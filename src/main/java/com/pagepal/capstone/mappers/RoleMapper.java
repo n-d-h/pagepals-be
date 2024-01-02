@@ -8,13 +8,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper()
 public interface RoleMapper {
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "status", source = "status")
+
     RoleDto toDto(Role role);
-    Role toEntity(CreateRoleDto createRoleDto);
-    Role toEntity(UpdateRoleDto updateRoleDto);
+
+    @Mapping(target = "accounts", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Role createToEntity(CreateRoleDto createRoleDto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "accounts", ignore = true)
+    Role updateToEntity(UpdateRoleDto updateRoleDto);
 }
