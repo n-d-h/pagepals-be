@@ -1,0 +1,14 @@
+type Book {
+    id: ID!
+    title: String
+    longTitle: String
+    author: String
+    publisher: String
+    pages: Int
+    language: String
+    overview: String
+    imageUrl: String
+    edition: String
+    status: Status
+    category: Category
+}

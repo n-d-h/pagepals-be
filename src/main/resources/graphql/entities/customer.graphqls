@@ -1,0 +1,13 @@
+type Customer {
+    id: ID!
+    fullName: String
+    gender: GenderEnum
+    dob: String
+    imageUrl: String
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+    status: Status
+    follows: [Follow]
+    bookings: [Booking]
+}

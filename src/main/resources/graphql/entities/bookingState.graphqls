@@ -1,0 +1,6 @@
+type BookingState {
+    id: ID!
+    name: String
+    status: Status
+    bookings: [Booking]
+}

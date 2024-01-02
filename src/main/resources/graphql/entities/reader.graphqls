@@ -1,0 +1,25 @@
+type Reader {
+    id: ID!
+    rating: Int
+    genre: String
+    language: String
+    countryAccent: String
+    audioDescriptionUrl: String
+    description: String
+    totalOfReviews: String
+    totalOfBookings: String
+    introductionVideoUrl: String
+    experience: Float
+    tags: String
+    createdAt: String
+    updatedAt: String
+    deletedAt: String
+    status: Status
+    level: Level
+    workingTimes: [WorkingTime]
+    services: [Service]
+    follows: [Follow]
+    promotions: [Promotion]
+    requests: [Request]
+    meetings: [Meeting]
+}

@@ -1,0 +1,7 @@
+type WorkingTime {
+    id: ID!
+    date: String
+    startTime: String
+    endTime: String
+    reader: Reader
+}

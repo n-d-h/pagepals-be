@@ -1,0 +1,13 @@
+type Campaign {
+    id: ID!
+    title: String
+    description: String
+    startAt: String
+    endAt: String
+    imageUrl: String
+    saleLimit: Int
+    expOfPromotion: String
+    status: Status
+    state: CampaignEnum
+    promotions: [Promotion]
+}
