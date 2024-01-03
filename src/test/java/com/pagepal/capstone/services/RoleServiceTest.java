@@ -1,9 +1,8 @@
-package com.pagepal.capstone.repositories;
+package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
-import com.pagepal.capstone.services.RoleServiceTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {RoleRepository.class})
-public class RoleRepositoryTest {
+public class RoleServiceTest {
     @Autowired
     private RoleRepository roleRepository;
 

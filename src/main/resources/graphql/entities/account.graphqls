@@ -18,13 +18,25 @@ type LoginResponse {
     refreshToken: String
 }
 
+type LoginStaffResponse {
+    username: String,
+    password: String,
+    accessToken: String
+    refreshToken: String
+}
+
 input LoginRequest {
     username: String!
     password: String!
 }
 
+extend type Query {
+    getAccount(id: ID!): Account
+}
+
 extend type Mutation {
     login(account: LoginRequest): LoginResponse
     register(register: LoginRequest): LoginResponse
+    registerStaff(username: String!): LoginStaffResponse
     refreshToken: LoginResponse
 }
