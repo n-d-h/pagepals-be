@@ -30,12 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        String currentPath = request.getRequestURI();
-        System.out.println(currentPath);
-        if(currentPath.startsWith("/graphql") || currentPath.startsWith("/graphiql")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
         // Get the Authorization header
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 

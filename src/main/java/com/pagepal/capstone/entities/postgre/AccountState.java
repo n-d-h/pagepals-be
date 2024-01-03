@@ -18,7 +18,7 @@ import java.util.UUID;
 @Table(name = "ACCOUNT_STATE")
 public class AccountState {
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"

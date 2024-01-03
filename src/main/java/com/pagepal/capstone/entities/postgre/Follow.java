@@ -19,7 +19,7 @@ import java.util.UUID;
 @Where(clause = "status = 'ACTIVE'")
 public class Follow {
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"

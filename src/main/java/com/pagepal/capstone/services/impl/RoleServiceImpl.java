@@ -1,6 +1,5 @@
 package com.pagepal.capstone.services.impl;
 
-
 import com.pagepal.capstone.dtos.role.CreateRoleDto;
 import com.pagepal.capstone.dtos.role.RoleDto;
 import com.pagepal.capstone.dtos.role.UpdateRoleDto;
@@ -25,7 +24,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<RoleDto> getRoles() {
         List<Role> roles = roleRepository.findAll();
-        if(roles == null || roles.isEmpty())
+        if (roles.isEmpty())
             return null;
         return roles.stream().map(RoleMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
@@ -38,9 +37,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDto create(CreateRoleDto createRoleDto) {
-        UUID id = UUID.randomUUID();
         Role role = RoleMapper.INSTANCE.createToEntity(createRoleDto);
-        role.setId(id);
         Role createdRole = roleRepository.save(role);
         return RoleMapper.INSTANCE.toDto(createdRole);
     }

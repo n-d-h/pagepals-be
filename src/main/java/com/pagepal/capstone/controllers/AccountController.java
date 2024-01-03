@@ -27,9 +27,9 @@ public class AccountController {
         return accountService.register(registerRequest);
     }
 
-    @MutationMapping(name = "refreshToken")
-    public AccountResponse refresh(@ContextValue String authorization) {
-        String refreshToken = authorization.substring(7);
-        return accountService.refresh(new RefreshTokenRequest(refreshToken));
-    }
+//    @MutationMapping(name = "refreshToken")
+//    public AccountResponse refresh(@ContextValue String authorization) {
+//        String refreshToken = authorization.substring(7);
+//        return accountService.refresh(new RefreshTokenRequest(refreshToken));
+//    }
 }

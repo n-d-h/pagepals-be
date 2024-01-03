@@ -23,7 +23,7 @@ import java.util.*;
 //@Where(clause = "status = 'ACTIVE'")
 public class Account implements UserDetails {
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
