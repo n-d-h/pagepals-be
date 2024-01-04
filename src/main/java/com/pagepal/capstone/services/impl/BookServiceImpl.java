@@ -15,12 +15,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 //    private final BookMapper bookMapper;
 
     @Override
@@ -53,5 +55,9 @@ public class BookServiceImpl implements BookService {
         book.setId(null);
         book.setStatus(Status.ACTIVE);
         return BookMapper.INSTANCE.toDto(bookRepository.save(book));
+    }
+    
+    public BookDto bookById(UUID id) {
+        return BookMapper.INSTANCE.toDto(bookRepository.findById(id).orElse(bookRepository.findById(id).orElse(null)));
     }
 }

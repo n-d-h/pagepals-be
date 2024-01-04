@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +32,11 @@ public class BookController {
     @MutationMapping(name = "createBook")
     public BookDto createBook(@Argument(name = "book") WriteBookDto bookDto) {
         return bookService.createBook(bookDto);
+    }
+
+    @QueryMapping(name = "bookById")
+    public BookDto bookById(@Argument(name = "id") UUID id) {
+        return bookService.bookById(id);
     }
 
 //    @Argument(name = "search") Optional<String> search,
