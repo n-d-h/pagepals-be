@@ -15,4 +15,5 @@ type Customer {
 
 extend type Query {
     getCustomersActive: [Customer]
+    getCustomerDetail(id: ID!): Customer
 }
