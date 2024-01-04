@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -40,5 +41,11 @@ public class ReaderServiceImpl implements ReaderService {
         List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
         List<Reader> readers = accounts.stream().map(Account::getReader).toList();
         return readers.stream().map(ReaderMapper.INSTANCE::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public ReaderDto getReaderById(UUID id) {
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new RuntimeException("Reader not found"));
+        return ReaderMapper.INSTANCE.toDto(reader);
     }
 }

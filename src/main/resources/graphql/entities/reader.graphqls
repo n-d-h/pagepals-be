@@ -28,4 +28,5 @@ type Reader {
 
 extend type Query {
     getReadersActive: [Reader]
+    getReaderDetail(id: ID!): Reader
 }

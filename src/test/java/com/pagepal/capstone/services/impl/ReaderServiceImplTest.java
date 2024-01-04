@@ -62,11 +62,11 @@ class ReaderServiceImplTest {
     Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2", LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState2, null, null, role2, null);
     //Reader
-    Reader reader1 = new Reader(UUID.randomUUID(), "name1", 5, "genre1", "Vietnamese", "accent1" ,
+    Reader reader1 = new Reader(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"), "name1", 5, "genre1", "Vietnamese", "accent1" ,
             "url" ,"des1", "123", "123", "url", 123.2, "tag",
             new Date(), new Date(), new Date(), null, account1, null, null, null, null,
             null, null, null);
-    Reader reader2 = new Reader(UUID.randomUUID(), "name2", 5, "genre1", "Vietnamese", "accent1" ,
+    Reader reader2 = new Reader(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "name2", 5, "genre1", "Vietnamese", "accent1" ,
             "url" ,"des1", "123", "123", "url", 123.2, "tag",
             new Date(), new Date(), new Date(), null, account2, null, null, null, null,
             null, null, null);
@@ -144,6 +144,20 @@ class ReaderServiceImplTest {
         });
     }
 
+
+    /**
+     * Method under test: {@link ReaderServiceImpl#getReaderById(UUID)} ()}
+     */
+    @Test
+    void canGetReaderDetailById() {
+        account1.setReader(reader1);
+        account2.setReader(reader2);
+        when(readerRepository.findById(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172")))
+                .thenReturn(Optional.of(reader1));
+        ReaderDto readerDto = readerServiceImpl.getReaderById(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"));
+        assertEquals(readerDto.getNickname(), "name1");
+        verify(readerRepository).findById(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"));
+    }
 
 }
 
