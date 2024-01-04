@@ -26,8 +26,10 @@ public class JwtService {
 
     public String extractDataFromToken(String token) {
         var claims = extractAllClaims(token);
-        var userMap = claims.get("User", Map.class);
-        return userMap.get(DATA_FIELD).toString();
+        var username = claims.get(DATA_FIELD).toString();
+        return username;
+//        var userMap = claims.get("User", Map.class);
+//        return userMap.get(DATA_FIELD).toString();
     }
 
     public String extractUserEmail(String token) {
@@ -64,7 +66,7 @@ public class JwtService {
             UserDetails userDetails,
             String expirationTimeType
     ) {
-        extraClaims.put("User", userDetails);
+        extraClaims.put("username", userDetails.getUsername());
 
         return Jwts.builder()
                 .setClaims(extraClaims)

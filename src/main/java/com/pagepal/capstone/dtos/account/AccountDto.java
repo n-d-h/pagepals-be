@@ -1,4 +1,23 @@
 package com.pagepal.capstone.dtos.account;
 
+import com.pagepal.capstone.enums.LoginTypeEnum;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+import java.util.UUID;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountDto {
+    private UUID id;
+    private String username;
+    private String password;
+    private String email;
+    private LoginTypeEnum loginType;
+    private Date createdAt;
+    private Date updatedAt;
+    private Date deletedAt;
 }
