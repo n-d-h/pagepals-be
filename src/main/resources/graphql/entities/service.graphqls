@@ -14,5 +14,5 @@ type Service {
 }
 
 extend type Query {
-    service(id: ID!): Service
+    serviceById(id: ID!): Service
 }

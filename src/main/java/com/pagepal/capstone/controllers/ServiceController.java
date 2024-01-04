@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ServiceController {
     private final ServiceService serviceService;
 
-    @QueryMapping(name = "service")
+    @QueryMapping(name = "serviceById")
     public ServiceDto serviceById(@Argument(name = "id") UUID id) {
         return serviceService.serviceById(id);
     }
