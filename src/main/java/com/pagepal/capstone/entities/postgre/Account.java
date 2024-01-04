@@ -58,6 +58,7 @@ public class Account implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "account_state_id")
+    @JsonManagedReference
     private AccountState accountState;
 
     @OneToOne(mappedBy = "account")

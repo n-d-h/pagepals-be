@@ -12,3 +12,7 @@ type Customer {
     follows: [Follow]
     bookings: [Booking]
 }
+
+extend type Query {
+    getCustomersActive: [Customer]
+}
