@@ -1,6 +1,7 @@
 package com.pagepal.capstone.entities.postgre;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.GenderEnum;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -58,6 +59,11 @@ public class Customer {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
+
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    @JsonManagedReference
+    private Account account;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     @JsonBackReference

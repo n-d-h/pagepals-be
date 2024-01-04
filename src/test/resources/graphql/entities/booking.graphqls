@@ -1,0 +1,13 @@
+type Booking {
+    id: ID!
+    totalPrice: Float
+    promotionCode: String
+    description: String
+    review: String
+    rating: Int
+    customer: Customer
+    meeting: Meeting
+    state: BookingState
+    bookingDetails: [BookingDetail]
+    transactions: [Transaction]
+}

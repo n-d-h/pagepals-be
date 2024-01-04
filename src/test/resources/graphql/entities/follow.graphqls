@@ -1,0 +1,6 @@
+type Follow {
+    id: ID!
+    createdAt: String
+    customer: Customer
+    reader: Reader
+}

@@ -1,0 +1,11 @@
+type Record {
+    id: ID!
+    title: String
+    recordUrl: String
+    date: String
+    capacity: Float
+    description: String
+    duration: Float
+    status: Status
+    booking: Booking
+}

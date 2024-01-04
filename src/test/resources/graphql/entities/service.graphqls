@@ -1,0 +1,14 @@
+type Service {
+    id: ID!
+    price: Float
+    createdAt: String
+    description: String
+    duration: Float
+    totalOfReview: Int
+    totalOfBooking: Int
+    rating: Int
+    status: Status
+    bookingDetails: [BookingDetail]
+    reader: Reader
+    chapter: Chapter
+}

@@ -16,7 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "WORKING_TIME")
-@Where(clause = "status = 'ACTIVE'")
 public class WorkingTime {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
