@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +55,7 @@ public class BookServiceImpl implements BookService {
         Book book = BookMapper.INSTANCE.createBook(bookDto);
         book.setId(null);
         book.setStatus(Status.ACTIVE);
+        book.setCreatedAt(new Date());
         return BookMapper.INSTANCE.toDto(bookRepository.save(book));
     }
     

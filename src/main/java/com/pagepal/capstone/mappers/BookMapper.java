@@ -22,6 +22,7 @@ public interface BookMapper {
     Book toEntity(BookDto bookDto);
 
     @Mapping(target = "category", source = "categoryId", qualifiedByName = "toEntityWithCategory")
+    @Mapping(target = "createdAt", ignore = true)
     Book createBook(WriteBookDto bookDTO);
     @Named("toEntityWithCategory")
     default Category toEntityWithCategory(UUID id) {
