@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,6 +25,11 @@ public class BookController {
                 query.getFilter(),
                 query.getPage(),
                 query.getPageSize());
+    }
+
+    @QueryMapping(name = "bookById")
+    public BookDto bookById(@Argument(name = "id") UUID id) {
+        return bookService.bookById(id);
     }
 
 //    @Argument(name = "search") Optional<String> search,
