@@ -18,31 +18,34 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@RunWith(SpringRunner.class)
 @DataJpaTest
 public class BookRepositoryTest {
     @Autowired
-    private BookRepository bookRepository;
+    private TestEntityManager entityManager;
+
+    @Autowired
+    BookRepository bookRepository;
 
     @Test
     public void testFindByTitleContainingIgnoreCase() {
-//        Book book = new Book();
-//        book.setId(UUID.randomUUID());
-//        book.setTitle("test");
-//        book.setAuthor("test");
-//        book.setCreatedAt(null);
-//        book.setStatus(Status.ACTIVE);
-//
-//        bookRepository.save(book);
-//        Page<Book> result = bookRepository.findByTitleContainingIgnoreCase("test", PageRequest.of(0, 10));
-//        assertNotNull(result);
-//        assertFalse(result.getContent().isEmpty());
+        Book book = new Book();
+        book.setId(UUID.randomUUID());
+        book.setTitle("test");
+        book.setAuthor("test");
+        book.setCreatedAt(null);
+        book.setStatus(Status.ACTIVE);
+
+        bookRepository.save(book);
+        Page<Book> result = bookRepository.findByTitleContainingIgnoreCase("", PageRequest.of(0, 10));
+        assertNotNull(result);
+        assertFalse(result.getContent().isEmpty());
     }
 
-//    @Test
-//    public void testFindByTitleContainsIgnoreCaseAndAuthor() {
-//        Page<Book> result = bookRepository.findByTitleContainsIgnoreCaseAndAuthor("", "", PageRequest.of(0, 10));
-//        assertNotNull(result);
-//        assertFalse(result.getContent().isEmpty());
-//    }
+    @Test
+    public void testFindByTitleContainsIgnoreCaseAndAuthor() {
+        Page<Book> result = bookRepository.findByTitleContainsIgnoreCaseAndAuthor("", "", PageRequest.of(0, 10));
+        assertNotNull(result);
+        assertTrue(result.getContent().isEmpty());
+    }
 }
