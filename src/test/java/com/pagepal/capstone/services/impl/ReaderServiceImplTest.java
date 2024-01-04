@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Reader;
@@ -26,6 +27,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -159,5 +164,44 @@ class ReaderServiceImplTest {
         verify(readerRepository).findById(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"));
     }
 
+    /**
+     * Method under test: {@link ReaderServiceImpl#getListReaders(ReaderQueryDto)}
+     */
+    @Test
+    void canGetListReaders() {
+        ReaderQueryDto readerQueryDto = new ReaderQueryDto();
+        readerQueryDto.setNickname("name1");
+        readerQueryDto.setGenre("genre1");
+        readerQueryDto.setLanguage("Vietnamese");
+        readerQueryDto.setCountryAccent("accent1");
+        readerQueryDto.setRating(5);
+        readerQueryDto.setSort("desc");
+        readerQueryDto.setPage(0);
+        readerQueryDto.setPageSize(10);
+
+        List<Reader> readerList = Arrays.asList(reader1, reader2);
+        Page<Reader> page = new PageImpl<>(readerList, PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize()), readerList.size());
+
+        when(readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+                readerQueryDto.getNickname(),
+                readerQueryDto.getGenre(),
+                readerQueryDto.getLanguage(),
+                readerQueryDto.getCountryAccent(),
+                readerQueryDto.getRating(),
+                PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending())
+        )).thenReturn(page);
+
+        List<ReaderDto> readers = readerServiceImpl.getListReaders(readerQueryDto);
+
+        assertEquals(readers.get(0).getNickname(), readerQueryDto.getNickname());
+        verify(readerRepository).findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+                readerQueryDto.getNickname(),
+                readerQueryDto.getGenre(),
+                readerQueryDto.getLanguage(),
+                readerQueryDto.getCountryAccent(),
+                readerQueryDto.getRating(),
+                PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending())
+        );
+    }
 }
 

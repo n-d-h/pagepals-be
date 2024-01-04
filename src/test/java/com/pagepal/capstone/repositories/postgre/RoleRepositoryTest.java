@@ -1,4 +1,4 @@
 package com.pagepal.capstone.repositories.postgre;
 
-public class RoleRepositoryTest {
+class RoleRepositoryTest {
 }
