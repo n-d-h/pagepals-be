@@ -11,10 +11,7 @@ import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.GenderEnum;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.postgre.AccountRepository;
-import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
-import com.pagepal.capstone.repositories.postgre.ReaderRepository;
-import com.pagepal.capstone.repositories.postgre.RoleRepository;
+import com.pagepal.capstone.repositories.postgre.*;
 
 import java.util.*;
 
@@ -40,7 +37,7 @@ class CustomerServiceImplTest {
     private CustomerServiceImpl customerServiceImpl;
 
     @MockBean
-    private ReaderRepository readerRepository;
+    private CustomerRepository customerRepository;
 
     @MockBean
     private RoleRepository roleRepository;
@@ -64,7 +61,7 @@ class CustomerServiceImplTest {
             "url" ,"des1", "123", "123", "url", 123.2, "tag",
             new Date(), new Date(), new Date(), null, account1, null, null, null, null,
             null, null, null);
-    Customer customer1 = new Customer(UUID.randomUUID(),"customer name 1", GenderEnum.MALE, new Date(), "url",
+    Customer customer1 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"),"customer name 1", GenderEnum.MALE, new Date(), "url",
             new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null);
 
     /**
@@ -138,6 +135,20 @@ class CustomerServiceImplTest {
         assertThrows(RuntimeException.class, () -> {
             customerServiceImpl.getCustomersActive();
         });
+    }
+
+    /**
+     * Method under test: {@link CustomerServiceImpl#getCustomerById(UUID)}
+     */
+    @Test
+    void canGetCustomerDetail() {
+        account1.setReader(reader1);
+        account2.setCustomer(customer1);
+        when(customerRepository.findById(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014")))
+                .thenReturn(Optional.of(customer1));
+        CustomerDto customer = customerServiceImpl.getCustomerById(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"));
+        assertEquals(customer.getFullName(), "customer name 1");
+        verify(customerRepository).findById(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"));
     }
 
 }
