@@ -16,7 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "FOLLOW")
-@Where(clause = "status = 'ACTIVE'")
 public class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

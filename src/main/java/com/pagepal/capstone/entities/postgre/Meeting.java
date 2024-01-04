@@ -19,7 +19,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "MEETING")
-@Where(clause = "status = 'ACTIVE'")
 public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

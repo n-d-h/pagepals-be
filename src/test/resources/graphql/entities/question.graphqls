@@ -1,0 +1,6 @@
+type Question {
+    id: ID!
+    content: String
+    status: Status
+    answers: [Answer]
+}
