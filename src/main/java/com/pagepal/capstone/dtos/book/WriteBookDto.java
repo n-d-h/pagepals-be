@@ -21,6 +21,6 @@ public class WriteBookDto {
     private String overview;
     private String imageUrl;
     private String edition;
-    private Date createdAt;
+    private String createdAt;
     private UUID categoryId;
 }
