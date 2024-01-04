@@ -58,20 +58,21 @@ public class Account implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "account_state_id")
+    @JsonManagedReference
     private AccountState accountState;
 
-    @OneToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "account")
+    @JsonBackReference
     private Customer customer;
+
+    @OneToOne(mappedBy = "account")
+    @JsonBackReference
+    private Reader reader;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     @JsonManagedReference
     private Role role;
-
-    @OneToOne
-    @JoinColumn(name = "reader_id", referencedColumnName = "id")
-    private Reader reader;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     @JsonBackReference

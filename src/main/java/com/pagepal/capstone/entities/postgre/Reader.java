@@ -30,6 +30,9 @@ public class Reader {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "nickname")
+    private String nickname;
+
     @Column(name = "rating")
     private int rating;
 
@@ -78,6 +81,11 @@ public class Reader {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
+
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    @JsonManagedReference
+    private Account account;
 
     @ManyToOne
     @JoinColumn(name = "level_id")

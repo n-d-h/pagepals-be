@@ -8,6 +8,12 @@ type Customer {
     updatedAt: String
     deletedAt: String
     status: Status
+    account: Account
     follows: [Follow]
     bookings: [Booking]
+}
+
+extend type Query {
+    getCustomersActive: [Customer]
+    getCustomerDetail(id: ID!): Customer
 }

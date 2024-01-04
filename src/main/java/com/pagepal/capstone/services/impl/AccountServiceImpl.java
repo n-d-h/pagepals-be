@@ -3,10 +3,13 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.*;
 import com.pagepal.capstone.entities.postgre.Account;
+import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.LoginTypeEnum;
+import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.AccountMapper;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
+import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import com.pagepal.capstone.services.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +18,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +33,10 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final AccountStateRepository accountStateRepository;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
+    private final static String ACTIVE = "ACTIVE";
 
     public AccountResponse register(RegisterRequest request) {
         var role = roleRepository.findByName(ROLE_CUSTOMER).orElseThrow(
@@ -103,6 +110,18 @@ public class AccountServiceImpl implements AccountService {
         var refreshToken = jwtService.generateRefreshToken(savedAccount);
 
         return new AccountStaffResponse(username, password, accessToken, refreshToken);
+    }
+
+    @Override
+    public List<AccountDto> getListStaff() {
+        AccountState accountState = accountStateRepository
+                .findByNameAndStatus(ACTIVE, Status.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("Account State not found"));
+        Role role = roleRepository
+                .findByName(ROLE_STAFF)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
+        return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
     private String generatePassword() {

@@ -32,6 +32,7 @@ input LoginRequest {
 
 extend type Query {
     getAccount(id: ID!): Account
+    getListStaff: [Account]
 }
 
 extend type Mutation {

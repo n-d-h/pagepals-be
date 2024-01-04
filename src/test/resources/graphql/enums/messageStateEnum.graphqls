@@ -1,0 +1,4 @@
+enum MessageStateEnum {
+    AVAILABLE
+    UNAVAILABLE
+}

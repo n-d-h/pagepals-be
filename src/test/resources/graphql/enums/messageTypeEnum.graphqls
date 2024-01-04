@@ -1,0 +1,4 @@
+enum MessageTypeEnum {
+    AVAILABLE
+    UNAVAILABLE
+}

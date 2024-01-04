@@ -1,0 +1,11 @@
+type Wallet {
+    id: ID!
+    tokenAmount: Int
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+    status: Status
+    account: Account
+    walletType: WalletType
+    transactions: [Transaction]
+}

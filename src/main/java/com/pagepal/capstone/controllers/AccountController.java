@@ -9,6 +9,7 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -38,6 +39,11 @@ public class AccountController {
     public AccountDto getAccount(@Argument(name = "id") String id) {
         UUID uuid = UUID.fromString(id);
         return accountService.getAccountById(uuid);
+    }
+
+    @QueryMapping(name = "getListStaff")
+    public List<AccountDto> getListStaff() {
+        return accountService.getListStaff();
     }
 
 //    @MutationMapping(name = "refreshToken")
