@@ -1,5 +1,6 @@
 type Query {
     getListBook(query: searchBook): [Book]
+    bookById(id: ID!): Book
 }
 
 #extend type Mutation {
