@@ -1,21 +1,24 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.account.AccountRequest;
-import com.pagepal.capstone.dtos.account.AccountResponse;
-import com.pagepal.capstone.dtos.account.RefreshTokenRequest;
-import com.pagepal.capstone.dtos.account.RegisterRequest;
+import com.pagepal.capstone.dtos.account.*;
 import com.pagepal.capstone.services.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.ContextValue;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
 public class AccountController {
 
     private final AccountService accountService;
+    private final static String ROLE_CUSTOMER = "CUSTOMER";
+    private final static String ROLE_STAFF = "STAFF";
 
     @MutationMapping(name = "login")
     public AccountResponse login(@Argument(name = "account") AccountRequest accountRequest) {
@@ -25,6 +28,22 @@ public class AccountController {
     @MutationMapping(name = "register")
     public AccountResponse register(@Argument(name = "register") RegisterRequest registerRequest) {
         return accountService.register(registerRequest);
+    }
+
+    @MutationMapping(name = "registerStaff")
+    public AccountStaffResponse registerStaff(@Argument(name = "username") String username) {
+        return accountService.registerStaff(username);
+    }
+
+    @QueryMapping(name = "getAccount")
+    public AccountDto getAccount(@Argument(name = "id") String id) {
+        UUID uuid = UUID.fromString(id);
+        return accountService.getAccountById(uuid);
+    }
+
+    @QueryMapping(name = "getListStaff")
+    public List<AccountDto> getListStaff() {
+        return accountService.getListStaff();
     }
 
 //    @MutationMapping(name = "refreshToken")
