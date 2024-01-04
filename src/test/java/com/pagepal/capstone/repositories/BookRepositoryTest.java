@@ -48,4 +48,19 @@ public class BookRepositoryTest {
         assertNotNull(result);
         assertTrue(result.getContent().isEmpty());
     }
+
+    @Test
+    public void testFindByID() {
+        Book book = new Book();
+        book.setId(UUID.randomUUID());
+        book.setTitle("test");
+        book.setAuthor("test");
+        book.setCreatedAt(null);
+        book.setStatus(Status.ACTIVE);
+
+        bookRepository.save(book);
+        Book result = bookRepository.findById(book.getId()).orElse(null);
+        assertNotNull(result);
+        assertEquals(result.getTitle(), book.getTitle());
+    }
 }
