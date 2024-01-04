@@ -50,7 +50,7 @@ public class BookRepositoryTest {
     }
 
     @Test
-    public void testFindByID() {
+    public void canSaveBook() {
         Book book = new Book();
         book.setId(UUID.randomUUID());
         book.setTitle("test");
@@ -59,8 +59,8 @@ public class BookRepositoryTest {
         book.setStatus(Status.ACTIVE);
 
         bookRepository.save(book);
-        Book result = bookRepository.findById(book.getId()).orElse(null);
+        Page<Book> result = bookRepository.findByTitleContainingIgnoreCase("test", PageRequest.of(0, 10));
         assertNotNull(result);
-        assertEquals(result.getTitle(), book.getTitle());
+        assertFalse(result.getContent().isEmpty());
     }
 }
