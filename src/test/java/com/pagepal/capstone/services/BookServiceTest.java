@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -91,5 +92,23 @@ public class BookServiceTest {
         assertNotNull(result);
         assertFalse(result.isEmpty());
         assertEquals(3, result.size());
+    }
+
+    @Test
+    public void testGetBookById() {
+        Book book1 = new Book();
+        book1.setId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+        book1.setTitle("test1");
+        book1.setAuthor("test1");
+        book1.setCreatedAt(null);
+        book1.setStatus(Status.ACTIVE);
+
+        when(bookRepository.findById(eq(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))))
+                .thenReturn(java.util.Optional.of(book1));
+
+        BookDto result = bookService.bookById(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+
+        assertNotNull(result);
+        assertEquals("test1", result.getTitle());
     }
 }
