@@ -2,12 +2,14 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
+import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ReaderMapper;
+import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
@@ -59,9 +61,9 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public List<ReaderDto> getListReaders(ReaderQueryDto readerQueryDto) {
 
-        if(readerQueryDto.getPage() == null || readerQueryDto.getPage() < 0)
+        if (readerQueryDto.getPage() == null || readerQueryDto.getPage() < 0)
             readerQueryDto.setPage(0);
-        if(readerQueryDto.getPageSize() == null || readerQueryDto.getPageSize() < 0)
+        if (readerQueryDto.getPageSize() == null || readerQueryDto.getPageSize() < 0)
             readerQueryDto.setPageSize(10);
 
         Pageable pageable;
@@ -100,5 +102,22 @@ public class ReaderServiceImpl implements ReaderService {
         if (page == null) return Collections.emptyList();
         else return page.map(ReaderMapper.INSTANCE::toDto).toList();
 
+    }
+
+    @Override
+    public List<ServiceDto> getListServicesByReaderId(UUID id) {
+        Reader reader = readerRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Reader not found")
+                );
+        if (reader.getServices() != null) {
+            return reader
+                    .getServices()
+                    .stream()
+                    .map(ServiceMapper.INSTANCE::toDto)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 }

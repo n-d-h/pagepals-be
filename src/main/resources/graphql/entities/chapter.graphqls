@@ -3,5 +3,7 @@ type Chapter {
     chapterNumber: Int
     pages: Int
     status: Status
+    book: Book
     services: [Service]
+
 }
