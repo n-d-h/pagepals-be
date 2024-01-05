@@ -1,4 +1,9 @@
 package com.pagepal.capstone.mappers;
+
+import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
+import com.pagepal.capstone.dtos.service.ServiceDto;
+import com.pagepal.capstone.entities.postgre.Service;
+import org.mapstruct.Mapper;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.entities.postgre.Service;
 import org.mapstruct.Mapper;
@@ -13,4 +18,8 @@ public interface ServiceMapper {
     @Mapping(target = "reader", source = "reader")
     @Mapping(target = "chapter", source = "chapter")
     ServiceDto toDto(Service book);
+
+    ServiceCustomerDto toCustomerDto(Service book);
+
+    Service toEntity(ServiceDto serviceDto);
 }

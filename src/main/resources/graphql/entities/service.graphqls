@@ -13,6 +13,15 @@ type Service {
     chapter: Chapter
 }
 
+input QueryInput {
+    search: String
+    sort: String
+    page: Int
+    pageSize: Int
+}
+
 extend type Query {
     serviceById(id: ID!): Service
+    getServicesByReader(readerId: ID!, filter: QueryInput): [Service]
+    getServicesByBook(bookId: ID!, filter: QueryInput): [Service]
 }

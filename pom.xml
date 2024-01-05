@@ -18,14 +18,14 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
     </properties>
     <url>https://repo1.maven.org/maven2</url>
-    <!--    <repositories>-->
-    <!--        <repository>-->
-    <!--            <id>central</id>-->
-    <!--            <name>Central Repository</name>-->
-    <!--            <url>https://repo1.maven.org/maven2</url>-->
-    <!--            <layout>default</layout>-->
-    <!--        </repository>-->
-    <!--    </repositories>-->
+<!--        <repositories>-->
+<!--            <repository>-->
+<!--                <id>central</id>-->
+<!--                <name>Central Repository</name>-->
+<!--                <url>https://repo1.maven.org/maven2</url>-->
+<!--                <layout>default</layout>-->
+<!--            </repository>-->
+<!--        </repositories>-->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
