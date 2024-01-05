@@ -1,6 +1,7 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
 import com.pagepal.capstone.services.ReaderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -24,5 +25,10 @@ public class ReaderController {
     @QueryMapping
     public ReaderDto getReaderDetail(@Argument UUID id) {
         return readerService.getReaderById(id);
+    }
+
+    @QueryMapping
+    public List<ReaderDto> getListReaders(@Argument(name = "query") ReaderQueryDto readerQueryDto) {
+        return readerService.getListReaders(readerQueryDto);
     }
 }
