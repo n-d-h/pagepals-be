@@ -1,6 +1,7 @@
 package com.pagepal.capstone.entities.postgre;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,4 +42,9 @@ public class Chapter {
     @OneToMany(mappedBy = "chapter", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Service> services;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    @JsonManagedReference
+    private Book book;
 }

@@ -12,3 +12,8 @@ type Service {
     reader: Reader
     chapter: Chapter
 }
+
+extend type Query {
+    getServicesByReader(readerId: ID!): [Service]
+    getServicesByBook(bookId: ID!): [Service]
+}
