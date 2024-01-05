@@ -5,4 +5,5 @@ type Chapter {
     status: Status
     book: Book
     services: [Service]
+
 }

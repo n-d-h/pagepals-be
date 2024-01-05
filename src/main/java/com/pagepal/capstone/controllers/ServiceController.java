@@ -1,8 +1,11 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.service.QueryDto;
+import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.services.ServiceProvideService;
+import com.pagepal.capstone.dtos.service.ServiceDto;
+import com.pagepal.capstone.services.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -15,9 +18,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ServiceController {
     private final ServiceProvideService serviceProvideService;
+    private final ServiceService serviceService;
 
     @QueryMapping(name = "getServicesByReader")
-    public List<ServiceDto> getServicesByReaderId(
+    public List<ServiceCustomerDto> getServicesByReaderId(
             @Argument(name = "readerId") UUID readerId,
             @Argument(name = "filter") QueryDto queryDto
     ) {
@@ -25,10 +29,15 @@ public class ServiceController {
     }
 
     @QueryMapping(name = "getServicesByBook")
-    public List<ServiceDto> getServicesByBookId(
+    public List<ServiceCustomerDto> getServicesByBookId(
             @Argument(name = "bookId") UUID bookId,
             @Argument(name = "filter") QueryDto queryDto
     ) {
         return serviceProvideService.getAllServicesByBookId(bookId, queryDto);
+    }
+
+    @QueryMapping(name = "serviceById")
+    public ServiceDto serviceById(@Argument(name = "id") UUID id) {
+        return serviceService.serviceById(id);
     }
 }

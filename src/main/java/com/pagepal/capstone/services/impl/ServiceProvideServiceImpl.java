@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.service.QueryDto;
+import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.postgre.BookRepository;
@@ -26,7 +27,7 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
     private final BookRepository bookRepository;
 
     @Override
-    public List<ServiceDto> getAllServicesByReaderId(UUID readerId, QueryDto queryDto) {
+    public List<ServiceCustomerDto> getAllServicesByReaderId(UUID readerId, QueryDto queryDto) {
         if(queryDto.getPage() == null || queryDto.getPage() < 0)
             queryDto.setPage(0);
 
@@ -50,11 +51,11 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
         );
 
         var services = serviceRepository.findAllByReaderAndBookTitleContainsIgnoreCase(reader, queryDto.getSearch(), pageable);
-        return services.stream().map(ServiceMapper.INSTANCE::toDto).collect(Collectors.toList());
+        return services.stream().map(ServiceMapper.INSTANCE::toCustomerDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<ServiceDto> getAllServicesByBookId(UUID bookId, QueryDto queryDto) {
+    public List<ServiceCustomerDto> getAllServicesByBookId(UUID bookId, QueryDto queryDto) {
         if(queryDto.getPage() == null || queryDto.getPage() < 0)
             queryDto.setPage(0);
 
@@ -78,6 +79,6 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
         );
 
         var services = serviceRepository.findAllByBookId(book, queryDto.getSearch(), pageable);
-        return services.stream().map(ServiceMapper.INSTANCE::toDto).collect(Collectors.toList());
+        return services.stream().map(ServiceMapper.INSTANCE::toCustomerDto).collect(Collectors.toList());
     }
 }

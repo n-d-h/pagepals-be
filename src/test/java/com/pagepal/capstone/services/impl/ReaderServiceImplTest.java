@@ -1,15 +1,27 @@
 package com.pagepal.capstone.services.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
+import com.pagepal.capstone.entities.postgre.Follow;
+import com.pagepal.capstone.entities.postgre.Level;
+import com.pagepal.capstone.entities.postgre.Promotion;
 import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.Request;
 import com.pagepal.capstone.entities.postgre.Role;
+import com.pagepal.capstone.entities.postgre.Service;
+import com.pagepal.capstone.entities.postgre.WorkingTime;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
@@ -18,7 +30,13 @@ import com.pagepal.capstone.repositories.postgre.ReaderRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 
 import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Disabled;
 
@@ -26,6 +44,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -58,16 +80,16 @@ class ReaderServiceImplTest {
 
     //Account
     Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1", LoginTypeEnum.NORMAL,
-            new Date(), new Date(),new Date(), accountState1, null, null, role1, null);
+            new Date(), new Date(), new Date(), accountState1, null, null, role1, null);
     Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2", LoginTypeEnum.NORMAL,
-            new Date(), new Date(),new Date(), accountState2, null, null, role2, null);
+            new Date(), new Date(), new Date(), accountState2, null, null, role2, null);
     //Reader
-    Reader reader1 = new Reader(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"), "name1", 5, "genre1", "Vietnamese", "accent1" ,
-            "url" ,"des1", "123", "123", "url", 123.2, "tag",
+    Reader reader1 = new Reader(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"), "name1", 5, "genre1", "Vietnamese", "accent1",
+            "url", "des1", "123", "123", "url", 123.2, "tag",
             new Date(), new Date(), new Date(), null, account1, null, null, null, null,
             null, null, null);
-    Reader reader2 = new Reader(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "name2", 5, "genre1", "Vietnamese", "accent1" ,
-            "url" ,"des1", "123", "123", "url", 123.2, "tag",
+    Reader reader2 = new Reader(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "name2", 5, "genre1", "Vietnamese", "accent1",
+            "url", "des1", "123", "123", "url", 123.2, "tag",
             new Date(), new Date(), new Date(), null, account2, null, null, null, null,
             null, null, null);
 
@@ -158,6 +180,95 @@ class ReaderServiceImplTest {
         assertEquals(readerDto.getNickname(), "name1");
         verify(readerRepository).findById(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"));
     }
+
+    /**
+     * Method under test: {@link ReaderServiceImpl#getListReaders(ReaderQueryDto)}
+     */
+    @Test
+    void canGetListReaders() {
+        ReaderQueryDto readerQueryDto = new ReaderQueryDto();
+        readerQueryDto.setNickname("name1");
+        readerQueryDto.setGenre("genre1");
+        readerQueryDto.setLanguage("Vietnamese");
+        readerQueryDto.setCountryAccent("accent1");
+        readerQueryDto.setRating(5);
+        readerQueryDto.setSort("desc");
+        readerQueryDto.setPage(0);
+        readerQueryDto.setPageSize(10);
+
+        List<Reader> readerList = Arrays.asList(reader1, reader2);
+        Page<Reader> page = new PageImpl<>(readerList, PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize()), readerList.size());
+
+        when(readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+                readerQueryDto.getNickname(),
+                readerQueryDto.getGenre(),
+                readerQueryDto.getLanguage(),
+                readerQueryDto.getCountryAccent(),
+                readerQueryDto.getRating(),
+                PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending())
+        )).thenReturn(page);
+
+        List<ReaderDto> readers = readerServiceImpl.getListReaders(readerQueryDto);
+
+        assertEquals(readers.get(0).getNickname(), readerQueryDto.getNickname());
+        verify(readerRepository).findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+                readerQueryDto.getNickname(),
+                readerQueryDto.getGenre(),
+                readerQueryDto.getLanguage(),
+                readerQueryDto.getCountryAccent(),
+                readerQueryDto.getRating(),
+                PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending())
+        );
+    }
+
+    /**
+     * Method under test: {@link ReaderServiceImpl#getListServicesByReaderId(UUID)}
+     */
+    @Test
+    void canGetListServicesByReaderId() {
+        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader()));
+        assertNull(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()));
+        verify(readerRepository).findById((UUID) any());
+    }
+
+    /**
+     * Method under test: {@link ReaderServiceImpl#getListServicesByReaderId(UUID)}
+     */
+    @Test
+    void canGetListServicesByReaderId2() {
+        UUID id = UUID.randomUUID();
+        Date createdAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
+        Date updatedAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
+        Date deletedAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
+        Account account = new Account();
+        Level level = new Level();
+        ArrayList<WorkingTime> workingTimes = new ArrayList<>();
+        ArrayList<Service> services = new ArrayList<>();
+        ArrayList<Follow> follows = new ArrayList<>();
+        ArrayList<Promotion> promotions = new ArrayList<>();
+        ArrayList<Request> requests = new ArrayList<>();
+        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
+                "GB", "https://example.org/example", "The characteristics of someone or something", "Total Of Reviews",
+                "Total Of Bookings", "https://example.org/example", 10.0d, "Tags", createdAt, updatedAt, deletedAt,
+                Status.ACTIVE, account, level, workingTimes, services, follows, promotions, requests, new ArrayList<>())));
+        assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
+        verify(readerRepository).findById((UUID) any());
+    }
+
+    /**
+     * Method under test: {@link ReaderServiceImpl#getListServicesByReaderId(UUID)}
+     */
+    @Test
+    void canGetListServicesByReaderId3() {
+        Reader reader = mock(Reader.class);
+        when(reader.getServices()).thenReturn(new ArrayList<>());
+        Optional<Reader> ofResult = Optional.of(reader);
+        when(readerRepository.findById((UUID) any())).thenReturn(ofResult);
+        assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
+        verify(readerRepository).findById((UUID) any());
+        verify(reader, atLeast(1)).getServices();
+    }
+
 
 }
 

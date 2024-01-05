@@ -24,7 +24,8 @@ public class BookController {
         return bookService.getListBook(
                 query.getSearch(),
                 query.getSort(),
-                query.getFilter(),
+                query.getAuthor(),
+                query.getCategoryId(),
                 query.getPage(),
                 query.getPageSize());
     }

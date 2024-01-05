@@ -1,31 +1,28 @@
 package com.pagepal.capstone.dtos.service;
 
-import com.pagepal.capstone.entities.postgre.BookingDetail;
-import com.pagepal.capstone.entities.postgre.Chapter;
-import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.dtos.chapter.ChapterDto;
+import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ServiceDto {
+@NoArgsConstructor
+public class ServiceCustomerDto {
     private UUID id;
-    private Float price;
+    private Double price;
     private Date createdAt;
     private String description;
-    private Float duration;
+    private Double duration;
     private Integer totalOfReview;
     private Integer totalOfBooking;
     private Integer rating;
     private Status status;
-    private List<BookingDetail> bookingDetails;
-    private Reader reader;
-    private Chapter chapter;
+    private ReaderDto reader;
+    private ChapterDto chapter;
 }

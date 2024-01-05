@@ -21,6 +21,7 @@ input QueryInput {
 }
 
 extend type Query {
+    serviceById(id: ID!): Service
     getServicesByReader(readerId: ID!, filter: QueryInput): [Service]
     getServicesByBook(bookId: ID!, filter: QueryInput): [Service]
 }

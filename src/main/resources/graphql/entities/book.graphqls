@@ -21,12 +21,14 @@ type Book {
     status: Status
     createdAt: String
     category: Category
+    chapters: [Chapter]
 }
 
 input searchBook {
     search: String
     sort: String
-    filter: String
+    author: String
+    categoryId: ID
     page: Int
     pageSize: Int
 }

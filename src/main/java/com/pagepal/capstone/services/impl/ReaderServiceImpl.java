@@ -1,12 +1,15 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
+import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ReaderMapper;
+import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
@@ -14,8 +17,14 @@ import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import com.pagepal.capstone.services.ReaderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,5 +56,68 @@ public class ReaderServiceImpl implements ReaderService {
     public ReaderDto getReaderById(UUID id) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new RuntimeException("Reader not found"));
         return ReaderMapper.INSTANCE.toDto(reader);
+    }
+
+    @Override
+    public List<ReaderDto> getListReaders(ReaderQueryDto readerQueryDto) {
+
+        if (readerQueryDto.getPage() == null || readerQueryDto.getPage() < 0)
+            readerQueryDto.setPage(0);
+        if (readerQueryDto.getPageSize() == null || readerQueryDto.getPageSize() < 0)
+            readerQueryDto.setPageSize(10);
+
+        Pageable pageable;
+        if (readerQueryDto.getSort() != null && readerQueryDto.getSort().equals("desc")) {
+            pageable = PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending());
+        } else {
+            pageable = PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").ascending());
+        }
+
+        if (readerQueryDto.getNickname() == null) readerQueryDto.setNickname("");
+        if (readerQueryDto.getGenre() == null) readerQueryDto.setGenre("");
+        if (readerQueryDto.getLanguage() == null) readerQueryDto.setLanguage("");
+        if (readerQueryDto.getCountryAccent() == null) readerQueryDto.setCountryAccent("");
+
+        Page<Reader> page;
+        if (readerQueryDto.getRating() != null)
+            page = readerRepository
+                    .findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+                            readerQueryDto.getNickname(),
+                            readerQueryDto.getGenre(),
+                            readerQueryDto.getLanguage(),
+                            readerQueryDto.getCountryAccent(),
+                            readerQueryDto.getRating(),
+                            pageable
+                    );
+
+        else page = readerRepository
+                .findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase(
+                        readerQueryDto.getNickname(),
+                        readerQueryDto.getGenre(),
+                        readerQueryDto.getLanguage(),
+                        readerQueryDto.getCountryAccent(),
+                        pageable
+                );
+
+        if (page == null) return Collections.emptyList();
+        else return page.map(ReaderMapper.INSTANCE::toDto).toList();
+
+    }
+
+    @Override
+    public List<ServiceDto> getListServicesByReaderId(UUID id) {
+        Reader reader = readerRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Reader not found")
+                );
+        if (reader.getServices() != null) {
+            return reader
+                    .getServices()
+                    .stream()
+                    .map(ServiceMapper.INSTANCE::toDto)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 }

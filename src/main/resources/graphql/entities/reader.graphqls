@@ -26,7 +26,20 @@ type Reader {
     meetings: [Meeting]
 }
 
+input searchReaderInput {
+    nickname: String
+    rating: Int
+    genre: String
+    language: String
+    countryAccent: String
+    sort: String
+    page: Int
+    pageSize: Int
+}
+
 extend type Query {
     getReadersActive: [Reader]
     getReaderDetail(id: ID!): Reader
+    getListReaders(query: searchReaderInput): [Reader]
+    getListServicesOfReader(id: ID!): [Service]
 }

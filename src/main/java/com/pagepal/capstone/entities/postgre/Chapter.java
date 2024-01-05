@@ -39,12 +39,12 @@ public class Chapter {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Book book;
+
     @OneToMany(mappedBy = "chapter", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Service> services;
-
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    @JsonManagedReference
-    private Book book;
 }
