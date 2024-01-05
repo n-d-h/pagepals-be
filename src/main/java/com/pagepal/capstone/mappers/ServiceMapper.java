@@ -4,12 +4,9 @@ import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.entities.postgre.Service;
 import org.mapstruct.Mapper;
-import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.service.WriteServiceDto;
 import com.pagepal.capstone.entities.postgre.Chapter;
 import com.pagepal.capstone.entities.postgre.Reader;
-import com.pagepal.capstone.entities.postgre.Service;
-import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
@@ -28,6 +25,12 @@ public interface ServiceMapper {
     @Mapping(target = "bookingDetails", ignore = true)
     @Mapping(target = "reader", source = "readerId", qualifiedByName = "readerIdToReader")
     @Mapping(target = "chapter", source = "chapterId", qualifiedByName = "chapterIdToChapter")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "totalOfReview", ignore = true)
+    @Mapping(target = "totalOfBooking", ignore = true)
+    @Mapping(target = "rating", ignore = true)
+    @Mapping(target = "id", ignore = true)
     Service writeService(WriteServiceDto bookDto);
 
     @Named("readerIdToReader")
