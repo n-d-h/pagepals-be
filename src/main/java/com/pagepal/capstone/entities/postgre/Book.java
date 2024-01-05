@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -66,4 +68,8 @@ public class Book {
     @JoinColumn(name = "category_id")
     @JsonManagedReference
     private Category category;
+
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Chapter> chapters;
 }

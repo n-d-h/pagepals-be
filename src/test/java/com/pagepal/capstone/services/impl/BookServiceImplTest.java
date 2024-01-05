@@ -57,17 +57,17 @@ class BookServiceImplTest {
     Book book1 = new Book(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "book1",
             "book1mock", "author1", "publisher1", 123L,
             "vietnamese", null, null, null,
-            date1, Status.ACTIVE, category1);
+            date1, Status.ACTIVE, category1, null);
 
     Book book2 = new Book(UUID.randomUUID(), "book2",
             "book2mock", "author2", "publisher2", 234L,
             "english", null, null, null,
-            date2, Status.ACTIVE, category1);
+            date2, Status.ACTIVE, category1, null);
 
     Book book3 = new Book(UUID.randomUUID(), "book3",
             "book3mock", "author3", "publisher3", 345L,
             "vietnamese", null, null, null,
-            date3, Status.ACTIVE, category2);
+            date3, Status.ACTIVE, category2, null);
 
     /**
      * Method under test: {@link BookServiceImpl#getListBook(String, String, String, UUID, Integer, Integer)}
