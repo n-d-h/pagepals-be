@@ -16,3 +16,21 @@ type Service {
 extend type Query {
     serviceById(id: ID!): Service
 }
+
+input serviceInput {
+    price: Float
+    description: String
+    duration: Float
+    readerId: ID!
+    chapterId: ID!
+}
+
+
+extend type Mutation {
+    createService(service: serviceInput): Service
+    updateService(
+        id: ID!
+        service: serviceInput
+    ): Service
+    deleteService(id: ID!): String
+}
