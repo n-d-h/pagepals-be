@@ -2,6 +2,7 @@ package com.pagepal.capstone.mappers;
 
 import com.pagepal.capstone.dtos.account.AccountDto;
 import com.pagepal.capstone.dtos.account.AccountReadDto;
+import com.pagepal.capstone.dtos.account.AccountUpdateDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,4 +22,5 @@ public interface AccountMapper {
     Account toEntity(AccountDto accountDto);
 
     AccountReadDto toAccountReadDto(Account account);
+
 }

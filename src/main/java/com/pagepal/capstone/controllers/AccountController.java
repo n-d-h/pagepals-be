@@ -51,4 +51,10 @@ public class AccountController {
 //        String refreshToken = authorization.substring(7);
 //        return accountService.refresh(new RefreshTokenRequest(refreshToken));
 //    }
+
+    @MutationMapping(name = "updateAccount")
+    public AccountDto updateAccount(@Argument(name = "id") String id, @Argument(name = "accountUpdateDto") AccountUpdateDto accountUpdateDto) {
+        UUID uuid = UUID.fromString(id);
+        return accountService.updateAccount(uuid, accountUpdateDto);
+    }
 }
