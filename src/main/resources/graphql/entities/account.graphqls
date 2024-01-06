@@ -13,6 +13,20 @@ type Account {
     wallets: [Wallet]
 }
 
+type AccountRead {
+    id: ID!
+    username: String
+    email: String
+    createdAt: String!
+    updatedAt: String
+    deletedAt: String
+    accountState: AccountState
+    customer: Customer
+    reader: Reader
+    role: Role
+    wallets: [Wallet]
+}
+
 type LoginResponse {
     accessToken: String
     refreshToken: String

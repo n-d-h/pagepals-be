@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.entities.postgre.Account;
@@ -119,5 +120,15 @@ public class ReaderServiceImpl implements ReaderService {
                     .collect(Collectors.toList());
         }
         return null;
+    }
+
+    @Override
+    public ReaderProfileDto getReaderProfileById(UUID id) {
+        Reader reader = readerRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Reader not found")
+                );
+        return ReaderMapper.INSTANCE.toProfileDto(reader);
     }
 }

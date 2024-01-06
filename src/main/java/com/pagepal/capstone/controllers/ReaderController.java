@@ -1,6 +1,7 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.services.ReaderService;
@@ -36,5 +37,10 @@ public class ReaderController {
     @QueryMapping
     public List<ServiceDto> getListServicesOfReader(@Argument UUID id) {
         return readerService.getListServicesByReaderId(id);
+    }
+
+    @QueryMapping
+    public ReaderProfileDto getReaderProfile(@Argument UUID id) {
+        return readerService.getReaderProfileById(id);
     }
 }

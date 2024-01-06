@@ -69,7 +69,7 @@ public class ServiceProvideServiceTest {
     );
 
     Chapter chapter = new Chapter(UUID.randomUUID(), 10, 20L,
-            Status.ACTIVE, null, book
+            Status.ACTIVE, book,null
     );
 
     Service service = new Service(UUID.randomUUID(), 255.0,
