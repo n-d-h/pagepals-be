@@ -53,7 +53,7 @@ public class AccountController {
 //    }
 
     @MutationMapping(name = "updateAccount")
-    public AccountDto updateAccount(@Argument(name = "id") String id, @Argument(name = "accountUpdateDto") AccountUpdateDto accountUpdateDto) {
+    public AccountDto updateAccount(@Argument(name = "id") String id, @Argument(name = "account") AccountUpdateDto accountUpdateDto) {
         UUID uuid = UUID.fromString(id);
         return accountService.updateAccount(uuid, accountUpdateDto);
     }

@@ -3,10 +3,12 @@ package com.pagepal.capstone.controllers;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
+import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.services.ReaderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
@@ -42,5 +44,10 @@ public class ReaderController {
     @QueryMapping
     public ReaderProfileDto getReaderProfile(@Argument UUID id) {
         return readerService.getReaderProfileById(id);
+    }
+
+    @MutationMapping
+    public ReaderProfileDto updateReader(@Argument UUID id, @Argument(name = "data") ReaderUpdateDto readerProfileDto) {
+        return readerService.updateReaderProfile(id, readerProfileDto);
     }
 }

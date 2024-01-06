@@ -3,6 +3,7 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
+import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
@@ -24,10 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -130,5 +128,22 @@ public class ReaderServiceImpl implements ReaderService {
                         new RuntimeException("Reader not found")
                 );
         return ReaderMapper.INSTANCE.toProfileDto(reader);
+    }
+
+    @Override
+    public ReaderProfileDto updateReaderProfile(UUID id, ReaderUpdateDto readerUpdateDto) {
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new RuntimeException("Reader not found"));
+
+        reader.setNickname(readerUpdateDto.getNickname());
+        reader.setGenre(readerUpdateDto.getGenre());
+        reader.setLanguage(readerUpdateDto.getLanguage());
+        reader.setCountryAccent(readerUpdateDto.getCountryAccent());
+        reader.setDescription(readerUpdateDto.getDescription());
+        reader.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
+        reader.setTags(readerUpdateDto.getTags());
+        reader.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
+        reader.setUpdatedAt(new Date());
+
+        return ReaderMapper.INSTANCE.toProfileDto(readerRepository.save(reader));
     }
 }
