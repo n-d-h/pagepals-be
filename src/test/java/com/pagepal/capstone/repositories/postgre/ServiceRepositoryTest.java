@@ -61,7 +61,7 @@ public class ServiceRepositoryTest {
     );
 
     Chapter chapter = new Chapter(UUID.randomUUID(), 10, 20L,
-            Status.ACTIVE, null, book
+            Status.ACTIVE, book, null
     );
 
     @Test
