@@ -2,11 +2,11 @@ package com.pagepal.capstone.mappers;
 
 import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
-import com.pagepal.capstone.entities.postgre.Service;
-import org.mapstruct.Mapper;
 import com.pagepal.capstone.dtos.service.WriteServiceDto;
 import com.pagepal.capstone.entities.postgre.Chapter;
 import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.Service;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;

@@ -1,9 +1,0 @@
-type Meeting {
-    id: ID!
-    meetingCode: String
-    createAt: String
-    limitOfPerson: Int
-    state: MeetingEnum
-    reader: Reader
-    bookings: [Booking]
-}

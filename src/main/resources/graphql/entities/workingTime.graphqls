@@ -5,3 +5,14 @@ type WorkingTime {
     endTime: String
     reader: Reader
 }
+
+input WorkingTimeCreateInput {
+    date: String
+    startTime: String
+    endTime: String
+    readerId: String
+}
+
+extend type Mutation {
+    createReaderWorkingTime(workingTime: WorkingTimeCreateInput!): WorkingTime!
+}

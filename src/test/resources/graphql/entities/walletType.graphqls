@@ -1,7 +1,0 @@
-type WalletType {
-    id: ID!
-    name: String
-    description: String
-    status: Status
-    wallets: [Wallet]
-}

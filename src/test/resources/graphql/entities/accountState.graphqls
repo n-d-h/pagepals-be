@@ -1,6 +1,0 @@
-type AccountState {
-    id: ID!
-    name: String
-    status: Status
-    accounts: [Account]
-}

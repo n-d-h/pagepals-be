@@ -1,8 +1,0 @@
-type Level {
-    id: ID!
-    name: String
-    amountRequest: Float
-    description: String
-    status: Status
-    readers: [Reader]
-}

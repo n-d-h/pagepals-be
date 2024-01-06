@@ -13,7 +13,18 @@ type Customer {
     bookings: [Booking]
 }
 
+input CustomerUpdate {
+    fullName : String
+    gender : GenderEnum
+    dob : String
+    imageUrl : String
+}
+
 extend type Query {
     getCustomersActive: [Customer]
     getCustomerDetail(id: ID!): Customer
+}
+
+extend type Mutation {
+    updateCustomer(id: ID!, customer: CustomerUpdate): Customer
 }

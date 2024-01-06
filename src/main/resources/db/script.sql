@@ -61,3 +61,10 @@ insert into service (id, created_at, description, duration, price, rating, statu
                      chapter_id, reader_id)
 values ('cf0fe86a-1f84-4a91-925d-2b9f6133a369',now(),'Service 1', 60, 100, 4.5, 'ACTIVE', 0,0,
         '161155b4-9e57-4918-9d1f-0ff1f3877c03', '3f9a5ed9-f580-4f2d-813a-583b685c6898');
+
+insert into customer (
+    id, created_at, deleted_at, dob, full_name, gender, image_url, status,
+    updated_at, account_id)
+values ('7050ae5f-a421-462e-b382-4b760c478018', now(), null, '1990-01-01', 'FullName',
+        'MALE', 'https://s3.amazonaws.com/audiobooks-mp3/1.mp3', 'ACTIVE',
+        now(), '6a27d080-d861-43fe-bc2e-f5a2168feda7');

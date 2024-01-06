@@ -5,6 +5,7 @@ import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
 import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
+import com.pagepal.capstone.dtos.workingtime.WorkingTimeCreateDto;
 
 import java.util.List;
 import java.util.UUID;
