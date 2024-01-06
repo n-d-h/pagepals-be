@@ -124,6 +124,23 @@ public class AccountServiceImpl implements AccountService {
         return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
+    @Override
+    public AccountDto updateAccount(UUID id, AccountUpdateDto accountUpdateDto) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if (accountUpdateDto.getUsername() != null) {
+            account.setUsername(accountUpdateDto.getUsername());
+        }
+        if (accountUpdateDto.getPassword() != null && !accountUpdateDto.getPassword().isEmpty()) {
+            account.setPassword(passwordEncoder.encode(accountUpdateDto.getPassword()));
+        }
+        if (accountUpdateDto.getEmail() != null) {
+            account.setEmail(accountUpdateDto.getEmail());
+        }
+        account = accountRepository.save(account);
+        return AccountMapper.INSTANCE.toDto(account);
+    }
+
     private String generatePassword() {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'

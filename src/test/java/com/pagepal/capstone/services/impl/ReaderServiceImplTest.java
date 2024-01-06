@@ -1,17 +1,21 @@
 package com.pagepal.capstone.services.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
+import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Follow;
@@ -269,6 +273,69 @@ class ReaderServiceImplTest {
         verify(reader, atLeast(1)).getServices();
     }
 
+    /**
+     * Method under test: {@link ReaderServiceImpl#updateReaderProfile(UUID, ReaderUpdateDto)}
+     */
+    @Test
+    void canUpdateReaderProfile() {
+        when(readerRepository.save((Reader) any())).thenReturn(new Reader());
+        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader()));
+        UUID id = UUID.randomUUID();
+        ReaderProfileDto actualUpdateReaderProfileResult = readerServiceImpl.updateReaderProfile(id,
+                new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
+                        "The characteristics of someone or something", "https://example.org/example", "Tags"));
+        assertNull(actualUpdateReaderProfileResult.getAccount());
+        assertNull(actualUpdateReaderProfileResult.getTotalOfReviews());
+        assertNull(actualUpdateReaderProfileResult.getTotalOfBookings());
+        assertNull(actualUpdateReaderProfileResult.getTags());
+        assertEquals(Status.ACTIVE, actualUpdateReaderProfileResult.getStatus());
+        assertEquals(0, actualUpdateReaderProfileResult.getRating());
+        assertNull(actualUpdateReaderProfileResult.getNickname());
+        assertNull(actualUpdateReaderProfileResult.getLevel());
+        assertNull(actualUpdateReaderProfileResult.getLanguage());
+        assertNull(actualUpdateReaderProfileResult.getIntroductionVideoUrl());
+        assertNull(actualUpdateReaderProfileResult.getId());
+        assertNull(actualUpdateReaderProfileResult.getGenre());
+        assertNull(actualUpdateReaderProfileResult.getExperience());
+        assertNull(actualUpdateReaderProfileResult.getDescription());
+        assertNull(actualUpdateReaderProfileResult.getDeletedAt());
+        assertNull(actualUpdateReaderProfileResult.getCountryAccent());
+        assertNull(actualUpdateReaderProfileResult.getAudioDescriptionUrl());
+        verify(readerRepository).save((Reader) any());
+        verify(readerRepository).findById((UUID) any());
+    }
+
+    /**
+     * Method under test: {@link ReaderServiceImpl#updateReaderProfile(UUID, ReaderUpdateDto)}
+     */
+    @Test
+    void shouldThrowWhenCannotSave() {
+        when(readerRepository.save((Reader) any())).thenThrow(new RuntimeException());
+        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader()));
+        UUID id = UUID.randomUUID();
+        assertThrows(RuntimeException.class,
+                () -> readerServiceImpl.updateReaderProfile(id,
+                        new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
+                                "The characteristics of someone or something", "https://example.org/example", "Tags")));
+        verify(readerRepository).save((Reader) any());
+        verify(readerRepository).findById((UUID) any());
+    }
+
+    /**
+     * Method under test: {@link ReaderServiceImpl#updateReaderProfile(UUID, ReaderUpdateDto)}
+     */
+    @Test
+    void showThrowWhenCannotFindReader() {
+        when(readerRepository.save((Reader) any())).thenReturn(mock(Reader.class));
+        when(readerRepository.findById((UUID) any())).thenReturn(Optional.empty());
+
+        UUID id = UUID.randomUUID();
+        assertThrows(RuntimeException.class,
+                () -> readerServiceImpl.updateReaderProfile(id,
+                        new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
+                                "The characteristics of someone or something", "https://example.org/example", "Tags")));
+        verify(readerRepository).findById((UUID) any());
+    }
 
 }
 

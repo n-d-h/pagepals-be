@@ -44,6 +44,12 @@ input LoginRequest {
     password: String!
 }
 
+input AccountUpdate {
+    username: String
+    password: String
+    email: String
+}
+
 extend type Query {
     getAccount(id: ID!): Account
     getListStaff: [Account]
@@ -54,4 +60,5 @@ extend type Mutation {
     register(register: LoginRequest): LoginResponse
     registerStaff(username: String!): LoginStaffResponse
     refreshToken: LoginResponse
+    updateAccount(id: ID!, account: AccountUpdate): Account
 }

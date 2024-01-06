@@ -54,6 +54,17 @@ type ReaderRead{
     meetings: [Meeting]
 }
 
+input ReaderUpdate{
+    nickname: String
+    genre: String
+    language: String
+    countryAccent: String
+    audioDescriptionUrl: String
+    description: String
+    introductionVideoUrl: String
+    tags: String
+}
+
 input searchReaderInput {
     nickname: String
     rating: Int
@@ -71,4 +82,8 @@ extend type Query {
     getListReaders(query: searchReaderInput): [Reader]
     getListServicesOfReader(id: ID!): [Service]
     getReaderProfile(id: ID!): ReaderRead
+}
+
+extend type Mutation {
+    updateReader(id: ID!, data: ReaderUpdate): Reader
 }

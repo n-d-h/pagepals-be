@@ -3,6 +3,7 @@ package com.pagepal.capstone.services;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
+import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface ReaderService {
     List<ServiceDto> getListServicesByReaderId(UUID id);
 
     ReaderProfileDto getReaderProfileById(UUID id);
+
+    ReaderProfileDto updateReaderProfile(UUID id, ReaderUpdateDto readerUpdateDto);
 }
