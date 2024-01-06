@@ -1,9 +1,0 @@
-type Request {
-    id: ID!
-    description: String
-    state: RequestStateEnum
-    createdAt: String
-    updatedAt: String
-    answers: [Answer]
-    reader: Reader
-}

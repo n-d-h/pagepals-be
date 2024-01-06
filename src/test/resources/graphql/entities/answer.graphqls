@@ -1,7 +1,0 @@
-type Answer {
-    id: ID!
-    content: String
-    status: Status
-    question: Question
-    request: Request
-}

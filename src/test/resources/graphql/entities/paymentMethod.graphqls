@@ -1,7 +1,0 @@
-type PaymentMethod {
-    id: ID!
-    name: String
-    description: String
-    status: Status
-    transactions: [Transaction]
-}

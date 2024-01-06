@@ -1,7 +1,0 @@
-type Category {
-    id: ID!
-    name: String
-    description: String
-    status: Status
-    books: [Book]
-}

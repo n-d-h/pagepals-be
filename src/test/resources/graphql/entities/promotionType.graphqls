@@ -1,7 +1,0 @@
-type PromotionType {
-    id: ID!
-    name: String
-    description: String
-    status: Status
-    promotions: [Promotion]
-}

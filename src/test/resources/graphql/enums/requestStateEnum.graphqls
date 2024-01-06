@@ -1,4 +1,0 @@
-enum RequestStateEnum {
-    AVAILABLE
-    UNAVAILABLE
-}
