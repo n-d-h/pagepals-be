@@ -58,6 +58,8 @@ class CustomerServiceImplTest {
             new Date(), new Date(),new Date(), accountState1, null, null, role1, null);
     Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2", LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState2, null, null, role2, null);
+    Account account3 = new Account(UUID.randomUUID(), "username3", "password3", "email3", LoginTypeEnum.NORMAL,
+            new Date(), new Date(),new Date(), accountState1, null, null, role2, null);
     //Reader
     Reader reader1 = new Reader(UUID.randomUUID(), "name1", 5, "genre1", "Vietnamese", "accent1" ,
             "url" ,"des1", "123", "123", "url", 123.2, "tag",
@@ -65,6 +67,9 @@ class CustomerServiceImplTest {
             null, null, null);
     Customer customer1 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"),"customer name 1", GenderEnum.MALE, new Date(), "url",
             new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null);
+
+    Customer customer2 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"),"customer name 1", GenderEnum.MALE, new Date(), "url",
+            new Date(), new Date(), new Date(), Status.ACTIVE, account1, null, null);
 
     /**
      * Method under test: {@link ReaderServiceImpl#getReadersActive()}
@@ -177,12 +182,11 @@ class CustomerServiceImplTest {
      */
     @Test
     void canGetCustomerProfile() {
-        account1.setReader(reader1);
-        account2.setCustomer(customer1);
+        account3.setCustomer(customer2);
         when(customerRepository.findById(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014")))
-                .thenReturn(Optional.of(customer1));
+                .thenReturn(Optional.of(customer2));
         CustomerReadDto customer = customerServiceImpl.getCustomerProfile(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"));
-        assertEquals(customer.getFullName(), "customer name 1");
+        assertEquals(customer.getFullName(), customer2.getFullName());
         verify(customerRepository).findById(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"));
     }
 }

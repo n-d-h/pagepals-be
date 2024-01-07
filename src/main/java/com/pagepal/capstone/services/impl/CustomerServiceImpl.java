@@ -53,7 +53,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerReadDto getCustomerProfile(UUID id) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
-        return CustomerMapper.INSTANCE.toDtoRead(customer);
+        if (customer.getAccount().getAccountState().getName().equals("ACTIVE")) {
+            return CustomerMapper.INSTANCE.toDtoRead(customer);
+        } else throw new RuntimeException("Customer not found");
     }
 
     @Override
@@ -65,21 +67,21 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer = customerOptional.get();
 
-        if(customerUpdateDto.getFullName() != null) {
+        if (customerUpdateDto.getFullName() != null) {
             customer.setFullName(customerUpdateDto.getFullName());
         }
 
-        if(customerUpdateDto.getGender() != null) {
+        if (customerUpdateDto.getGender() != null) {
             customer.setGender(customerUpdateDto.getGender());
         }
 
-        if(customerUpdateDto.getDob() != null) {
+        if (customerUpdateDto.getDob() != null) {
             LocalDate localDate = LocalDate.parse(customerUpdateDto.getDob());
             Date dob = Date.from(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant());
             customer.setDob(dob);
         }
 
-        if(customerUpdateDto.getImageUrl() != null) {
+        if (customerUpdateDto.getImageUrl() != null) {
             customer.setImageUrl(customerUpdateDto.getImageUrl());
         }
 
