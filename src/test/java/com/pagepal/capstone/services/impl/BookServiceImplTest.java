@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.book.BookDto;
+import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.book.WriteBookDto;
 import com.pagepal.capstone.entities.postgre.Book;
 import com.pagepal.capstone.entities.postgre.Category;
@@ -80,8 +81,8 @@ class BookServiceImplTest {
         when(bookRepository
                 .findByTitleContainingIgnoreCaseAndAuthorContainingIgnoreCaseAndCategory("", "", category1, PageRequest.of(0, 10, Sort.by("createdAt").ascending())))
                 .thenReturn(bookPage);
-        List<BookDto> list = bookServiceImpl.getListBook("", "asc", "", category1.getId(), 0, 10);
-        assertEquals(2, list.size());
+        ListBookDto list = bookServiceImpl.getListBook("", "asc", "", category1.getId(), 0, 10);
+        assertEquals(2, list.getList().size());
         verify(bookRepository).findByTitleContainingIgnoreCaseAndAuthorContainingIgnoreCaseAndCategory("", "", category1, PageRequest.of(0, 10, Sort.by("createdAt").ascending()));
     }
 
@@ -92,8 +93,8 @@ class BookServiceImplTest {
         when(bookRepository
                 .findByTitleContainingIgnoreCaseAndAuthorContainingIgnoreCase("", "", PageRequest.of(0, 10, Sort.by("createdAt").ascending())))
                 .thenReturn(bookPage);
-        List<BookDto> list = bookServiceImpl.getListBook("", "asc", "", null, 0, 10);
-        assertEquals(2, list.size());
+        ListBookDto list = bookServiceImpl.getListBook("", "asc", "", null, 0, 10);
+        assertEquals(2, list.getList().size());
         verify(bookRepository).findByTitleContainingIgnoreCaseAndAuthorContainingIgnoreCase("", "", PageRequest.of(0, 10, Sort.by("createdAt").ascending()));
     }
 

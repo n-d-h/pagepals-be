@@ -1,9 +1,6 @@
 package com.pagepal.capstone.services;
 
-import com.pagepal.capstone.dtos.reader.ReaderDto;
-import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
-import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
-import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
+import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeCreateDto;
 
@@ -16,7 +13,7 @@ public interface ReaderService {
 
     ReaderDto getReaderById(UUID id);
 
-    List<ReaderDto> getListReaders(ReaderQueryDto readerQueryDto);
+    ListReaderDto getListReaders(ReaderQueryDto readerQueryDto);
 
     List<ServiceDto> getListServicesByReaderId(UUID id);
 

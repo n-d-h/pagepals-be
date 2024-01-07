@@ -1,0 +1,7 @@
+type Paging {
+    totalOfPages: Int
+    totalOfElements: Int
+    sort: String
+    currentPage: Int
+    pageSize: Int
+}

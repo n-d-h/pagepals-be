@@ -2,6 +2,7 @@ package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.dtos.book.BookQueryDto;
+import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.book.WriteBookDto;
 import com.pagepal.capstone.services.BookService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class BookController {
     private final BookService bookService;
 
     @QueryMapping(name = "getListBook")
-    public List<BookDto> getListBook(@Argument(name = "query")BookQueryDto query) {
+    public ListBookDto getListBook(@Argument(name = "query")BookQueryDto query) {
         return bookService.getListBook(
                 query.getSearch(),
                 query.getSort(),

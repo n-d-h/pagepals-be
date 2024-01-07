@@ -12,10 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.pagepal.capstone.dtos.reader.ReaderDto;
-import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
-import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
-import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
+import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Follow;
@@ -212,9 +209,9 @@ class ReaderServiceImplTest {
                 PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending())
         )).thenReturn(page);
 
-        List<ReaderDto> readers = readerServiceImpl.getListReaders(readerQueryDto);
+        ListReaderDto readers = readerServiceImpl.getListReaders(readerQueryDto);
 
-        assertEquals(readers.get(0).getNickname(), readerQueryDto.getNickname());
+        assertEquals(readers.getList().get(0).getNickname(), readerQueryDto.getNickname());
         verify(readerRepository).findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
                 readerQueryDto.getNickname(),
                 readerQueryDto.getGenre(),
