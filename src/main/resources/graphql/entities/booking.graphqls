@@ -11,3 +11,7 @@ type Booking {
     bookingDetails: [BookingDetail]
     transactions: [Transaction]
 }
+
+extend type Query {
+    getListBookingByReader(readerId: ID!): [Booking]
+}

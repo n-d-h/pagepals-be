@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -15,11 +16,9 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     @Query("""
             SELECT b
             FROM Booking b
-            JOIN FETCH b.meeting m
-            JOIN FETCH m.reader r
-            WHERE r.id = :readerId
-            AND r.status = 'ACTIVE'
-            AND b.
+            WHERE b.meeting.reader.id = :readerId
+            AND b.meeting.reader.status = 'ACTIVE'
+            AND b.createAt >= CURRENT_DATE
             """)
-    Page<Booking> findAllByReaderId(Long readerId, Pageable pageable);
+    List<Booking> findAllByReaderId(UUID readerId);
 }

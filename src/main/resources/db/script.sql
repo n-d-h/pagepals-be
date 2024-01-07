@@ -17,14 +17,13 @@ VALUES ('069853bd-7d75-42c8-bf20-ce1ff83f95f1', 'ACTIVE', 'ACTIVE'),
 INSERT INTO role (id, name, status)
 VALUES ('72b2c84a-448f-4427-94c4-2b27d765f2e1', 'READER', 'ACTIVE'),
        ('a8819f86-355b-4370-9deb-b4bc62252c28', 'ADMIN', 'ACTIVE'),
-       ('338df8eb-5c35-4c0e-a6e5-535aafa8e07e', 'USER', 'ACTIVE');
+       ('338df8eb-5c35-4c0e-a6e5-535aafa8e07e', 'CUSTOMER', 'ACTIVE');
 
 -- Account
-insert into account (id, created_at, deleted_at, email, login_type, password, updated_at, username, account_state_id,
-                     role_id)
+insert into account (id, created_at, deleted_at, email, login_type, password,
+                     updated_at, username, account_state_id,role_id)
 values ('6a27d080-d861-43fe-bc2e-f5a2168feda7', now(), null, 'account@gmail.com', 'NORMAL', '123456',
-        now(), 'account', '069853bd-7d75-42c8-bf20-ce1ff83f95f1', '72b2c84a-448f-4427-94c4-2b27d765f2e1'
-       );
+        now(), 'account', '069853bd-7d75-42c8-bf20-ce1ff83f95f1', '72b2c84a-448f-4427-94c4-2b27d765f2e1');
 
 -- Level
 insert into level (id, amount_request, description, name, status)
@@ -35,26 +34,33 @@ insert into category (id, description, name, status)
 values ('b01dc67b-16c5-442c-9c3c-d19d2262b45e', 'Category 1', 'Category 1', 'ACTIVE');
 
 -- Book
-insert into book (id, author, created_at, edition, image_url, "language", long_title, overview, pages, publisher,
-                  status, title, category_id)
+insert into book (id, author, created_at, edition, image_url, "language", long_title, overview,
+                  pages, publisher, status, title, category_id)
 values ('bc484dab-1dcb-4ed0-a9c0-7480ec7a06f3', 'Author 1', now(), '1',
         'https://s3.amazonaws.com/audiobooks-mp3/1.mp3', 'ENGLISH', 'Long Title 1', 'Overview 1',
-        10, 'Publisher 1', 'ACTIVE', 'Title 1', 'b01dc67b-16c5-442c-9c3c-d19d2262b45e'
-       );
+        10, 'Publisher 1', 'ACTIVE', 'Title 1', 'b01dc67b-16c5-442c-9c3c-d19d2262b45e');
 
 -- Chapter
 insert into chapter (id, chapter_number, pages, status, book_id)
 values ('161155b4-9e57-4918-9d1f-0ff1f3877c03', 1, 10, 'ACTIVE', 'bc484dab-1dcb-4ed0-a9c0-7480ec7a06f3');
 
+-- Customer
+insert into customer (
+    id, created_at, deleted_at, dob, full_name, gender, image_url, status,
+    updated_at, account_id)
+values ('7050ae5f-a421-462e-b382-4b760c478018', now(), null, '1990-01-01', 'FullName',
+        'MALE', 'https://s3.amazonaws.com/audiobooks-mp3/1.mp3', 'ACTIVE',
+        now(), '6a27d080-d861-43fe-bc2e-f5a2168feda7');
+
 -- Reader
-insert into reader (id, audio_description_url, country_accent, created_at, deleted_at, description, experience, genre,
-                    introduction_video_url, "language", nickname, rating, status, tags, total_of_bookings,
-                    total_of_reviews, updated_at, account_id, level_id)
+insert into reader (id, audio_description_url, country_accent, created_at,
+                    deleted_at, description, experience, genre, introduction_video_url,
+                    "language", nickname, rating, status, tags, total_of_bookings, total_of_reviews,
+                    updated_at, account_id, level_id)
 values ('3f9a5ed9-f580-4f2d-813a-583b685c6898', 'https://s3.amazonaws.com/audiobooks-mp3/1.mp3', 'US', now(),
         null, 'Reader 1', 5, 'FICTION', 'https://s3.amazonaws.com/audiobooks-mp3/1.mp3',
         'ENGLISH', 'reader1', 4.5, 'ACTIVE', 'FICTION, ROMANCE', 0, 0,
-        now(), '6a27d080-d861-43fe-bc2e-f5a2168feda7', 'e581d064-0820-4a66-9d7a-d5023e4a21ef'
-       );
+        now(), '6a27d080-d861-43fe-bc2e-f5a2168feda7', 'e581d064-0820-4a66-9d7a-d5023e4a21ef');
 
 -- Service
 insert into service (id, created_at, description, duration, price, rating, status, total_of_booking, total_of_review,
@@ -62,9 +68,24 @@ insert into service (id, created_at, description, duration, price, rating, statu
 values ('cf0fe86a-1f84-4a91-925d-2b9f6133a369',now(),'Service 1', 60, 100, 4.5, 'ACTIVE', 0,0,
         '161155b4-9e57-4918-9d1f-0ff1f3877c03', '3f9a5ed9-f580-4f2d-813a-583b685c6898');
 
-insert into customer (
-    id, created_at, deleted_at, dob, full_name, gender, image_url, status,
-    updated_at, account_id)
-values ('7050ae5f-a421-462e-b382-4b760c478018', now(), null, '1990-01-01', 'FullName',
-        'MALE', 'https://s3.amazonaws.com/audiobooks-mp3/1.mp3', 'ACTIVE',
-        now(), '6a27d080-d861-43fe-bc2e-f5a2168feda7');
+-- Booking State
+insert into booking_state (id, name, status)
+values ('2a2bdaa3-33cd-4b19-a127-60cdb8b33172', 'PENDING', 'ACTIVE'),
+       ('02ab6b3f-38ac-438f-9e6e-c210fffe21fa', 'ACCEPTED', 'ACTIVE'),
+       ('c69edbf7-1d7d-43c7-aeb0-2575ebd32294', 'REJECTED', 'ACTIVE'),
+       ('78ddfbe1-64b8-4afe-9cb7-9dfd3c179eba', 'CANCELLED', 'ACTIVE'),
+       ('ec6960d6-7b7e-4501-b03a-8410d40c0431', 'COMPLETED', 'ACTIVE');
+
+-- Meeting
+insert into meeting (id, create_at, limit_of_person, meeting_code,
+                     state, reader_id)
+values (
+           '1c097088-c3b2-449c-8165-d7b1372e3fc8', now(), 10, 'ABCD',
+           'AVAILABLE', '3f9a5ed9-f580-4f2d-813a-583b685c6898');
+
+-- Booking
+insert into booking (id, description, promotion_code, rating, review,
+                     total_price, customer_id, meeting_id, booking_state_id)
+values ('c745d51a-77a3-425f-bf32-8b79bd645612', 'This is description', 'ABCD', 4.5, '',
+        100, '7050ae5f-a421-462e-b382-4b760c478018', '1c097088-c3b2-449c-8165-d7b1372e3fc8',
+        '02ab6b3f-38ac-438f-9e6e-c210fffe21fa');
