@@ -1,5 +1,5 @@
 type Query {
-    getListBook(query: searchBook): [Book]
+    getListBook(query: searchBook): ListBook
     bookById(id: ID!): Book
 }
 
@@ -22,6 +22,11 @@ type Book {
     createdAt: String
     category: Category
     chapters: [Chapter]
+}
+
+type ListBook {
+    pagination: Paging
+    list: [Book]
 }
 
 input searchBook {

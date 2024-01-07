@@ -16,9 +16,13 @@ public interface BookMapper {
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
 
     @Mapping(target = "category", source = "category")
+    @Mapping(target = "chapters", source = "chapters")
     BookDto toDto(Book book);
 
     @Mapping(target = "category", source = "category.id", qualifiedByName = "toEntityWithCategory")
+    @Mapping(target = "chapters", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
     Book toEntity(BookDto bookDto);
 
     @Mapping(target = "category", source = "categoryId", qualifiedByName = "toEntityWithCategory")

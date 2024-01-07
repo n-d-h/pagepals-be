@@ -1,7 +1,9 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.book.BookDto;
+import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.book.WriteBookDto;
+import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Book;
 import com.pagepal.capstone.entities.postgre.Category;
 import com.pagepal.capstone.enums.Status;
@@ -31,7 +33,7 @@ public class BookServiceImpl implements BookService {
 //    private final BookMapper bookMapper;
 
     @Override
-    public List<BookDto> getListBook(String search, String sort, String author, UUID categoryId, Integer page, Integer pageSize) {
+    public ListBookDto getListBook(String search, String sort, String author, UUID categoryId, Integer page, Integer pageSize) {
         if (page == null || page < 0)
             page = 0;
 
@@ -59,9 +61,25 @@ public class BookServiceImpl implements BookService {
             bookPage = bookRepository.findByTitleContainingIgnoreCaseAndAuthorContainingIgnoreCaseAndCategory(search, author, category, pageable);
         }
 
-        if (bookPage == null) return Collections.emptyList();
-        else return bookPage.map(BookMapper.INSTANCE::toDto).toList();
+        ListBookDto listBookDto = new ListBookDto();
+        if (bookPage == null) {
+            listBookDto.setList(Collections.emptyList());
+            listBookDto.setPagination(null);
+            return listBookDto;
+        } else {
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(bookPage.getTotalPages());
+            pagingDto.setTotalOfElements(bookPage.getTotalElements());
+            pagingDto.setSort(bookPage.getSort().toString());
+            pagingDto.setCurrentPage(bookPage.getNumber());
+            pagingDto.setPageSize(bookPage.getSize());
+
+            listBookDto.setList(bookPage.map(BookMapper.INSTANCE::toDto).toList());
+            listBookDto.setPagination(pagingDto);
+            return listBookDto;
+        }
     }
+
 
     @Override
     public BookDto createBook(WriteBookDto bookDto) {

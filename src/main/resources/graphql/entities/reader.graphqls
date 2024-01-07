@@ -54,6 +54,11 @@ type ReaderRead{
     meetings: [Meeting]
 }
 
+type listReader {
+    pagination: Paging
+    list: [Reader]
+}
+
 input ReaderUpdate{
     nickname: String
     genre: String
@@ -79,7 +84,7 @@ input searchReaderInput {
 extend type Query {
     getReadersActive: [Reader]
     getReaderDetail(id: ID!): Reader
-    getListReaders(query: searchReaderInput): [Reader]
+    getListReaders(query: searchReaderInput): listReader
     getListServicesOfReader(id: ID!): [Service]
     getReaderProfile(id: ID!): ReaderRead
 }

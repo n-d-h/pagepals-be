@@ -1,9 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.reader.ReaderDto;
-import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
-import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
-import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
+import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
@@ -61,7 +59,7 @@ public class ReaderServiceImpl implements ReaderService {
     }
 
     @Override
-    public List<ReaderDto> getListReaders(ReaderQueryDto readerQueryDto) {
+    public ListReaderDto getListReaders(ReaderQueryDto readerQueryDto) {
 
         if (readerQueryDto.getPage() == null || readerQueryDto.getPage() < 0)
             readerQueryDto.setPage(0);
@@ -101,9 +99,23 @@ public class ReaderServiceImpl implements ReaderService {
                         pageable
                 );
 
-        if (page == null) return Collections.emptyList();
-        else return page.map(ReaderMapper.INSTANCE::toDto).toList();
+        ListReaderDto listReaderDto = new ListReaderDto();
+        if (page == null) {
+            listReaderDto.setList(Collections.emptyList());
+            listReaderDto.setPagination(null);
+            return listReaderDto;
+        } else {
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(page.getTotalPages());
+            pagingDto.setTotalOfElements(page.getTotalElements());
+            pagingDto.setSort(page.getSort().toString());
+            pagingDto.setCurrentPage(page.getNumber());
+            pagingDto.setPageSize(page.getSize());
 
+            listReaderDto.setList(page.map(ReaderMapper.INSTANCE::toDto).toList());
+            listReaderDto.setPagination(pagingDto);
+            return listReaderDto;
+        }
     }
 
     @Override

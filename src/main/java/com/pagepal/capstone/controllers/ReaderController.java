@@ -1,9 +1,6 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.reader.ReaderDto;
-import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
-import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
-import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
+import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.services.ReaderService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,7 @@ public class ReaderController {
     }
 
     @QueryMapping
-    public List<ReaderDto> getListReaders(@Argument(name = "query") ReaderQueryDto readerQueryDto) {
+    public ListReaderDto getListReaders(@Argument(name = "query") ReaderQueryDto readerQueryDto) {
         return readerService.getListReaders(readerQueryDto);
     }
 

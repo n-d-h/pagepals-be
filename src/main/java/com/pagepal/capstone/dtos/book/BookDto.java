@@ -1,12 +1,15 @@
 package com.pagepal.capstone.dtos.book;
 
 import com.pagepal.capstone.dtos.category.CategoryDto;
+import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Category;
+import com.pagepal.capstone.entities.postgre.Chapter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -25,4 +28,5 @@ public class BookDto {
     private String edition;
     private Date createdAt;
     private CategoryDto category;
+    private List<Chapter> chapters;
 }
