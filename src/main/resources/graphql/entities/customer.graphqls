@@ -13,6 +13,17 @@ type Customer {
     bookings: [Booking]
 }
 
+type Profile {
+    fullName: String
+    gender: GenderEnum
+    dob: String
+    imageUrl: String
+    createdAt: String!
+    account: Account
+    follows: [Follow]
+    bookings: [Booking]
+}
+
 input CustomerUpdate {
     fullName : String
     gender : GenderEnum
@@ -23,6 +34,7 @@ input CustomerUpdate {
 extend type Query {
     getCustomersActive: [Customer]
     getCustomerDetail(id: ID!): Customer
+    getCustomerProfile(id: ID!): Profile
 }
 
 extend type Mutation {

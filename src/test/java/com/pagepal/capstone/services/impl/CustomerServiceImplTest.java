@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pagepal.capstone.dtos.customer.CustomerDto;
+import com.pagepal.capstone.dtos.customer.CustomerReadDto;
 import com.pagepal.capstone.dtos.customer.CustomerUpdateDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.entities.postgre.*;
@@ -171,5 +172,18 @@ class CustomerServiceImplTest {
         assertEquals(customerDto.getFullName(), "customer name 1");
     }
 
+    /**
+     * Method under test: {@link CustomerServiceImpl#getCustomerProfile(UUID)}
+     */
+    @Test
+    void canGetCustomerProfile() {
+        account1.setReader(reader1);
+        account2.setCustomer(customer1);
+        when(customerRepository.findById(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014")))
+                .thenReturn(Optional.of(customer1));
+        CustomerReadDto customer = customerServiceImpl.getCustomerProfile(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"));
+        assertEquals(customer.getFullName(), "customer name 1");
+        verify(customerRepository).findById(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"));
+    }
 }
 

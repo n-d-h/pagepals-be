@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.customer.CustomerDto;
+import com.pagepal.capstone.dtos.customer.CustomerReadDto;
 import com.pagepal.capstone.dtos.customer.CustomerUpdateDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.entities.postgre.*;
@@ -47,6 +48,12 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDto getCustomerById(UUID id) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
         return CustomerMapper.INSTANCE.toDto(customer);
+    }
+
+    @Override
+    public CustomerReadDto getCustomerProfile(UUID id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
+        return CustomerMapper.INSTANCE.toDtoRead(customer);
     }
 
     @Override
