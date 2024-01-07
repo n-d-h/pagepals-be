@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class Booking {
     private UUID id;
 
     @Column(name = "total_price")
-    private double totalPrice;
+    private Double totalPrice;
 
     @Column(name = "promotion_code")
     private String promotionCode;
@@ -41,6 +42,15 @@ public class Booking {
 
     @Column(name = "rating")
     private Integer rating;
+
+    @Column(name = "create_at")
+    private Date createAt;
+
+    @Column(name = "update_at")
+    private Date updateAt;
+
+    @Column(name = "delete_at")
+    private Date deleteAt;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
