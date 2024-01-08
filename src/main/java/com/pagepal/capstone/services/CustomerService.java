@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.dtos.customer.CustomerDto;
+import com.pagepal.capstone.dtos.customer.CustomerReadDto;
 import com.pagepal.capstone.dtos.customer.CustomerUpdateDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 
@@ -11,6 +12,8 @@ public interface CustomerService {
     List<CustomerDto> getCustomersActive();
 
     CustomerDto getCustomerById(UUID id);
+
+    CustomerReadDto getCustomerProfile(UUID id);
 
     CustomerDto updateCustomer(UUID id, CustomerUpdateDto customerUpdateDto);
 }

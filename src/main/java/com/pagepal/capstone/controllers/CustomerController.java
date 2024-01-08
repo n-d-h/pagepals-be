@@ -1,6 +1,7 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.customer.CustomerDto;
+import com.pagepal.capstone.dtos.customer.CustomerReadDto;
 import com.pagepal.capstone.dtos.customer.CustomerUpdateDto;
 import com.pagepal.capstone.services.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,11 @@ public class CustomerController {
     @QueryMapping
     public CustomerDto getCustomerDetail(@Argument UUID id) {
         return customerService.getCustomerById(id);
+    }
+
+    @QueryMapping
+    public CustomerReadDto getCustomerProfile(@Argument UUID id) {
+        return customerService.getCustomerProfile(id);
     }
 
     @MutationMapping(name = "updateCustomer")
