@@ -16,5 +16,5 @@ public interface CampaignRepository extends JpaRepository<Campaign, UUID> {
             FROM Campaign c
             WHERE c.title LIKE %:title%
             """)
-    Page<Campaign> findAllCampaign(String title, Pageable pageable);
+    Page<Campaign> findAllCampaignWithSearch(String title, Pageable pageable);
 }

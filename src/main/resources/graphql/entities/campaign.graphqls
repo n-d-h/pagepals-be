@@ -37,12 +37,12 @@ input CampaignUpdateInput {
 }
 
 extend type Query {
-    getListCampaigns: [Campaign]
+    getListCampaigns(query: QueryInput): [Campaign]
     getCampaign(id: ID!): Campaign
 }
 
 extend type Mutation {
-    createCampaign(input: CampaignCreateInput): Campaign
-    updateCampaign(id: ID!, input: CampaignUpdateInput): Campaign
+    createCampaign(campaign: CampaignCreateInput): Campaign
+    updateCampaign(id: ID!, campaign: CampaignUpdateInput): Campaign
     deleteCampaign(id: ID!): Campaign
 }

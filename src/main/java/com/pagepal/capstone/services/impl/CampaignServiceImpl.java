@@ -32,31 +32,40 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public List<CampaignDto> getListCampaign(QueryCampaignDto query) {
-        if(query.getPage() == null || query.getPage() < 0)
+        if (query.getPage() == null || query.getPage() < 0)
             query.setPage(0);
 
-        if(query.getPageSize() == null || query.getPageSize() < 0)
+        if (query.getPage() > 0)
+            query.setPage(query.getPage() - 1);
+
+        if (query.getPageSize() == null || query.getPageSize() < 0)
             query.setPageSize(10);
 
         Pageable pageable;
-        if(query.getSort() != null && query.getSort().equals("desc")) {
-            pageable = PageRequest.of(query.getPage(), query.getPageSize(), Sort.by("createdAt").descending());
+        if (query.getSort() != null && query.getSort().equals("desc")) {
+            pageable = PageRequest.of(query.getPage(), query.getPageSize(), Sort.by("startAt").descending());
         } else {
-            pageable = PageRequest.of(query.getPage(), query.getPageSize(), Sort.by("createdAt").ascending());
+            pageable = PageRequest.of(query.getPage(), query.getPageSize(), Sort.by("startAt").ascending());
         }
 
-        if(query.getSearch() == null)
+        if (query.getSearch() == null)
             query.setSearch("");
 
-        var res = campaignRepository.findAllCampaign(query.getSearch(), pageable);
-
-        return res.stream().map(CampaignMapper.INSTANCE::toDto).collect(Collectors.toList());
+        if (query.getSearch().equals("")) {
+            var campaigns = campaignRepository.findAll(pageable);
+            return campaigns.stream().map(CampaignMapper.INSTANCE::toDto).collect(Collectors.toList());
+        } else {
+            var res = campaignRepository.findAllCampaignWithSearch(query.getSearch(), pageable);
+            return res.stream().map(CampaignMapper.INSTANCE::toDto).collect(Collectors.toList());
+        }
     }
 
     @Override
     public CampaignDto getCampaignById(String id) {
         var campaign = campaignRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+                .orElse(null);
+        if (campaign == null)
+            return null;
         return CampaignMapper.INSTANCE.toDto(campaign);
     }
 
