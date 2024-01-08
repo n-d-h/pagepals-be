@@ -5,6 +5,9 @@ type Booking {
     description: String
     review: String
     rating: Int
+    createdAt: String
+    updatedAt: String
+    startAt: String
     customer: Customer
     meeting: Meeting
     state: BookingState
@@ -12,6 +15,27 @@ type Booking {
     transactions: [Transaction]
 }
 
+type ListBooking{
+    list: [Booking]
+    pagination: Paging
+}
+
+input filterBooking{
+    sort: String
+    page: Int
+    pageSize: Int
+}
+
+input BookingCreate {
+    totalPrice: Float
+    startAt: String
+    promotionCode: String
+    description: String
+    bookingDetails: [BookingDetailCreate]
+}
+
 extend type Query {
+    getListBookingByCustomer(customerId: ID!, filter: filterBooking): ListBooking
     getListBookingByReader(readerId: ID!): [Booking]
+    createBooking(customerId: ID, booking: BookingCreate): Booking
 }

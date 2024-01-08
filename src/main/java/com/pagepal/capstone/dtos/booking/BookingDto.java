@@ -22,6 +22,7 @@ public class BookingDto {
     private Date createAt;
     private Date updateAt;
     private Date deleteAt;
+    private Date startAt;
     private Customer customer;
     private Meeting meeting;
     private BookingState state;

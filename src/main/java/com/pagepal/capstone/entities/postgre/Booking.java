@@ -52,6 +52,9 @@ public class Booking {
     @Column(name = "delete_at")
     private Date deleteAt;
 
+    @Column(name = "start_at")
+    private Date startAt;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     @JsonManagedReference
