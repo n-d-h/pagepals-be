@@ -8,3 +8,9 @@ type BookingDetail {
     booking: Booking
     service: Service
 }
+
+input BookingDetailCreate{
+    price: Float
+    description: String
+    serviceId: ID
+}

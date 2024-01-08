@@ -18,7 +18,14 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             FROM Booking b
             WHERE b.meeting.reader.id = :readerId
             AND b.meeting.reader.status = 'ACTIVE'
-            AND b.createAt >= CURRENT_DATE
             """)
     List<Booking> findAllByReaderId(UUID readerId);
+
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.customer.id = :customerId
+            AND b.customer.account.accountState.name = 'ACTIVE'
+            """)
+    Page<Booking> findAllByCustomerId(UUID customerId, Pageable pageable);
 }

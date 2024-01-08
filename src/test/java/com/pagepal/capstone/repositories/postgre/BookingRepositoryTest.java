@@ -1,14 +1,21 @@
 package com.pagepal.capstone.repositories.postgre;
 
 import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.entities.postgre.Booking;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.MeetingEnum;
 import com.pagepal.capstone.enums.Status;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDate;
@@ -126,6 +133,7 @@ public class BookingRepositoryTest {
             4,
             new Date(),
             new Date(),
+            new Date(),
             null,
             new Customer(),
             meeting,
@@ -133,6 +141,8 @@ public class BookingRepositoryTest {
             null,
             null
     );
+
+
 
 
     @Test
@@ -149,4 +159,6 @@ public class BookingRepositoryTest {
 
         assertNotNull(result);
     }
+
+
 }
