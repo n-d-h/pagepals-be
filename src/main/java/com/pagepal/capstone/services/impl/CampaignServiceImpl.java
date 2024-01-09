@@ -10,10 +10,12 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.CampaignMapper;
 import com.pagepal.capstone.repositories.postgre.CampaignRepository;
 import com.pagepal.capstone.services.CampaignService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.DateFormatter;
@@ -30,6 +32,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     private final CampaignRepository campaignRepository;
 
+    @Secured("STAFF")
     @Override
     public List<CampaignDto> getListCampaign(QueryCampaignDto query) {
         if (query.getPage() == null || query.getPage() < 0)
@@ -60,6 +63,7 @@ public class CampaignServiceImpl implements CampaignService {
         }
     }
 
+    @Secured("STAFF")
     @Override
     public CampaignDto getCampaignById(String id) {
         var campaign = campaignRepository.findById(UUID.fromString(id))
@@ -69,6 +73,7 @@ public class CampaignServiceImpl implements CampaignService {
         return CampaignMapper.INSTANCE.toDto(campaign);
     }
 
+    @Secured("STAFF")
     @Override
     public CampaignDto createCampaign(CampaignCreateDto campaignDto) {
         Campaign campaign = CampaignMapper.INSTANCE.toEntity(campaignDto);
@@ -76,10 +81,11 @@ public class CampaignServiceImpl implements CampaignService {
         return CampaignMapper.INSTANCE.toDto(res);
     }
 
+    @Secured("STAFF")
     @Override
     public CampaignDto updateCampaign(String id, CampaignUpdateDto campaignDto) {
         Campaign campaign = campaignRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Campaign not found"));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDate startDate = LocalDate.parse(campaignDto.getStartAt(), formatter);
@@ -99,10 +105,11 @@ public class CampaignServiceImpl implements CampaignService {
         return CampaignMapper.INSTANCE.toDto(res);
     }
 
+    @Secured("STAFF")
     @Override
     public CampaignDto deleteCampaign(String id) {
         Campaign campaign = campaignRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Campaign not found"));
         campaign.setStatus(Status.INACTIVE);
         var res = campaignRepository.save(campaign);
         return CampaignMapper.INSTANCE.toDto(res);

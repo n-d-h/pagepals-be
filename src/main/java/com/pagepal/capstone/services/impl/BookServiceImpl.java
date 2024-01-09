@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -81,6 +82,7 @@ public class BookServiceImpl implements BookService {
     }
 
 
+    @Secured("STAFF")
     @Override
     public BookDto createBook(WriteBookDto bookDto) {
         Book book = BookMapper.INSTANCE.createBook(bookDto);

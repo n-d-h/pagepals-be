@@ -5,8 +5,10 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.postgre.ServiceRepository;
 import com.pagepal.capstone.services.ServiceService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -18,14 +20,16 @@ import java.util.UUID;
 public class ServiceServiceImpl implements ServiceService {
     private final ServiceRepository serviceRepository;
 
+    @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
     @Override
     public ServiceDto serviceById(UUID id) {
-        return ServiceMapper.INSTANCE.toDto(serviceRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Service not found")));
+        return ServiceMapper.INSTANCE.toDto(serviceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Service not found")));
     }
 
+    @Secured("READER")
     @Override
     public ServiceDto createService(WriteServiceDto writeServiceDto) {
-        com.pagepal.capstone.entities.postgre.Service service = ServiceMapper.INSTANCE.writeService(writeServiceDto);
+        var service = ServiceMapper.INSTANCE.writeService(writeServiceDto);
         service.setCreatedAt(new Date());
         service.setStatus(Status.ACTIVE);
         service.setTotalOfReview(0);
@@ -34,10 +38,11 @@ public class ServiceServiceImpl implements ServiceService {
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
     }
 
+    @Secured("READER")
     @Override
     public ServiceDto updateService(UUID id, WriteServiceDto writeServiceDto) {
-        com.pagepal.capstone.entities.postgre.Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+        var service = serviceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
         service.setId(id);
         service.setPrice(writeServiceDto.getPrice());
         service.setDescription(writeServiceDto.getDescription());
@@ -45,10 +50,11 @@ public class ServiceServiceImpl implements ServiceService {
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
     }
 
+    @Secured("READER")
     @Override
     public String deleteService(UUID id) {
-        com.pagepal.capstone.entities.postgre.Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+        var service = serviceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
         service.setStatus(Status.INACTIVE);
         serviceRepository.save(service);
         return "Service deleted";

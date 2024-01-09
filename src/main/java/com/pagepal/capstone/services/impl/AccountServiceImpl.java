@@ -12,9 +12,13 @@ import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import com.pagepal.capstone.services.AccountService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +38,7 @@ public class AccountServiceImpl implements AccountService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final AccountStateRepository accountStateRepository;
+    private final UserDetailsService userDetailsService;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
     private final static String ACTIVE = "ACTIVE";
@@ -70,18 +75,19 @@ public class AccountServiceImpl implements AccountService {
         return new AccountResponse(accessToken, refreshToken);
     }
 
-    public AccountResponse refresh(RefreshTokenRequest request) {
+    public AccountResponse refresh(String token) {
         try {
-            String username = jwtService.extractDataFromToken(request.getRefreshToken());
+            String username = jwtService.extractDataFromToken(token);
 
-            Account account = accountRepository.findByUsername(username).orElseThrow(
-                    () -> new RuntimeException("User not found")
-            );
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            String accessToken = jwtService.generateAccessToken(account);
-            String refreshToken = jwtService.generateRefreshToken(account);
+            if (jwtService.isTokenValid(token, userDetails)) {
+                String accessToken = jwtService.generateAccessToken(userDetails);
+                return new AccountResponse(accessToken, token);
+            }else{
+                throw new RuntimeException("Refresh token is invalid");
+            }
 
-            return new AccountResponse(accessToken, refreshToken);
         } catch (Exception e) {
             throw new RuntimeException("Refresh token is invalid");
         }
@@ -90,13 +96,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto getAccountById(UUID id) {
         Optional<Account> account = accountRepository.findById(id);
-        return account.map(AccountMapper.INSTANCE::toDto).orElse(null);
+        return account.map(AccountMapper.INSTANCE::toDto).orElseThrow(() -> new EntityNotFoundException("Account not found"));
     }
 
+    @Secured("ADMIN")
     @Override
     public AccountStaffResponse registerStaff(String username) {
         var role = roleRepository.findByName(ROLE_STAFF).orElseThrow(
-                () -> new RuntimeException("Role not found")
+                () -> new EntityNotFoundException("Role not found")
         );
         var account = new Account();
         account.setUsername(username);
@@ -112,21 +119,23 @@ public class AccountServiceImpl implements AccountService {
         return new AccountStaffResponse(username, password, accessToken, refreshToken);
     }
 
+    @Secured("ADMIN")
     @Override
     public List<AccountDto> getListStaff() {
         AccountState accountState = accountStateRepository
                 .findByNameAndStatus(ACTIVE, Status.ACTIVE)
-                .orElseThrow(() -> new RuntimeException("Account State not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Account State not found"));
         Role role = roleRepository
                 .findByName(ROLE_STAFF)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
         List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
         return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
+    @Secured({"CUSTOMER", "READER", "ADMIN"})
     @Override
     public AccountDto updateAccount(UUID id, AccountUpdateDto accountUpdateDto) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
         if (accountUpdateDto.getUsername() != null) {
             account.setUsername(accountUpdateDto.getUsername());

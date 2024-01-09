@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Disabled;
 
 import org.junit.jupiter.api.Test;
@@ -141,9 +142,9 @@ class ReaderServiceImplTest {
                 .thenReturn(Arrays.asList(account1));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
-        when(roleRepository.findByName("READER")).thenThrow(new RuntimeException());
+        when(roleRepository.findByName("READER")).thenThrow(new EntityNotFoundException());
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             readerServiceImpl.getReadersActive();
         });
     }
@@ -159,10 +160,10 @@ class ReaderServiceImplTest {
         when(accountRepository.findByAccountStateAndRole(accountState1, role1))
                 .thenReturn(Arrays.asList(account1));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
-                .thenThrow(new RuntimeException());
+                .thenThrow(new EntityNotFoundException());
         when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             readerServiceImpl.getReadersActive();
         });
     }
@@ -307,10 +308,10 @@ class ReaderServiceImplTest {
      */
     @Test
     void shouldThrowWhenCannotSave() {
-        when(readerRepository.save((Reader) any())).thenThrow(new RuntimeException());
+        when(readerRepository.save((Reader) any())).thenThrow(new EntityNotFoundException());
         when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader()));
         UUID id = UUID.randomUUID();
-        assertThrows(RuntimeException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> readerServiceImpl.updateReaderProfile(id,
                         new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
                                 "The characteristics of someone or something", "https://example.org/example", "Tags")));
@@ -327,7 +328,7 @@ class ReaderServiceImplTest {
         when(readerRepository.findById((UUID) any())).thenReturn(Optional.empty());
 
         UUID id = UUID.randomUUID();
-        assertThrows(RuntimeException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> readerServiceImpl.updateReaderProfile(id,
                         new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
                                 "The characteristics of someone or something", "https://example.org/example", "Tags")));

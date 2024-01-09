@@ -8,10 +8,12 @@ import com.pagepal.capstone.repositories.postgre.BookRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
 import com.pagepal.capstone.repositories.postgre.ServiceRepository;
 import com.pagepal.capstone.services.ServiceProvideService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
     private final ReaderRepository readerRepository;
     private final BookRepository bookRepository;
 
+    @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
     @Override
     public List<ServiceCustomerDto> getAllServicesByReaderId(UUID readerId, QueryDto queryDto) {
         if(queryDto.getPage() == null || queryDto.getPage() < 0)
@@ -47,13 +50,14 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
         }
 
         var reader = readerRepository.findById(readerId).orElseThrow(
-                () -> new RuntimeException("Reader not found")
+                () -> new EntityNotFoundException("Reader not found")
         );
 
         var services = serviceRepository.findAllByReaderAndBookTitleContainsIgnoreCase(reader, queryDto.getSearch(), pageable);
         return services.stream().map(ServiceMapper.INSTANCE::toCustomerDto).collect(Collectors.toList());
     }
 
+    @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
     @Override
     public List<ServiceCustomerDto> getAllServicesByBookId(UUID bookId, QueryDto queryDto) {
         if(queryDto.getPage() == null || queryDto.getPage() < 0)
@@ -75,7 +79,7 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
         }
 
         var book = bookRepository.findById(bookId).orElseThrow(
-                () -> new RuntimeException("Book not found")
+                () -> new EntityNotFoundException("Book not found")
         );
 
         var services = serviceRepository.findAllByBookId(book, queryDto.getSearch(), pageable);

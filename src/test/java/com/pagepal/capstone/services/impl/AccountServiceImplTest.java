@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 
 import java.util.Optional;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Disabled;
 
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -63,6 +65,9 @@ public class AccountServiceImplTest {
 
     @MockBean
     private JwtService jwtService;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     @MockBean
     private AuthenticationManager authenticationManager;
@@ -141,7 +146,7 @@ public class AccountServiceImplTest {
 
         when(passwordEncoder.encode((CharSequence) any())).thenReturn("secret");
         UUID id = UUID.randomUUID();
-        assertThrows(RuntimeException.class, () -> accountServiceImpl.updateAccount(id,
+        assertThrows(EntityNotFoundException.class, () -> accountServiceImpl.updateAccount(id,
                 new AccountUpdateDto("janedoe", "iloveyou", "jane.doe@example.org")));
         verify(accountRepository).findById((UUID) any());
     }
@@ -152,9 +157,9 @@ public class AccountServiceImplTest {
     @Test
     void canUpdateAccount1() {
         Account account = mock(Account.class);
-        doThrow(new RuntimeException()).when(account).setEmail((String) any());
-        doThrow(new RuntimeException()).when(account).setPassword((String) any());
-        doThrow(new RuntimeException()).when(account).setUsername((String) any());
+        doThrow(new EntityNotFoundException()).when(account).setEmail((String) any());
+        doThrow(new EntityNotFoundException()).when(account).setPassword((String) any());
+        doThrow(new EntityNotFoundException()).when(account).setUsername((String) any());
         Optional<Account> ofResult = Optional.of(account);
         Account account1 = mock(Account.class);
         when(account1.getLoginType()).thenReturn(LoginTypeEnum.NORMAL);

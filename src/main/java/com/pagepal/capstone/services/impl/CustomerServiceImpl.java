@@ -10,8 +10,10 @@ import com.pagepal.capstone.mappers.CustomerMapper;
 import com.pagepal.capstone.mappers.ReaderMapper;
 import com.pagepal.capstone.repositories.postgre.*;
 import com.pagepal.capstone.services.CustomerService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,38 +33,42 @@ public class CustomerServiceImpl implements CustomerService {
     private final RoleRepository roleRepository;
     private final CustomerRepository customerRepository;
 
+    @Secured({"STAFF", "ADMIN"})
     @Override
     public List<CustomerDto> getCustomersActive() {
         AccountState accountState = accountStateRepository
                 .findByNameAndStatus("ACTIVE", Status.ACTIVE)
-                .orElseThrow(() -> new RuntimeException("Account State not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Account State not found"));
         Role role = roleRepository
                 .findByName("CUSTOMER")
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
         List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
         List<Customer> customers = accounts.stream().map(Account::getCustomer).toList();
         return customers.stream().map(CustomerMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
+    @Secured({"CUSTOMER", "READER"})
     @Override
     public CustomerDto getCustomerById(UUID id) {
-        Customer customer = customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
         return CustomerMapper.INSTANCE.toDto(customer);
     }
 
+    @Secured({"CUSTOMER", "READER"})
     @Override
     public CustomerReadDto getCustomerProfile(UUID id) {
-        Customer customer = customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
         if (customer.getAccount().getAccountState().getName().equals("ACTIVE")) {
             return CustomerMapper.INSTANCE.toDtoRead(customer);
-        } else throw new RuntimeException("Customer not found");
+        } else throw new EntityNotFoundException("Customer not found");
     }
 
+    @Secured({"CUSTOMER", "READER"})
     @Override
     public CustomerDto updateCustomer(UUID id, CustomerUpdateDto customerUpdateDto) {
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if (customerOptional.isEmpty()) {
-            throw new RuntimeException("Customer not found");
+            throw new EntityNotFoundException("Customer not found");
         }
 
         Customer customer = customerOptional.get();
