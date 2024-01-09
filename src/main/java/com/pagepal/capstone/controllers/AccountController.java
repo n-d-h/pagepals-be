@@ -2,6 +2,9 @@ package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.account.*;
 import com.pagepal.capstone.services.AccountService;
+import graphql.GraphQLContext;
+import graphql.schema.DataFetchingEnvironment;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.ContextValue;
@@ -16,6 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountController {
 
+    private final HttpServletRequest request;
     private final AccountService accountService;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
@@ -46,11 +50,11 @@ public class AccountController {
         return accountService.getListStaff();
     }
 
-//    @MutationMapping(name = "refreshToken")
-//    public AccountResponse refresh(@ContextValue String authorization) {
-//        String refreshToken = authorization.substring(7);
-//        return accountService.refresh(new RefreshTokenRequest(refreshToken));
-//    }
+    @MutationMapping(name = "refreshToken")
+    public AccountResponse refresh(DataFetchingEnvironment env) {
+        String refreshToken = request.getHeader("Authorization");
+        return accountService.refresh(refreshToken.substring(7));
+    }
 
     @MutationMapping(name = "updateAccount")
     public AccountDto updateAccount(@Argument(name = "id") String id, @Argument(name = "account") AccountUpdateDto accountUpdateDto) {

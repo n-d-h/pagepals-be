@@ -10,11 +10,13 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.postgre.*;
 import com.pagepal.capstone.services.BookingService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -32,12 +34,14 @@ public class BookingServiceImpl implements BookingService {
     private final BookingStateRepository bookingStateRepository;
     private final BookingDetailRepository bookingDetailRepository;
 
+    @Secured("READER")
     @Override
     public List<BookingDto> getListBookingByReader(UUID readerId) {
         var res = bookingRepository.findAllByReaderId(readerId);
         return res.stream().map(BookingMapper.INSTANCE::toDto).toList();
     }
 
+    @Secured({"CUSTOMER", "READER"})
     @Override
     public ListBookingDto getListBookingByCustomer(UUID cusId, QueryDto queryDto) {
 
@@ -76,9 +80,10 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Secured({"CUSTOMER", "READER"})
     @Override
     public BookingDto createBooking(UUID cusId, BookingCreateDto bookingDto) {
-        Customer customer = customerRepository.findById(cusId).orElseThrow(() -> new RuntimeException("Customer not found"));
+        Customer customer = customerRepository.findById(cusId).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
 
         Booking booking = new Booking();
         booking.setCreateAt(new Date());
@@ -88,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setCustomer(customer);
         booking.setTotalPrice(bookingDto.getTotalPrice());
         booking.setStartAt(bookingDto.getStartAt());
-        booking.setState(bookingStateRepository.findByName("PENDING").orElseThrow(() -> new RuntimeException("State not found")));
+        booking.setState(bookingStateRepository.findByName("PENDING").orElseThrow(() -> new EntityNotFoundException("State not found")));
 
         Booking res = bookingRepository.save(booking);
 
@@ -99,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
                 dt.setBooking(res);
                 dt.setPrice(bookingDetailCreateDto.getPrice());
                 dt.setDescription(bookingDetailCreateDto.getDescription());
-                dt.setService(serviceRepository.findById(bookingDetailCreateDto.getServiceId()).orElseThrow(() -> new RuntimeException("Service not found")));
+                dt.setService(serviceRepository.findById(bookingDetailCreateDto.getServiceId()).orElseThrow(() -> new EntityNotFoundException("Service not found")));
                 dt.setStatus(Status.ACTIVE);
                 return dt;
             }).toList();

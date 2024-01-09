@@ -7,7 +7,9 @@ import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.mappers.RoleMapper;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import com.pagepal.capstone.services.RoleService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
 
+    @Secured("STAFF")
     @Override
     public List<RoleDto> getRoles() {
         List<Role> roles = roleRepository.findAll();
@@ -29,12 +32,14 @@ public class RoleServiceImpl implements RoleService {
         return roles.stream().map(RoleMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
+    @Secured("STAFF")
     @Override
     public RoleDto getById(String id) {
-        Optional<Role> role = roleRepository.findById(UUID.fromString(id));
-        return role.map(RoleMapper.INSTANCE::toDto).orElse(null);
+        Role role = roleRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Role not found"));
+        return RoleMapper.INSTANCE.toDto(role);
     }
 
+    @Secured("ADMIN")
     @Override
     public RoleDto create(CreateRoleDto createRoleDto) {
         Role role = RoleMapper.INSTANCE.createToEntity(createRoleDto);
@@ -42,6 +47,7 @@ public class RoleServiceImpl implements RoleService {
         return RoleMapper.INSTANCE.toDto(createdRole);
     }
 
+    @Secured("ADMIN")
     @Override
     public RoleDto update(String id, UpdateRoleDto updateRoleDto) {
         RoleDto roleDto = getById(id);
@@ -54,6 +60,7 @@ public class RoleServiceImpl implements RoleService {
         return null;
     }
 
+    @Secured("ADMIN")
     @Override
     public RoleDto delete(String id) {
         RoleDto roleDto = getById(id);

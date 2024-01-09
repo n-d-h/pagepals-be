@@ -4,6 +4,7 @@ import com.pagepal.capstone.dtos.role.CreateRoleDto;
 import com.pagepal.capstone.dtos.role.RoleDto;
 import com.pagepal.capstone.dtos.role.UpdateRoleDto;
 import com.pagepal.capstone.services.RoleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -29,7 +30,7 @@ public class RoleController {
     }
 
     @MutationMapping(name = "createRole")
-    public RoleDto createRole(@Argument(name = "createRole") CreateRoleDto createRoleDto) {
+    public RoleDto createRole(@Argument(name = "createRole") @Valid CreateRoleDto createRoleDto) {
         return roleService.create(createRoleDto);
     }
 

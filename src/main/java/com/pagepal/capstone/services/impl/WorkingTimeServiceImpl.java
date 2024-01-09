@@ -9,9 +9,11 @@ import com.pagepal.capstone.mappers.WorkingTimeMapper;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
 import com.pagepal.capstone.repositories.postgre.WorkingTimeRepository;
 import com.pagepal.capstone.services.WorkingTimeService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +29,7 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
     private final WorkingTimeRepository workingTimeRepository;
     private final ReaderRepository readerRepository;
 
+    @Secured("READER")
     @Override
     public WorkingTimeDto createReaderWorkingTime(WorkingTimeCreateDto workingTimeCreateDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -37,7 +40,7 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
         Optional<Reader> reader = readerRepository.findById(workingTimeCreateDto.getReaderId());
 
         if(reader.isEmpty()){
-            throw new RuntimeException("Reader not found");
+            throw new EntityNotFoundException("Reader not found");
         }
 
         WorkingTime workingTime = new WorkingTime();

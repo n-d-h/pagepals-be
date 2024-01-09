@@ -17,6 +17,7 @@ import com.pagepal.capstone.repositories.postgre.*;
 
 import java.util.*;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Disabled;
 
 import org.junit.jupiter.api.Test;
@@ -118,9 +119,9 @@ class CustomerServiceImplTest {
                 .thenReturn(Arrays.asList(account2));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
-        when(roleRepository.findByName("CUSTOMER")).thenThrow(new RuntimeException());
+        when(roleRepository.findByName("CUSTOMER")).thenThrow(new EntityNotFoundException());
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             customerServiceImpl.getCustomersActive();
         });
     }
@@ -136,10 +137,10 @@ class CustomerServiceImplTest {
         when(accountRepository.findByAccountStateAndRole(accountState1, role1))
                 .thenReturn(Arrays.asList(account1));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
-                .thenThrow(new RuntimeException());
+                .thenThrow(new EntityNotFoundException());
         when(roleRepository.findByName("CUSTOMER")).thenReturn(Optional.of(role2));
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             customerServiceImpl.getCustomersActive();
         });
     }

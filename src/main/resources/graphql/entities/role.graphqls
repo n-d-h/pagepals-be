@@ -17,7 +17,7 @@ input UpdateRoleInput {
 
 extend type Query {
     getRoles: [Role],
-    getRole(id: ID!): Role
+    getRoleById(id: ID!): Role
 }
 
 type Mutation {

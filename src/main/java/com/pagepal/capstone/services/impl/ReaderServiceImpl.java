@@ -15,12 +15,14 @@ import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import com.pagepal.capstone.services.ReaderService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -39,25 +41,28 @@ public class ReaderServiceImpl implements ReaderService {
     private final AccountStateRepository accountStateRepository;
     private final RoleRepository roleRepository;
 
+    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public List<ReaderDto> getReadersActive() {
         AccountState accountState = accountStateRepository
                 .findByNameAndStatus("ACTIVE", Status.ACTIVE)
-                .orElseThrow(() -> new RuntimeException("Account State not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Account State not found"));
         Role role = roleRepository
                 .findByName("READER")
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
         List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
         List<Reader> readers = accounts.stream().map(Account::getReader).toList();
         return readers.stream().map(ReaderMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
+    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public ReaderDto getReaderById(UUID id) {
-        Reader reader = readerRepository.findById(id).orElseThrow(() -> new RuntimeException("Reader not found"));
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         return ReaderMapper.INSTANCE.toDto(reader);
     }
 
+    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public ListReaderDto getListReaders(ReaderQueryDto readerQueryDto) {
 
@@ -118,12 +123,13 @@ public class ReaderServiceImpl implements ReaderService {
         }
     }
 
+    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public List<ServiceDto> getListServicesByReaderId(UUID id) {
         Reader reader = readerRepository
                 .findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Reader not found")
+                        new EntityNotFoundException("Reader not found")
                 );
         if (reader.getServices() != null) {
             return reader
@@ -135,19 +141,21 @@ public class ReaderServiceImpl implements ReaderService {
         return null;
     }
 
+    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public ReaderProfileDto getReaderProfileById(UUID id) {
         Reader reader = readerRepository
                 .findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Reader not found")
+                        new EntityNotFoundException("Reader not found")
                 );
         return ReaderMapper.INSTANCE.toProfileDto(reader);
     }
 
+    @Secured({"READER", "STAFF", "ADMIN"})
     @Override
     public ReaderProfileDto updateReaderProfile(UUID id, ReaderUpdateDto readerUpdateDto) {
-        Reader reader = readerRepository.findById(id).orElseThrow(() -> new RuntimeException("Reader not found"));
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
         reader.setNickname(readerUpdateDto.getNickname());
         reader.setGenre(readerUpdateDto.getGenre());

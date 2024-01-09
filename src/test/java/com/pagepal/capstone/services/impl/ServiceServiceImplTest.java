@@ -6,6 +6,7 @@ import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Service;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.postgre.ServiceRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,8 @@ class ServiceServiceImplTest {
     @Test
     void shouldThrowExceptionWhenGetServiceById() {
         UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-        when(this.serviceRepository.findById((UUID) any())).thenThrow(new IllegalArgumentException("Service not found"));
-        assertThrows(IllegalArgumentException.class, () -> this.serviceServiceImpl.serviceById(id));
+        when(this.serviceRepository.findById((UUID) any())).thenThrow(new EntityNotFoundException("Service not found"));
+        assertThrows(EntityNotFoundException.class, () -> this.serviceServiceImpl.serviceById(id));
         verify(this.serviceRepository).findById((UUID) any());
     }
 
