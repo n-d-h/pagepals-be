@@ -16,14 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@PropertySource("classpath:application-common.properties")
+//@PropertySource("classpath:application-common.properties")
 public class JwtService {
-    @Value("${jwt.secretKey}")
-    private String secretKey;
-    @Value("${jwt.expiration.accessToken}")
-    private String accessTokenExpirationTime;
-    @Value("${jwt.expiration.refreshToken}")
-    private String refreshTokenExpirationTime;
+    //@Value("${jwt.secretKey}")
+    private String secretKey="28482B4D6251655468576D597133743677397A24432646294A404E635266556A";
+    //@Value("${jwt.expiration.accessToken}")
+    private String accessTokenExpirationTime="86400000";
+    //@Value("${jwt.expiration.refreshToken}")
+    private String refreshTokenExpirationTime="2592000000";
     private static final String DATA_FIELD = "username";
 
     public String extractDataFromToken(String token) {
