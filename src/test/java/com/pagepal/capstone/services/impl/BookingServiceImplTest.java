@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.repositories.postgre.BookingRepository;
+import com.pagepal.capstone.repositories.postgre.*;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -33,6 +33,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class BookingServiceImplTest {
     @MockBean
     private BookingRepository bookingRepository;
+    @MockBean
+    private CustomerRepository customerRepository;
+    @MockBean
+    private ServiceRepository serviceRepository;
+    @MockBean
+    private BookingStateRepository bookingStateRepository;
+    @MockBean
+    private BookingDetailRepository bookingDetailRepository;
 
     @Autowired
     private BookingServiceImpl bookingServiceImpl;
