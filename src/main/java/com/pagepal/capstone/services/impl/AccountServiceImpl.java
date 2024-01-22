@@ -42,6 +42,7 @@ public class AccountServiceImpl implements AccountService {
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
     private final static String ACTIVE = "ACTIVE";
+    private final AccountMapper accountMapper;
 
     public AccountResponse register(RegisterRequest request) {
         var role = roleRepository.findByName(ROLE_CUSTOMER).orElseThrow(
@@ -148,6 +149,15 @@ public class AccountServiceImpl implements AccountService {
         }
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.toDto(account);
+    }
+
+    @Secured({"CUSTOMER", "READER","STAFF","ADMIN"})
+    @Override
+    public AccountReadDto getAccountByUsername(String username) {
+        Account account = accountRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+        System.out.println(account.getCustomer().getFullName());
+        return accountRepository.findByUsername(username).map(accountMapper::toAccountReadDto)
+                .orElseThrow(() -> new EntityNotFoundException("Account not found"));
     }
 
     private String generatePassword() {

@@ -5,10 +5,12 @@ import com.pagepal.capstone.dtos.book.BookQueryDto;
 import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.book.WriteBookDto;
 import com.pagepal.capstone.services.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class BookController {
     private final BookService bookService;
 
     @QueryMapping(name = "getListBook")
-    public ListBookDto getListBook(@Argument(name = "query")BookQueryDto query) {
+    public ListBookDto getListBook(@Argument(name = "query") @Valid BookQueryDto query) {
         return bookService.getListBook(
                 query.getSearch(),
                 query.getSort(),

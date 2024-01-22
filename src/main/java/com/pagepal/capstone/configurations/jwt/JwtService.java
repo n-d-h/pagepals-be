@@ -1,5 +1,6 @@
 package com.pagepal.capstone.configurations.jwt;
 
+import com.pagepal.capstone.configurations.exception.custom.TokenInvalidException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -78,12 +79,19 @@ public class JwtService {
                 .compact();
     }
 
-    private Claims extractAllClaims(String token) throws SecurityException {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    private Claims extractAllClaims(String token) {
+        Claims claims = null;
+        try {
+            claims =Jwts.parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims;
+        }catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            throw new TokenInvalidException("Error: " + e.getMessage());
+        }
     }
 
     private Key getSignInKey() {

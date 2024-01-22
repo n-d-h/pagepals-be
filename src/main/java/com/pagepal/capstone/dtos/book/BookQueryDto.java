@@ -1,5 +1,6 @@
 package com.pagepal.capstone.dtos.book;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookQueryDto {
+    @NotNull(message = "Search is required")
     private String search;
     private String sort;
     private String author;

@@ -1,6 +1,7 @@
 package com.pagepal.capstone.configurations.exception;
 
 import com.pagepal.capstone.configurations.exception.custom.QuantityNotEnoughException;
+import com.pagepal.capstone.configurations.exception.custom.TokenInvalidException;
 import graphql.GraphQLError;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -36,5 +37,11 @@ public class GlobalExceptionHandler {
     public GraphQLError handleValidationException(QuantityNotEnoughException ex) {
         Map<String, Object> extensions = Map.of("status", HttpStatus.BAD_REQUEST.value());
         return GraphQLError.newError().errorType(ErrorType.BAD_REQUEST).extensions(extensions).message(ex.getMessage()).build();
+    }
+
+    @GraphQlExceptionHandler
+    public GraphQLError handleTokenInvalidationException(TokenInvalidException ex) {
+        Map<String, Object> extensions = Map.of("status", HttpStatus.UNAUTHORIZED.value());
+        return GraphQLError.newError().errorType(ErrorType.UNAUTHORIZED).extensions(extensions).message(ex.getMessage()).build();
     }
 }
