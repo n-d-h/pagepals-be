@@ -42,7 +42,6 @@ public class AccountServiceImpl implements AccountService {
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
     private final static String ACTIVE = "ACTIVE";
-    private final AccountMapper accountMapper;
 
     public AccountResponse register(RegisterRequest request) {
         var role = roleRepository.findByName(ROLE_CUSTOMER).orElseThrow(
@@ -156,7 +155,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountReadDto getAccountByUsername(String username) {
         Account account = accountRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("Account not found"));
         System.out.println(account.getCustomer().getFullName());
-        return accountRepository.findByUsername(username).map(accountMapper::toAccountReadDto)
+        return accountRepository.findByUsername(username).map(AccountMapper.INSTANCE::toAccountReadDto)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found"));
     }
 
