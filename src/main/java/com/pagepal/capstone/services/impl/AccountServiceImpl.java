@@ -154,7 +154,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountReadDto getAccountByUsername(String username) {
         Account account = accountRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("Account not found"));
-        System.out.println(account.getCustomer().getFullName());
         return accountRepository.findByUsername(username).map(AccountMapper.INSTANCE::toAccountReadDto)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found"));
     }
