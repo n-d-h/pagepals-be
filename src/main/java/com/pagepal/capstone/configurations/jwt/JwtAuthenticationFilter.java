@@ -1,5 +1,6 @@
 package com.pagepal.capstone.configurations.jwt;
 
+import com.pagepal.capstone.configurations.exception.custom.TokenInvalidException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

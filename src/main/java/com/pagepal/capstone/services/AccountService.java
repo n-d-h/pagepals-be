@@ -12,6 +12,6 @@ public interface AccountService {
     AccountDto getAccountById(UUID id);
     AccountStaffResponse registerStaff(String username);
     List<AccountDto> getListStaff();
-
     AccountDto updateAccount(UUID id, AccountUpdateDto accountUpdateDto);
+    AccountReadDto getAccountByUsername(String username);
 }

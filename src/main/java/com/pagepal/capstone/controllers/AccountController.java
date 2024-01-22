@@ -51,7 +51,7 @@ public class AccountController {
     }
 
     @MutationMapping(name = "refreshToken")
-    public AccountResponse refresh(DataFetchingEnvironment env) {
+    public AccountResponse refresh() {
         String refreshToken = request.getHeader("Authorization");
         return accountService.refresh(refreshToken.substring(7));
     }
@@ -60,5 +60,10 @@ public class AccountController {
     public AccountDto updateAccount(@Argument(name = "id") String id, @Argument(name = "account") AccountUpdateDto accountUpdateDto) {
         UUID uuid = UUID.fromString(id);
         return accountService.updateAccount(uuid, accountUpdateDto);
+    }
+
+    @QueryMapping
+    public AccountReadDto getAccountByUsername(@Argument(name = "username") String username) {
+        return accountService.getAccountByUsername(username);
     }
 }

@@ -1,5 +1,9 @@
 package com.pagepal.capstone.dtos.account;
 
+import com.pagepal.capstone.dtos.customer.CustomerDto;
+import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.entities.postgre.Customer;
+import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,4 +24,6 @@ public class AccountDto {
     private Date createdAt;
     private Date updatedAt;
     private Date deletedAt;
+    private Customer customer;
+    private Reader reader;
 }
