@@ -25,6 +25,10 @@ public class AccountReadDto {
 
     private String email;
 
+    private String fullName;
+
+    private String phoneNumber;
+
     private LoginTypeEnum loginType;
 
     private Date createdAt = new Date();

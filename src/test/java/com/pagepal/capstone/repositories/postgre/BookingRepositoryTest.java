@@ -71,6 +71,8 @@ public class BookingRepositoryTest {
             "username1",
             "password1",
             "email1",
+            "fullName1",
+            "0123456789",
             LoginTypeEnum.NORMAL,
             new Date(),
             new Date(),

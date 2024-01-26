@@ -55,11 +55,11 @@ class CustomerServiceImplTest {
     Role role2 = new Role(UUID.randomUUID(), "CUSTOMER", Status.ACTIVE, null);
 
     //Account
-    Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1", LoginTypeEnum.NORMAL,
+    Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState1, null, null, role1, null);
-    Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2", LoginTypeEnum.NORMAL,
+    Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState2, null, null, role2, null);
-    Account account3 = new Account(UUID.randomUUID(), "username3", "password3", "email3", LoginTypeEnum.NORMAL,
+    Account account3 = new Account(UUID.randomUUID(), "username3", "password3", "email3","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState1, null, null, role2, null);
     //Reader
     Reader reader1 = new Reader(UUID.randomUUID(), "name1", 5, "genre1", "Vietnamese", "accent1" ,

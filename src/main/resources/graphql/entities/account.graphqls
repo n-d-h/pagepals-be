@@ -3,6 +3,8 @@ type Account {
     username: String
     password: String
     email: String
+    fullName: String
+    phoneNumber: String
     createdAt: String!
     updatedAt: String
     deletedAt: String
@@ -17,6 +19,8 @@ type AccountRead {
     id: ID!
     username: String
     email: String
+    fullName: String
+    phoneNumber: String
     createdAt: String!
     updatedAt: String
     deletedAt: String
@@ -48,6 +52,8 @@ input AccountUpdate {
     username: String
     password: String
     email: String
+    fullName: String
+    phoneNumber: String
 }
 
 extend type Query {
