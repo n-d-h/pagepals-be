@@ -1,7 +1,5 @@
 package com.pagepal.capstone.dtos.account;
 
-import com.pagepal.capstone.dtos.customer.CustomerDto;
-import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.LoginTypeEnum;
@@ -20,6 +18,8 @@ public class AccountDto {
     private String username;
     private String password;
     private String email;
+    private String fullName;
+    private String phoneNumber;
     private LoginTypeEnum loginType;
     private Date createdAt;
     private Date updatedAt;

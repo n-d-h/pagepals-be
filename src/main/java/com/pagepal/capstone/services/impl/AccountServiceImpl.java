@@ -146,6 +146,12 @@ public class AccountServiceImpl implements AccountService {
         if (accountUpdateDto.getEmail() != null) {
             account.setEmail(accountUpdateDto.getEmail());
         }
+        if (accountUpdateDto.getFullName() != null) {
+            account.setFullName(accountUpdateDto.getFullName());
+        }
+        if (accountUpdateDto.getPhoneNumber() != null) {
+            account.setPhoneNumber(accountUpdateDto.getPhoneNumber());
+        }
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.toDto(account);
     }

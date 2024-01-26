@@ -40,6 +40,12 @@ public class Account implements UserDetails {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column(name = "phoneNumber")
+    private String phoneNumber;
+
     @Column(name = "loginType")
     @Enumerated(EnumType.STRING)
     private LoginTypeEnum loginType;

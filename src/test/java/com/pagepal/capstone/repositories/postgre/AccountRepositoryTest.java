@@ -40,9 +40,9 @@ class AccountRepositoryTest {
     Role role2 = new Role(UUID.randomUUID(), "CUSTOMER", Status.ACTIVE, null);
 
     //Account
-    Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1", LoginTypeEnum.NORMAL,
+    Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1", "fullName1","0123456789",  LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState1, null, null, role1, null);
-    Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2", LoginTypeEnum.NORMAL,
+    Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState2, null, null, role2, null);
 
 
