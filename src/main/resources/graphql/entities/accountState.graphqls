@@ -1,6 +1,14 @@
 type AccountState {
     id: ID!
     name: String
-    status: Status
     accounts: [Account]
+}
+
+type AccountStateRead {
+    id: ID!
+    name: String
+}
+
+extend type Query{
+    getListAccountState: [AccountStateRead]
 }
