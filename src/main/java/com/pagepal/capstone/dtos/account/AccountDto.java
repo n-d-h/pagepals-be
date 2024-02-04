@@ -1,5 +1,6 @@
 package com.pagepal.capstone.dtos.account;
 
+import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.LoginTypeEnum;
@@ -26,4 +27,5 @@ public class AccountDto {
     private Date deletedAt;
     private Customer customer;
     private Reader reader;
+    private AccountState accountState;
 }
