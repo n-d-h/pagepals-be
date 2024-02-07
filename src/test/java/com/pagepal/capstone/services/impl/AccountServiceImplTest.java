@@ -10,6 +10,7 @@ import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
+import com.pagepal.capstone.repositories.postgre.CustomerRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 
 import java.time.LocalDate;
@@ -71,6 +72,9 @@ public class AccountServiceImplTest {
 
     @MockBean
     private AuthenticationManager authenticationManager;
+
+    @MockBean
+    private CustomerRepository customerRepository;
 
     //Mock data
     //Account State

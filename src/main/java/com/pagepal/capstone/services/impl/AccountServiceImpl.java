@@ -4,12 +4,14 @@ import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.*;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.AccountState;
+import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.AccountMapper;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
+import com.pagepal.capstone.repositories.postgre.CustomerRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import com.pagepal.capstone.services.AccountService;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,10 +24,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +42,7 @@ public class AccountServiceImpl implements AccountService {
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
     private final static String ACTIVE = "ACTIVE";
+    private final CustomerRepository customerRepository;
 
     public AccountResponse register(RegisterRequest request) {
         var role = roleRepository.findByName(ROLE_CUSTOMER).orElseThrow(
@@ -73,6 +74,55 @@ public class AccountServiceImpl implements AccountService {
         String refreshToken = jwtService.generateRefreshToken(account);
 
         return new AccountResponse(accessToken, refreshToken);
+    }
+
+    @Override
+    public AccountResponse authenticateWithGoogle(String token) {
+        AccountGoogleDto accountGoogleDto = jwtService.parseJwtToken(token);
+        Account account = accountRepository
+                .findByEmail(accountGoogleDto.getEmail())
+                .orElse(null);
+        if(account == null){
+            boolean result = createAccountWithGoogle(accountGoogleDto);
+            if(!result){
+                throw new RuntimeException("Create account with google failed");
+            }
+            account = accountRepository.findByEmail(accountGoogleDto.getEmail()).orElse(null);
+        }
+
+        String accessToken = jwtService.generateAccessToken(account);
+        String refreshToken = jwtService.generateRefreshToken(account);
+        return new AccountResponse(accessToken, refreshToken);
+    }
+
+    private boolean createAccountWithGoogle(AccountGoogleDto accountGoogleDto){
+        var role = roleRepository.findByName(ROLE_CUSTOMER).orElseThrow(
+                () -> new RuntimeException("Role not found")
+        );
+        var accountCreate = new Account();
+        String username = accountGoogleDto.getEmail().split("@")[0];
+        accountCreate.setUsername(username);
+        accountCreate.setEmail(accountGoogleDto.getEmail());
+        accountCreate.setLoginType(LoginTypeEnum.GOOGLE);
+        accountCreate.setRole(role);
+        accountCreate.setCreatedAt(new Date());
+        AccountState state = accountStateRepository.findByNameAndStatus(ACTIVE, Status.ACTIVE).orElseThrow(
+                () -> new RuntimeException("Account State not found")
+        );
+        accountCreate.setAccountState(state);
+        Account account = accountRepository.save(accountCreate);
+        if(account != null){
+            Customer cusCreate = new Customer();
+            cusCreate.setAccount(account);
+            cusCreate.setFullName(accountGoogleDto.getName());
+            cusCreate.setCreatedAt(new Date());
+            cusCreate.setStatus(Status.ACTIVE);
+            Customer result = customerRepository.save(cusCreate);
+            if(result != null){
+                return true;
+            }
+        }
+        return false;
     }
 
     public AccountResponse refresh(String token) {
