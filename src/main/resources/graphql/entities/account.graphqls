@@ -64,6 +64,7 @@ extend type Query {
 
 extend type Mutation {
     login(account: LoginRequest): LoginResponse
+    loginWithGoogle(token: String!): LoginResponse
     register(register: LoginRequest): LoginResponse
     registerStaff(username: String!): LoginStaffResponse
     refreshToken: LoginResponse

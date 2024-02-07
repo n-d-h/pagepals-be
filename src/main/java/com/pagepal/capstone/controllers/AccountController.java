@@ -1,5 +1,6 @@
 package com.pagepal.capstone.controllers;
 
+import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.*;
 import com.pagepal.capstone.services.AccountService;
 import graphql.GraphQLContext;
@@ -21,12 +22,18 @@ public class AccountController {
 
     private final HttpServletRequest request;
     private final AccountService accountService;
+    private final JwtService jwtService;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
 
     @MutationMapping(name = "login")
     public AccountResponse login(@Argument(name = "account") AccountRequest accountRequest) {
         return accountService.authenticate(accountRequest);
+    }
+
+    @MutationMapping(name = "loginWithGoogle")
+    public AccountResponse loginWithGoogle(@Argument(name = "token") String token) {
+        return accountService.authenticateWithGoogle(token);
     }
 
     @MutationMapping(name = "register")
