@@ -1,15 +1,9 @@
 package com.pagepal.capstone.mappers;
 
-import com.pagepal.capstone.dtos.workingtime.WorkingTimeCreateDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
-import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.WorkingTime;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-
-import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface WorkingTimeMapper {

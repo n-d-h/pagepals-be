@@ -1,8 +1,6 @@
 package com.pagepal.capstone.dtos.book;
 
 import com.pagepal.capstone.dtos.category.CategoryDto;
-import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.entities.postgre.Category;
 import com.pagepal.capstone.entities.postgre.Chapter;
 import lombok.AllArgsConstructor;
 import lombok.Data;

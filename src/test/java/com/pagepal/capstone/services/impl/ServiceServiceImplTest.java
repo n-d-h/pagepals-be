@@ -13,13 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {ServiceServiceImpl.class})
 @ExtendWith(SpringExtension.class)
@@ -57,17 +56,17 @@ class ServiceServiceImplTest {
     @Test
     void canGetServiceById() {
         UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-        when(this.serviceRepository.findById((UUID) any())).thenReturn(java.util.Optional.of(service1));
+        when(this.serviceRepository.findById(any())).thenReturn(java.util.Optional.of(service1));
         this.serviceServiceImpl.serviceById(id);
-        verify(this.serviceRepository).findById((UUID) any());
+        verify(this.serviceRepository).findById(any());
     }
 
     @Test
     void shouldThrowExceptionWhenGetServiceById() {
         UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-        when(this.serviceRepository.findById((UUID) any())).thenThrow(new EntityNotFoundException("Service not found"));
+        when(this.serviceRepository.findById(any())).thenThrow(new EntityNotFoundException("Service not found"));
         assertThrows(EntityNotFoundException.class, () -> this.serviceServiceImpl.serviceById(id));
-        verify(this.serviceRepository).findById((UUID) any());
+        verify(this.serviceRepository).findById(any());
     }
 
     /**
@@ -75,10 +74,10 @@ class ServiceServiceImplTest {
      */
     @Test
     void canDeleteService() {
-        when(this.serviceRepository.save((Service) any())).thenReturn(service2);
-        when(this.serviceRepository.findById((UUID) any())).thenReturn(java.util.Optional.of(service2));
+        when(this.serviceRepository.save(any())).thenReturn(service2);
+        when(this.serviceRepository.findById(any())).thenReturn(java.util.Optional.of(service2));
         this.serviceServiceImpl.deleteService(UUID.randomUUID());
-        verify(this.serviceRepository).save((Service) any());
-        verify(this.serviceRepository).findById((UUID) any());
+        verify(this.serviceRepository).save(any());
+        verify(this.serviceRepository).findById(any());
     }
 }

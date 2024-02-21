@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.service.*;
+import com.pagepal.capstone.dtos.service.ServiceDto;
+import com.pagepal.capstone.dtos.service.WriteServiceDto;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.postgre.ServiceRepository;

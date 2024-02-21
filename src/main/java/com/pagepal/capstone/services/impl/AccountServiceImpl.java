@@ -24,7 +24,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -118,9 +117,7 @@ public class AccountServiceImpl implements AccountService {
             cusCreate.setCreatedAt(new Date());
             cusCreate.setStatus(Status.ACTIVE);
             Customer result = customerRepository.save(cusCreate);
-            if(result != null){
-                return true;
-            }
+            return result != null;
         }
         return false;
     }

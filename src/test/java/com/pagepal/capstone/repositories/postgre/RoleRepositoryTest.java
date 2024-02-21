@@ -12,7 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ContextConfiguration(classes = {RoleRepository.class})
 @EnableAutoConfiguration

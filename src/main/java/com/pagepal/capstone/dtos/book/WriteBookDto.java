@@ -1,11 +1,9 @@
 package com.pagepal.capstone.dtos.book;
 
-import com.pagepal.capstone.dtos.category.CategoryDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Data

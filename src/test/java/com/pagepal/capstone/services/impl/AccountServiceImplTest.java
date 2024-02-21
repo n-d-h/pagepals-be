@@ -4,7 +4,6 @@ import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.AccountDto;
 import com.pagepal.capstone.dtos.account.AccountUpdateDto;
 import com.pagepal.capstone.entities.postgre.*;
-import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.enums.GenderEnum;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
@@ -12,15 +11,7 @@ import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.CustomerRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
-
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-
-import java.util.Optional;
-
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.Disabled;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +22,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 
 @ContextConfiguration(classes = {AccountServiceImpl.class})
@@ -123,9 +110,9 @@ public class AccountServiceImplTest {
      */
     @Test
     void canUpdateAccount() {
-        when(accountRepository.save((Account) any())).thenReturn(new Account());
-        when(accountRepository.findById((UUID) any())).thenReturn(Optional.of(new Account()));
-        when(passwordEncoder.encode((CharSequence) any())).thenReturn("secret");
+        when(accountRepository.save(any())).thenReturn(new Account());
+        when(accountRepository.findById(any())).thenReturn(Optional.of(new Account()));
+        when(passwordEncoder.encode(any())).thenReturn("secret");
         UUID id = UUID.randomUUID();
         AccountDto actualUpdateAccountResult = accountServiceImpl.updateAccount(id,
                 new AccountUpdateDto("janedoe", "iloveyou", "jane.doe@example.org", "fullName1","0123456789"));
@@ -135,9 +122,9 @@ public class AccountServiceImplTest {
         assertNull(actualUpdateAccountResult.getId());
         assertNull(actualUpdateAccountResult.getEmail());
         assertNull(actualUpdateAccountResult.getDeletedAt());
-        verify(accountRepository).save((Account) any());
-        verify(accountRepository).findById((UUID) any());
-        verify(passwordEncoder).encode((CharSequence) any());
+        verify(accountRepository).save(any());
+        verify(accountRepository).findById(any());
+        verify(passwordEncoder).encode(any());
     }
 
     /**
@@ -145,14 +132,14 @@ public class AccountServiceImplTest {
      */
     @Test
     void shouldThrowWhenIdNotFound() {
-        when(accountRepository.save((Account) any())).thenReturn(mock(Account.class));
-        when(accountRepository.findById((UUID) any())).thenReturn(Optional.empty());
+        when(accountRepository.save(any())).thenReturn(mock(Account.class));
+        when(accountRepository.findById(any())).thenReturn(Optional.empty());
 
-        when(passwordEncoder.encode((CharSequence) any())).thenReturn("secret");
+        when(passwordEncoder.encode(any())).thenReturn("secret");
         UUID id = UUID.randomUUID();
         assertThrows(EntityNotFoundException.class, () -> accountServiceImpl.updateAccount(id,
                 new AccountUpdateDto("janedoe", "iloveyou", "jane.doe@example.org","fullName1","0123456789")));
-        verify(accountRepository).findById((UUID) any());
+        verify(accountRepository).findById(any());
     }
 
     /**
@@ -161,9 +148,9 @@ public class AccountServiceImplTest {
     @Test
     void canUpdateAccount1() {
         Account account = mock(Account.class);
-        doThrow(new EntityNotFoundException()).when(account).setEmail((String) any());
-        doThrow(new EntityNotFoundException()).when(account).setPassword((String) any());
-        doThrow(new EntityNotFoundException()).when(account).setUsername((String) any());
+        doThrow(new EntityNotFoundException()).when(account).setEmail(any());
+        doThrow(new EntityNotFoundException()).when(account).setPassword(any());
+        doThrow(new EntityNotFoundException()).when(account).setUsername(any());
         Optional<Account> ofResult = Optional.of(account);
         Account account1 = mock(Account.class);
         when(account1.getLoginType()).thenReturn(LoginTypeEnum.NORMAL);
@@ -178,9 +165,9 @@ public class AccountServiceImplTest {
         when(account1.getUpdatedAt()).thenReturn(fromResult2);
         UUID randomUUIDResult = UUID.randomUUID();
         when(account1.getId()).thenReturn(randomUUIDResult);
-        when(accountRepository.save((Account) any())).thenReturn(account1);
-        when(accountRepository.findById((UUID) any())).thenReturn(ofResult);
-        when(passwordEncoder.encode((CharSequence) any())).thenReturn("secret");
+        when(accountRepository.save(any())).thenReturn(account1);
+        when(accountRepository.findById(any())).thenReturn(ofResult);
+        when(passwordEncoder.encode(any())).thenReturn("secret");
         UUID id = UUID.randomUUID();
         AccountDto actualUpdateAccountResult = accountServiceImpl.updateAccount(id, new AccountUpdateDto());
         assertSame(fromResult, actualUpdateAccountResult.getCreatedAt());
@@ -191,8 +178,8 @@ public class AccountServiceImplTest {
         assertSame(randomUUIDResult, actualUpdateAccountResult.getId());
         assertEquals("jane.doe@example.org", actualUpdateAccountResult.getEmail());
         assertSame(fromResult1, actualUpdateAccountResult.getDeletedAt());
-        verify(accountRepository).save((Account) any());
-        verify(accountRepository).findById((UUID) any());
+        verify(accountRepository).save(any());
+        verify(accountRepository).findById(any());
         verify(account1).getLoginType();
         verify(account1).getEmail();
         verify(account1).getPassword();

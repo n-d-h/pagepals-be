@@ -2,7 +2,6 @@ package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.dtos.service.QueryDto;
 import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
-import com.pagepal.capstone.dtos.service.ServiceDto;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,6 +1,5 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.reader.ReaderProfileDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeCreateDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
 import com.pagepal.capstone.entities.postgre.Reader;
@@ -10,9 +9,7 @@ import com.pagepal.capstone.repositories.postgre.ReaderRepository;
 import com.pagepal.capstone.repositories.postgre.WorkingTimeRepository;
 import com.pagepal.capstone.services.WorkingTimeService;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 

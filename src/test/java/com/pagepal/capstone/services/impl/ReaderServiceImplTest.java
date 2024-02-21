@@ -1,47 +1,14 @@
 package com.pagepal.capstone.services.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.pagepal.capstone.dtos.reader.*;
-import com.pagepal.capstone.entities.postgre.Account;
-import com.pagepal.capstone.entities.postgre.AccountState;
-import com.pagepal.capstone.entities.postgre.Follow;
-import com.pagepal.capstone.entities.postgre.Level;
-import com.pagepal.capstone.entities.postgre.Promotion;
-import com.pagepal.capstone.entities.postgre.Reader;
-import com.pagepal.capstone.entities.postgre.Request;
-import com.pagepal.capstone.entities.postgre.Role;
-import com.pagepal.capstone.entities.postgre.Service;
-import com.pagepal.capstone.entities.postgre.WorkingTime;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
-
-import java.lang.reflect.Array;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
-
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.Disabled;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +19,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {ReaderServiceImpl.class})
 @ExtendWith(SpringExtension.class)
@@ -102,7 +76,7 @@ class ReaderServiceImplTest {
     void canGetReadersActive() {
         account1.setReader(reader1);
         account2.setReader(reader2);
-        when(accountRepository.findByAccountStateAndRole(accountState1, role1)).thenReturn(Arrays.asList(account1));
+        when(accountRepository.findByAccountStateAndRole(accountState1, role1)).thenReturn(Collections.singletonList(account1));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
@@ -139,7 +113,7 @@ class ReaderServiceImplTest {
         account2.setReader(reader2);
 
         when(accountRepository.findByAccountStateAndRole(accountState1, role1))
-                .thenReturn(Arrays.asList(account1));
+                .thenReturn(Collections.singletonList(account1));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("READER")).thenThrow(new EntityNotFoundException());
@@ -158,7 +132,7 @@ class ReaderServiceImplTest {
         account2.setReader(reader2);
 
         when(accountRepository.findByAccountStateAndRole(accountState1, role1))
-                .thenReturn(Arrays.asList(account1));
+                .thenReturn(Collections.singletonList(account1));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenThrow(new EntityNotFoundException());
         when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
@@ -228,9 +202,9 @@ class ReaderServiceImplTest {
      */
     @Test
     void canGetListServicesByReaderId() {
-        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader()));
+        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader()));
         assertNull(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()));
-        verify(readerRepository).findById((UUID) any());
+        verify(readerRepository).findById(any());
     }
 
     /**
@@ -249,12 +223,12 @@ class ReaderServiceImplTest {
         ArrayList<Follow> follows = new ArrayList<>();
         ArrayList<Promotion> promotions = new ArrayList<>();
         ArrayList<Request> requests = new ArrayList<>();
-        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
+        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
                 "GB", "https://example.org/example", "The characteristics of someone or something", "Total Of Reviews",
                 "Total Of Bookings", "https://example.org/example", 10.0d, "Tags", createdAt, updatedAt, deletedAt,
                 Status.ACTIVE, account, level, workingTimes, services, follows, promotions, requests, new ArrayList<>())));
         assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
-        verify(readerRepository).findById((UUID) any());
+        verify(readerRepository).findById(any());
     }
 
     /**
@@ -265,9 +239,9 @@ class ReaderServiceImplTest {
         Reader reader = mock(Reader.class);
         when(reader.getServices()).thenReturn(new ArrayList<>());
         Optional<Reader> ofResult = Optional.of(reader);
-        when(readerRepository.findById((UUID) any())).thenReturn(ofResult);
+        when(readerRepository.findById(any())).thenReturn(ofResult);
         assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
-        verify(readerRepository).findById((UUID) any());
+        verify(readerRepository).findById(any());
         verify(reader, atLeast(1)).getServices();
     }
 
@@ -276,31 +250,31 @@ class ReaderServiceImplTest {
      */
     @Test
     void canUpdateReaderProfile() {
-        when(readerRepository.save((Reader) any())).thenReturn(new Reader());
-        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader()));
+        when(readerRepository.save(any())).thenReturn(new Reader());
+        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader()));
         UUID id = UUID.randomUUID();
         ReaderProfileDto actualUpdateReaderProfileResult = readerServiceImpl.updateReaderProfile(id,
                 new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
                         "The characteristics of someone or something", "https://example.org/example", "Tags"));
-        assertNull(actualUpdateReaderProfileResult.getAccount());
-        assertNull(actualUpdateReaderProfileResult.getTotalOfReviews());
-        assertNull(actualUpdateReaderProfileResult.getTotalOfBookings());
-        assertNull(actualUpdateReaderProfileResult.getTags());
-        assertEquals(Status.ACTIVE, actualUpdateReaderProfileResult.getStatus());
-        assertEquals(0, actualUpdateReaderProfileResult.getRating());
-        assertNull(actualUpdateReaderProfileResult.getNickname());
-        assertNull(actualUpdateReaderProfileResult.getLevel());
-        assertNull(actualUpdateReaderProfileResult.getLanguage());
-        assertNull(actualUpdateReaderProfileResult.getIntroductionVideoUrl());
-        assertNull(actualUpdateReaderProfileResult.getId());
-        assertNull(actualUpdateReaderProfileResult.getGenre());
-        assertNull(actualUpdateReaderProfileResult.getExperience());
-        assertNull(actualUpdateReaderProfileResult.getDescription());
-        assertNull(actualUpdateReaderProfileResult.getDeletedAt());
-        assertNull(actualUpdateReaderProfileResult.getCountryAccent());
-        assertNull(actualUpdateReaderProfileResult.getAudioDescriptionUrl());
-        verify(readerRepository).save((Reader) any());
-        verify(readerRepository).findById((UUID) any());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getAccount());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getTotalOfReviews());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getTotalOfBookings());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getTags());
+        assertEquals(Status.ACTIVE, actualUpdateReaderProfileResult.getProfile().getStatus());
+        assertEquals(0, actualUpdateReaderProfileResult.getProfile().getRating());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getNickname());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getLevel());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getLanguage());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getIntroductionVideoUrl());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getId());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getGenre());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getExperience());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getDescription());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getDeletedAt());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getCountryAccent());
+        assertNull(actualUpdateReaderProfileResult.getProfile().getAudioDescriptionUrl());
+        verify(readerRepository).save(any());
+        verify(readerRepository).findById(any());
     }
 
     /**
@@ -308,15 +282,15 @@ class ReaderServiceImplTest {
      */
     @Test
     void shouldThrowWhenCannotSave() {
-        when(readerRepository.save((Reader) any())).thenThrow(new EntityNotFoundException());
-        when(readerRepository.findById((UUID) any())).thenReturn(Optional.of(new Reader()));
+        when(readerRepository.save(any())).thenThrow(new EntityNotFoundException());
+        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader()));
         UUID id = UUID.randomUUID();
         assertThrows(EntityNotFoundException.class,
                 () -> readerServiceImpl.updateReaderProfile(id,
                         new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
                                 "The characteristics of someone or something", "https://example.org/example", "Tags")));
-        verify(readerRepository).save((Reader) any());
-        verify(readerRepository).findById((UUID) any());
+        verify(readerRepository).save(any());
+        verify(readerRepository).findById(any());
     }
 
     /**
@@ -324,15 +298,15 @@ class ReaderServiceImplTest {
      */
     @Test
     void showThrowWhenCannotFindReader() {
-        when(readerRepository.save((Reader) any())).thenReturn(mock(Reader.class));
-        when(readerRepository.findById((UUID) any())).thenReturn(Optional.empty());
+        when(readerRepository.save(any())).thenReturn(mock(Reader.class));
+        when(readerRepository.findById(any())).thenReturn(Optional.empty());
 
         UUID id = UUID.randomUUID();
         assertThrows(EntityNotFoundException.class,
                 () -> readerServiceImpl.updateReaderProfile(id,
                         new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
                                 "The characteristics of someone or something", "https://example.org/example", "Tags")));
-        verify(readerRepository).findById((UUID) any());
+        verify(readerRepository).findById(any());
     }
 
 }

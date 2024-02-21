@@ -13,6 +13,24 @@ input WorkingTimeCreateInput {
     readerId: String
 }
 
+type WorkingTimeList{
+    workingDates: [WorkingDate]
+}
+
+type WorkingDate {
+    date: String
+    timeSlots: [TimeSlot]
+}
+
+type TimeSlot {
+    id: ID!
+    startTime: String
+}
+
+extend type Query {
+    getWorkingTimesAvailableByReader(readerId: ID!): WorkingTimeList
+}
+
 extend type Mutation {
     createReaderWorkingTime(workingTime: WorkingTimeCreateInput!): WorkingTime!
 }

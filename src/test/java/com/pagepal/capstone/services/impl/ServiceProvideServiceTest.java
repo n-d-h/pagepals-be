@@ -1,25 +1,19 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.service.QueryDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.postgre.BookRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
 import com.pagepal.capstone.repositories.postgre.ServiceRepository;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
-
-import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {ServiceProvideServiceImpl.class})
 @ExtendWith(SpringExtension.class)
