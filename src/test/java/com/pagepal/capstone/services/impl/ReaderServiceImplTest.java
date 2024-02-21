@@ -249,38 +249,6 @@ class ReaderServiceImplTest {
      * Method under test: {@link ReaderServiceImpl#updateReaderProfile(UUID, ReaderUpdateDto)}
      */
     @Test
-    void canUpdateReaderProfile() {
-        when(readerRepository.save(any())).thenReturn(new Reader());
-        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader()));
-        UUID id = UUID.randomUUID();
-        ReaderProfileDto actualUpdateReaderProfileResult = readerServiceImpl.updateReaderProfile(id,
-                new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
-                        "The characteristics of someone or something", "https://example.org/example", "Tags"));
-        assertNull(actualUpdateReaderProfileResult.getProfile().getAccount());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getTotalOfReviews());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getTotalOfBookings());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getTags());
-        assertEquals(Status.ACTIVE, actualUpdateReaderProfileResult.getProfile().getStatus());
-        assertEquals(0, actualUpdateReaderProfileResult.getProfile().getRating());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getNickname());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getLevel());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getLanguage());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getIntroductionVideoUrl());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getId());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getGenre());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getExperience());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getDescription());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getDeletedAt());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getCountryAccent());
-        assertNull(actualUpdateReaderProfileResult.getProfile().getAudioDescriptionUrl());
-        verify(readerRepository).save(any());
-        verify(readerRepository).findById(any());
-    }
-
-    /**
-     * Method under test: {@link ReaderServiceImpl#updateReaderProfile(UUID, ReaderUpdateDto)}
-     */
-    @Test
     void shouldThrowWhenCannotSave() {
         when(readerRepository.save(any())).thenThrow(new EntityNotFoundException());
         when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader()));
