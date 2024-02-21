@@ -2,7 +2,6 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.service.QueryDto;
 import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
-import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.postgre.BookRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;

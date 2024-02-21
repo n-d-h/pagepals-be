@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @ContextConfiguration(classes = {

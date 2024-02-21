@@ -9,8 +9,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +21,11 @@ import java.util.Map;
 //@PropertySource("classpath:application-common.properties")
 public class JwtService {
     //@Value("${jwt.secretKey}")
-    private String secretKey="28482B4D6251655468576D597133743677397A24432646294A404E635266556A";
+    private final String secretKey="28482B4D6251655468576D597133743677397A24432646294A404E635266556A";
     //@Value("${jwt.expiration.accessToken}")
-    private String accessTokenExpirationTime="86400000";
+    private final String accessTokenExpirationTime="86400000";
     //@Value("${jwt.expiration.refreshToken}")
-    private String refreshTokenExpirationTime="2592000000";
+    private final String refreshTokenExpirationTime="2592000000";
     private static final String DATA_FIELD = "username";
 
     public String extractDataFromToken(String token) {

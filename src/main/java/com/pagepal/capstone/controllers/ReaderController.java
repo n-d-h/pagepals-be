@@ -2,6 +2,7 @@ package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
+import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.services.ReaderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -46,5 +47,10 @@ public class ReaderController {
     @MutationMapping
     public ReaderProfileDto updateReader(@Argument UUID id, @Argument(name = "data") ReaderUpdateDto readerProfileDto) {
         return readerService.updateReaderProfile(id, readerProfileDto);
+    }
+
+    @QueryMapping
+    public WorkingTimeListRead getWorkingTimesAvailableByReader(@Argument(name ="readerId") UUID id) {
+        return readerService.getWorkingTimesAvailableByReader(id);
     }
 }

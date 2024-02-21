@@ -3,13 +3,15 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
-import com.pagepal.capstone.entities.postgre.Account;
-import com.pagepal.capstone.entities.postgre.AccountState;
-import com.pagepal.capstone.entities.postgre.Reader;
-import com.pagepal.capstone.entities.postgre.Role;
+import com.pagepal.capstone.dtos.workingtime.TimeSlot;
+import com.pagepal.capstone.dtos.workingtime.WorkingDate;
+import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
+import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ReaderMapper;
 import com.pagepal.capstone.mappers.ServiceMapper;
+import com.pagepal.capstone.mappers.WorkingTimeMapper;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
@@ -25,10 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -149,7 +148,10 @@ public class ReaderServiceImpl implements ReaderService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Reader not found")
                 );
-        return ReaderMapper.INSTANCE.toProfileDto(reader);
+        ReaderProfileDto readerProfile = new ReaderProfileDto();
+        readerProfile.setProfile(ReaderMapper.INSTANCE.toDto(reader));
+        readerProfile.setWorkingTimeList(getWorkingTimesAvailableByReader(id));
+        return readerProfile;
     }
 
     @Secured({"READER", "STAFF", "ADMIN"})
@@ -166,7 +168,68 @@ public class ReaderServiceImpl implements ReaderService {
         reader.setTags(readerUpdateDto.getTags());
         reader.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
         reader.setUpdatedAt(new Date());
+        Reader result = readerRepository.save(reader);
+        return getReaderProfileById(result.getId());
+    }
 
-        return ReaderMapper.INSTANCE.toProfileDto(readerRepository.save(reader));
+    @Override
+    public WorkingTimeListRead getWorkingTimesAvailableByReader(UUID id) {
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        List<WorkingTime> workingTimes = reader.getWorkingTimes();
+        List<WorkingTimeDto> result = new ArrayList<>();
+        WorkingTimeListRead list = new WorkingTimeListRead();
+        if (workingTimes != null) {
+            Date now = new Date();
+            result = workingTimes.stream()
+                    .filter(p -> p.getDate().after(now))
+                    .map(WorkingTimeMapper.INSTANCE::toDto).toList();
+            list = divideWorkingTimes(result);
+        }
+        return list;
+    }
+
+    private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {
+        // Group the working times by date
+        Map<Date, List<WorkingTimeDto>> groupedWorkingTimes = workingTimes.stream()
+                .collect(Collectors.groupingBy(WorkingTimeDto::getDate));
+
+        // Create WorkingTimeListRead object
+        WorkingTimeListRead workingTimeListRead = new WorkingTimeListRead();
+        workingTimeListRead.setWorkingDates(new ArrayList<>());
+
+        // Iterate over the grouped working times and create WorkingDate objects
+        for (Map.Entry<Date, List<WorkingTimeDto>> entry : groupedWorkingTimes.entrySet()) {
+            Date date = entry.getKey();
+            List<WorkingTimeDto> workingTimesForDate = entry.getValue();
+
+            // Create WorkingDate object
+            WorkingDate workingDate = new WorkingDate();
+            workingDate.setDate(date);
+            workingDate.setTimeSlots(new ArrayList<>());
+
+            // Iterate over the working times for the date and create TimeSlot objects
+            for (WorkingTimeDto workingTimeDto : workingTimesForDate) {
+                TimeSlot timeSlot = new TimeSlot();
+                timeSlot.setId(workingTimeDto.getId());
+                timeSlot.setStartTime(getStartTime(workingTimeDto.getDate()));
+                workingDate.getTimeSlots().add(timeSlot);
+            }
+
+            // Add WorkingDate object to WorkingTimeListRead
+            workingTimeListRead.getWorkingDates().add(workingDate);
+        }
+
+        return workingTimeListRead;
+    }
+
+    private static String getStartTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+
+        return String.format("%02d:%02d:%02d", hour, minute, second); // Example start time
     }
 }

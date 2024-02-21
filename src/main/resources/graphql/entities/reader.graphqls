@@ -46,12 +46,13 @@ type ReaderRead{
     status: Status
     level: Level
     account: AccountRead
-    workingTimes: [WorkingTime]
     services: [Service]
     follows: [Follow]
-    promotions: [Promotion]
-    requests: [Request]
-    meetings: [Meeting]
+}
+
+type ReaderProfile{
+    profile: ReaderRead
+    workingTimeList: WorkingTimeList
 }
 
 type listReader {
@@ -86,7 +87,7 @@ extend type Query {
     getReaderDetail(id: ID!): Reader
     getListReaders(query: searchReaderInput): listReader
     getListServicesOfReader(id: ID!): [Service]
-    getReaderProfile(id: ID!): ReaderRead
+    getReaderProfile(id: ID!): ReaderProfile
 }
 
 extend type Mutation {

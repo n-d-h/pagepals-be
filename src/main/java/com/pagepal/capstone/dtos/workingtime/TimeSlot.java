@@ -1,4 +1,4 @@
-package com.pagepal.capstone.dtos.accountstate;
+package com.pagepal.capstone.dtos.workingtime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,10 +9,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountStateRead {
-
+public class TimeSlot {
     private UUID id;
-
-    private String name;
-
+    private String startTime;
 }

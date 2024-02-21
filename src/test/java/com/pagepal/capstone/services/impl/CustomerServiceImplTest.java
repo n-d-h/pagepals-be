@@ -1,31 +1,28 @@
 package com.pagepal.capstone.services.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.pagepal.capstone.dtos.customer.CustomerDto;
 import com.pagepal.capstone.dtos.customer.CustomerReadDto;
 import com.pagepal.capstone.dtos.customer.CustomerUpdateDto;
-import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.GenderEnum;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.postgre.*;
-
-import java.util.*;
-
+import com.pagepal.capstone.repositories.postgre.AccountRepository;
+import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
+import com.pagepal.capstone.repositories.postgre.CustomerRepository;
+import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.Disabled;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {CustomerServiceImpl.class})
 @ExtendWith(SpringExtension.class)
@@ -79,7 +76,7 @@ class CustomerServiceImplTest {
     void canGetCustomersActive() {
         account1.setReader(reader1);
         account2.setCustomer(customer1);
-        when(accountRepository.findByAccountStateAndRole(accountState1, role2)).thenReturn(Arrays.asList(account2));
+        when(accountRepository.findByAccountStateAndRole(accountState1, role2)).thenReturn(Collections.singletonList(account2));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("CUSTOMER")).thenReturn(Optional.of(role2));
@@ -116,7 +113,7 @@ class CustomerServiceImplTest {
         account2.setCustomer(customer1);
 
         when(accountRepository.findByAccountStateAndRole(accountState1, role2))
-                .thenReturn(Arrays.asList(account2));
+                .thenReturn(Collections.singletonList(account2));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("CUSTOMER")).thenThrow(new EntityNotFoundException());
@@ -135,7 +132,7 @@ class CustomerServiceImplTest {
         account2.setCustomer(customer1);
 
         when(accountRepository.findByAccountStateAndRole(accountState1, role1))
-                .thenReturn(Arrays.asList(account1));
+                .thenReturn(Collections.singletonList(account1));
         when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
                 .thenThrow(new EntityNotFoundException());
         when(roleRepository.findByName("CUSTOMER")).thenReturn(Optional.of(role2));
