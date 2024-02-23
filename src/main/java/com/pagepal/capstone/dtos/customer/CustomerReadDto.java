@@ -5,13 +5,14 @@ import com.pagepal.capstone.entities.postgre.Booking;
 import com.pagepal.capstone.entities.postgre.Follow;
 import com.pagepal.capstone.enums.GenderEnum;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerReadDto {

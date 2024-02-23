@@ -2,13 +2,14 @@ package com.pagepal.capstone.dtos.booking;
 
 import com.pagepal.capstone.dtos.bookingdetail.BookingDetailCreateDto;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingCreateDto {

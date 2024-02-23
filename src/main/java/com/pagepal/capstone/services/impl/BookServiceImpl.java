@@ -6,6 +6,7 @@ import com.pagepal.capstone.dtos.book.WriteBookDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Book;
 import com.pagepal.capstone.entities.postgre.Category;
+import com.pagepal.capstone.entities.postgre.Chapter;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.BookMapper;
 import com.pagepal.capstone.repositories.postgre.BookRepository;
@@ -20,9 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor

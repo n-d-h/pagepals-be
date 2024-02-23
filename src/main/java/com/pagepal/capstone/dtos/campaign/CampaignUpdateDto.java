@@ -3,10 +3,11 @@ package com.pagepal.capstone.dtos.campaign;
 import com.pagepal.capstone.enums.CampaignEnum;
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CampaignUpdateDto {

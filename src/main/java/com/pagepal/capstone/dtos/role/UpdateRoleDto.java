@@ -2,10 +2,11 @@ package com.pagepal.capstone.dtos.role;
 
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateRoleDto {

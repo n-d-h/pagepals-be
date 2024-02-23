@@ -15,8 +15,6 @@ import java.util.UUID;
 public interface BookMapper {
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
 
-    @Mapping(target = "category", source = "category")
-    @Mapping(target = "chapters", source = "chapters")
     BookDto toDto(Book book);
 
     @Mapping(target = "category", source = "category.id", qualifiedByName = "toEntityWithCategory")

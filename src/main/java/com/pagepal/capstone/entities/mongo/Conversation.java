@@ -6,7 +6,7 @@ import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -14,7 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.Date;
 import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "CONVERSATIONS")

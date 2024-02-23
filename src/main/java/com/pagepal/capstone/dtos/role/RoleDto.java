@@ -3,12 +3,13 @@ package com.pagepal.capstone.dtos.role;
 
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoleDto {

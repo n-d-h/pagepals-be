@@ -1,5 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.book.BookDto;
+import com.pagepal.capstone.dtos.chapter.ChapterDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
@@ -9,9 +11,7 @@ import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.mappers.ReaderMapper;
-import com.pagepal.capstone.mappers.ServiceMapper;
-import com.pagepal.capstone.mappers.WorkingTimeMapper;
+import com.pagepal.capstone.mappers.*;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
@@ -40,7 +40,6 @@ public class ReaderServiceImpl implements ReaderService {
     private final AccountStateRepository accountStateRepository;
     private final RoleRepository roleRepository;
 
-    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public List<ReaderDto> getReadersActive() {
         AccountState accountState = accountStateRepository
@@ -54,7 +53,6 @@ public class ReaderServiceImpl implements ReaderService {
         return readers.stream().map(ReaderMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
-    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public ReaderDto getReaderById(UUID id) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
@@ -122,7 +120,6 @@ public class ReaderServiceImpl implements ReaderService {
         }
     }
 
-    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public List<ServiceDto> getListServicesByReaderId(UUID id) {
         Reader reader = readerRepository
@@ -140,7 +137,6 @@ public class ReaderServiceImpl implements ReaderService {
         return null;
     }
 
-    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public ReaderProfileDto getReaderProfileById(UUID id) {
         Reader reader = readerRepository
@@ -187,6 +183,43 @@ public class ReaderServiceImpl implements ReaderService {
         }
         return list;
     }
+
+    @Override
+    public List<ReaderBookDto> getBookOfReader(UUID id) {
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        List<ReaderBookDto> books = new ArrayList<>();
+        var services = reader.getServices();
+        if (services != null) {
+            for (var service : services) {
+                boolean isAdded = false;
+                Book b = service.getChapter().getBook();
+                if(books.isEmpty()){
+                    books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ChapterMapper.INSTANCE.toDto(service.getChapter()))) );
+                }else{
+                    for(var book: books){
+                        if(book.getBook().getId().equals(b.getId())){
+                            List<ChapterDto> chapters = new ArrayList<>(book.getChapters());
+                            chapters.add(ChapterMapper.INSTANCE.toDto(service.getChapter()));
+                            book.setChapters(chapters);
+                            isAdded = true;
+                        }
+                    }
+                    if(!isAdded){
+                        books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ChapterMapper.INSTANCE.toDto(service.getChapter()))) );
+                    }
+                }
+            }
+        }
+        return books;
+    }
+
+//    private List<ReaderBookDto> addBookToList(List<ReaderBookDto> books, Book book, com.pagepal.capstone.entities.postgre.Service service){
+//        books.add(new ReaderBookDto(
+//                        BookMapper.INSTANCE.toDto(book),
+//                        List.of(ChapterMapper.INSTANCE.toDto(service.getChapter())))
+//        );
+//        return books;
+//    }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {
         // Group the working times by date

@@ -16,7 +16,6 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
             SELECT r FROM Reader r
             LEFT JOIN FETCH r.workingTimes wt
             WHERE r.id = :id
-            AND wt.date >= CURRENT_DATE
             """)
     Optional<Reader> findById(UUID id);
 
