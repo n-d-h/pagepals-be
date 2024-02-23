@@ -5,14 +5,15 @@ import com.pagepal.capstone.entities.postgre.Chapter;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceDto {

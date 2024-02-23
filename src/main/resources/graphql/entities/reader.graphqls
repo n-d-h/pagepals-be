@@ -60,6 +60,11 @@ type listReader {
     list: [Reader]
 }
 
+type ReaderBook{
+    book: Book
+    chapters: [Chapter]
+}
+
 input ReaderUpdate{
     nickname: String
     genre: String
@@ -88,6 +93,7 @@ extend type Query {
     getListReaders(query: searchReaderInput): listReader
     getListServicesOfReader(id: ID!): [Service]
     getReaderProfile(id: ID!): ReaderProfile
+    getReaderBooks(id: ID!): [ReaderBook]
 }
 
 extend type Mutation {

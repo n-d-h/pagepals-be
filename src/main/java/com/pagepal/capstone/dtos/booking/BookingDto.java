@@ -2,14 +2,15 @@ package com.pagepal.capstone.dtos.booking;
 
 import com.pagepal.capstone.entities.postgre.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingDto {

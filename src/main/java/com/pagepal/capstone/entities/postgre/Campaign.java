@@ -5,7 +5,7 @@ import com.pagepal.capstone.enums.CampaignEnum;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

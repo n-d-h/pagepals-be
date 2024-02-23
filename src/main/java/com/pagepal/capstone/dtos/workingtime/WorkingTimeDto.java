@@ -2,13 +2,14 @@ package com.pagepal.capstone.dtos.workingtime;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkingTimeDto {

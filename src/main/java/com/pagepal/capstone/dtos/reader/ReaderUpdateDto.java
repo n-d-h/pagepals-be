@@ -1,10 +1,11 @@
 package com.pagepal.capstone.dtos.reader;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.NoArgsConstructor;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReaderUpdateDto {
