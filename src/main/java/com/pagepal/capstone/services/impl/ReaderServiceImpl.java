@@ -213,14 +213,6 @@ public class ReaderServiceImpl implements ReaderService {
         return books;
     }
 
-//    private List<ReaderBookDto> addBookToList(List<ReaderBookDto> books, Book book, com.pagepal.capstone.entities.postgre.Service service){
-//        books.add(new ReaderBookDto(
-//                        BookMapper.INSTANCE.toDto(book),
-//                        List.of(ChapterMapper.INSTANCE.toDto(service.getChapter())))
-//        );
-//        return books;
-//    }
-
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {
         // Group the working times by date
         Map<Date, List<WorkingTimeDto>> groupedWorkingTimes = workingTimes.stream()
@@ -244,7 +236,7 @@ public class ReaderServiceImpl implements ReaderService {
             for (WorkingTimeDto workingTimeDto : workingTimesForDate) {
                 TimeSlot timeSlot = new TimeSlot();
                 timeSlot.setId(workingTimeDto.getId());
-                timeSlot.setStartTime(getStartTime(workingTimeDto.getDate()));
+                timeSlot.setStartTime(getStartTime(workingTimeDto.getStartTime()));
                 workingDate.getTimeSlots().add(timeSlot);
             }
 
