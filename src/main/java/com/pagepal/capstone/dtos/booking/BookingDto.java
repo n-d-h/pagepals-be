@@ -27,6 +27,7 @@ public class BookingDto {
     private Customer customer;
     private Meeting meeting;
     private BookingState state;
+    private WorkingTime workingTime;
     private List<BookingDetail> bookingDetails;
     private List<Transaction> transactions;
 }

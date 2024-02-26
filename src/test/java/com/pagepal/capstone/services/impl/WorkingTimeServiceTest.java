@@ -42,7 +42,7 @@ public class WorkingTimeServiceTest {
             null, null
     );
 
-    WorkingTime workingTime = new WorkingTime(UUID.randomUUID(), new Date(), new Date(), new Date(), reader);
+    WorkingTime workingTime = new WorkingTime(UUID.randomUUID(), new Date(), new Date(), new Date(), reader, null);
 
     @Test
     void testCreateWorkingTime() {

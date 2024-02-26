@@ -10,7 +10,6 @@ type BookingDetail {
 }
 
 input BookingDetailCreate{
-    price: Float
     description: String
-    serviceId: ID
+    chapterId: ID
 }

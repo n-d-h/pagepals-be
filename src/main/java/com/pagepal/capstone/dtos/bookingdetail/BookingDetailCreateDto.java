@@ -11,7 +11,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingDetailCreateDto {
-    private Double price;
     private String description;
-    private UUID serviceId;
+    private UUID chapterId;
 }
