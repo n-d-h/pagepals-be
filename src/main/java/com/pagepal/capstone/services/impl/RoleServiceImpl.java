@@ -22,7 +22,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
 
-    @Secured("STAFF")
+    @Secured({"ADMIN", "STAFF"})
     @Override
     public List<RoleDto> getRoles() {
         List<Role> roles = roleRepository.findAll();
@@ -31,14 +31,14 @@ public class RoleServiceImpl implements RoleService {
         return roles.stream().map(RoleMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
-    @Secured("STAFF")
+    @Secured({"ADMIN", "STAFF"})
     @Override
     public RoleDto getById(String id) {
         Role role = roleRepository.findById(UUID.fromString(id)).orElseThrow(() -> new EntityNotFoundException("Role not found"));
         return RoleMapper.INSTANCE.toDto(role);
     }
 
-    @Secured("ADMIN")
+    @Secured({"ADMIN", "STAFF"})
     @Override
     public RoleDto create(CreateRoleDto createRoleDto) {
         Role role = RoleMapper.INSTANCE.createToEntity(createRoleDto);
@@ -46,7 +46,7 @@ public class RoleServiceImpl implements RoleService {
         return RoleMapper.INSTANCE.toDto(createdRole);
     }
 
-    @Secured("ADMIN")
+    @Secured({"ADMIN", "STAFF"})
     @Override
     public RoleDto update(String id, UpdateRoleDto updateRoleDto) {
         RoleDto roleDto = getById(id);

@@ -11,6 +11,7 @@ type Booking {
     customer: Customer
     meeting: Meeting
     state: BookingState
+    workingTime: WorkingTime
     bookingDetails: [BookingDetail]
     transactions: [Transaction]
 }
@@ -27,8 +28,9 @@ input filterBooking{
 }
 
 input BookingCreate {
+    workingTimeId: ID
+    meetingCode: String
     totalPrice: Float
-    startAt: String
     promotionCode: String
     description: String
     bookingDetails: [BookingDetailCreate]
@@ -37,5 +39,8 @@ input BookingCreate {
 extend type Query {
     getListBookingByCustomer(customerId: ID!, filter: filterBooking): ListBooking
     getListBookingByReader(readerId: ID!): [Booking]
+}
+
+extend type Mutation {
     createBooking(customerId: ID, booking: BookingCreate): Booking
 }

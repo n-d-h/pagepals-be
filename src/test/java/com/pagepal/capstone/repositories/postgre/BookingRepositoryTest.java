@@ -133,6 +133,7 @@ public class BookingRepositoryTest {
             meeting,
             bookingState1,
             null,
+            null,
             null
     );
 

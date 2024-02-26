@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,4 +40,8 @@ public class WorkingTime {
     @JoinColumn(name = "reader_id")
     @JsonManagedReference
     private Reader reader;
+
+    @OneToOne(mappedBy = "workingTime", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Booking booking;
 }
