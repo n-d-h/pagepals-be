@@ -277,5 +277,14 @@ class ReaderServiceImplTest {
         verify(readerRepository).findById(any());
     }
 
+    /**
+     * Method under test: {@link ReaderServiceImpl#getListPopularReaders()}
+     */
+    @Test
+    void canGetListPopularReaders() {
+        when(readerRepository.findTop10ByOrderByRatingDesc()).thenReturn(new ArrayList<>());
+        assertTrue(readerServiceImpl.getListPopularReaders().isEmpty());
+        verify(readerRepository).findTop10ByOrderByRatingDesc();
+    }
 }
 
