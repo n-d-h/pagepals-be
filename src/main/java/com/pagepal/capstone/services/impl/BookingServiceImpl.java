@@ -124,7 +124,7 @@ public class BookingServiceImpl implements BookingService {
                 Chapter chapter = new Chapter();
                 chapter.setId(bookingDetailCreateDto.getChapterId());
                 var service = serviceRepository
-                        .findByChapter(chapter)
+                        .findByChapterAndReader(chapter, wt.getReader())
                         .orElseThrow(() -> new EntityNotFoundException("Service not found"));
                 dt.setBooking(res);
                 dt.setPrice(service.getPrice());

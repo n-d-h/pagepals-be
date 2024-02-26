@@ -23,5 +23,5 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
     @Query("SELECT s FROM Service s WHERE s.chapter.book = ?1 AND s.chapter.book.title LIKE %?2%")
     Page<Service> findAllByBookId(Book book, String title, Pageable pageable);
 
-    Optional<Service> findByChapter(Chapter chapter);
+    Optional<Service> findByChapterAndReader(Chapter chapter, Reader reader);
 }
