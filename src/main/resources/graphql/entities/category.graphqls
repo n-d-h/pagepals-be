@@ -5,3 +5,8 @@ type Category {
     status: Status
     books: [Book]
 }
+
+extend type Query {
+    getListCategories: [Category]
+#    category(id: ID!): Category
+}
