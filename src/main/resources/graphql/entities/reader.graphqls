@@ -94,6 +94,7 @@ extend type Query {
     getListServicesOfReader(id: ID!): [Service]
     getReaderProfile(id: ID!): ReaderProfile
     getReaderBooks(id: ID!): [ReaderBook]
+    getListPopularReaders: [Reader]
 }
 
 extend type Mutation {

@@ -36,6 +36,11 @@ public class ReaderController {
     }
 
     @QueryMapping
+    public List<ReaderDto> getListPopularReaders() {
+        return readerService.getListPopularReaders();
+    }
+
+    @QueryMapping
     public List<ServiceDto> getListServicesOfReader(@Argument UUID id) {
         return readerService.getListServicesByReaderId(id);
     }

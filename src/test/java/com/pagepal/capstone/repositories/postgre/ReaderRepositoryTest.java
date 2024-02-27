@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -106,6 +107,22 @@ class ReaderRepositoryTest {
         // Assert
         assertEquals(0, result.getTotalElements());
         assertEquals(0, result.getTotalPages());
+        assertNotNull(result);
+    }
+
+    /**
+     * Method under test: {@link ReaderRepository#findTop10ByOrderByRatingDesc()}
+     */
+
+    @Test
+    void canFindTop10ByOrderByRatingDesc() {
+        // Arrange
+        readerRepository.saveAll(Arrays.asList(reader1, reader2, reader3));
+        // Act
+        List<Reader> result = readerRepository.findTop10ByOrderByRatingDesc();
+        // Assert
+        assertEquals(3, result.size());
+        assertEquals(5, result.get(0).getRating());
         assertNotNull(result);
     }
 }

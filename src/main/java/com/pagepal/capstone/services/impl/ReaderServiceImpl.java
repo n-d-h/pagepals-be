@@ -121,6 +121,12 @@ public class ReaderServiceImpl implements ReaderService {
     }
 
     @Override
+    public List<ReaderDto> getListPopularReaders() {
+        List<Reader> readers = readerRepository.findTop10ByOrderByRatingDesc();
+        return readers.stream().map(ReaderMapper.INSTANCE::toDto).collect(Collectors.toList());
+    }
+
+    @Override
     public List<ServiceDto> getListServicesByReaderId(UUID id) {
         Reader reader = readerRepository
                 .findById(id)
