@@ -180,13 +180,10 @@ public class AccountServiceImpl implements AccountService {
     @Secured("ADMIN")
     @Override
     public List<AccountDto> getListStaff() {
-        AccountState accountState = accountStateRepository
-                .findByNameAndStatus(ACTIVE, Status.ACTIVE)
-                .orElseThrow(() -> new EntityNotFoundException("Account State not found"));
         Role role = roleRepository
                 .findByName(ROLE_STAFF)
                 .orElseThrow(() -> new EntityNotFoundException("Role not found"));
-        List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
+        List<Account> accounts = accountRepository.findByRole(role);
         return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
