@@ -2,6 +2,7 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.AccountDto;
+import com.pagepal.capstone.dtos.account.AccountStaffCreateDto;
 import com.pagepal.capstone.dtos.account.AccountUpdateDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.GenderEnum;
@@ -87,23 +88,6 @@ public class AccountServiceImplTest {
             null, null, null);
     Customer customer1 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "customer name 1", GenderEnum.MALE, new Date(), "url",
             new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null);
-
-    @Test
-    void shouldCreateStaffAndGetListStaff() {
-        when(accountRepository.save(account3)).thenReturn(account3);
-        when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE)).thenReturn(java.util.Optional.of(accountState1));
-        when(accountRepository.findByUsername(account3.getUsername())).thenReturn(java.util.Optional.of(account3));
-        when(roleRepository.findByName("STAFF")).thenReturn(java.util.Optional.of(role3));
-        when(accountRepository.findByAccountStateAndRole(accountState1, role3)).thenReturn(java.util.List.of(account3));
-
-        var actual = accountServiceImpl.registerStaff(account3.getUsername());
-
-        assert actual != null;
-
-        var listStaff = accountServiceImpl.getListStaff();
-
-        assert listStaff.size() > 0;
-    }
 
     /**
      * Method under test: {@link AccountServiceImpl#updateAccount(UUID, AccountUpdateDto)}

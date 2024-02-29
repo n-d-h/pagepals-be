@@ -148,22 +148,33 @@ public class AccountServiceImpl implements AccountService {
 
     @Secured("ADMIN")
     @Override
-    public AccountStaffResponse registerStaff(String username) {
+    public AccountDto registerStaff(AccountStaffCreateDto account) {
         var role = roleRepository.findByName(ROLE_STAFF).orElseThrow(
                 () -> new EntityNotFoundException("Role not found")
         );
-        var account = new Account();
-        account.setUsername(username);
+        var accountCreate = accountRepository
+                .findByUsername(account.getUsername())
+                .orElse(new Account());
+
+        if(accountCreate.getId() != null){
+            throw new RuntimeException("Username is already existed");
+        }
+
+        accountCreate.setUsername(account.getUsername());
         String password = generatePassword();
-        account.setPassword(passwordEncoder.encode(password));
-        account.setLoginType(LoginTypeEnum.NORMAL);
-        account.setRole(role);
-        var savedAccount = accountRepository.save(account);
+        accountCreate.setPassword(passwordEncoder.encode(password));
+        accountCreate.setLoginType(LoginTypeEnum.NORMAL);
+        accountCreate.setRole(role);
+        accountCreate.setFullName(account.getFullName());
+        accountCreate.setEmail(account.getEmail());
+        accountCreate.setPhoneNumber(account.getPhoneNumber());
+        accountCreate.setCreatedAt(new Date());
+        accountCreate.setAccountState(accountStateRepository.findByNameAndStatus(ACTIVE, Status.ACTIVE).orElseThrow(
+                () -> new EntityNotFoundException("Account State not found")
+        ));
 
-        var accessToken = jwtService.generateAccessToken(savedAccount);
-        var refreshToken = jwtService.generateRefreshToken(savedAccount);
-
-        return new AccountStaffResponse(username, password, accessToken, refreshToken);
+        var savedAccount = accountRepository.save(accountCreate);
+        return AccountMapper.INSTANCE.toDto(savedAccount);
     }
 
     @Secured("ADMIN")
@@ -209,6 +220,21 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("Account not found"));
         return accountRepository.findByUsername(username).map(AccountMapper.INSTANCE::toAccountReadDto)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+    }
+
+    @Secured({"STAFF","ADMIN"})
+    @Override
+    public AccountDto updateAccountState(UUID id, String accountState) {
+
+        Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+
+        AccountState state = accountStateRepository.findByNameAndStatus(accountState, Status.ACTIVE).orElseThrow(
+                () -> new EntityNotFoundException("Account State not found")
+        );
+
+        account.setAccountState(state);
+        account = accountRepository.save(account);
+        return AccountMapper.INSTANCE.toDto(account);
     }
 
     private String generatePassword() {

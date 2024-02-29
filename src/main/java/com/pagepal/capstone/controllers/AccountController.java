@@ -39,8 +39,8 @@ public class AccountController {
     }
 
     @MutationMapping(name = "registerStaff")
-    public AccountStaffResponse registerStaff(@Argument(name = "username") String username) {
-        return accountService.registerStaff(username);
+    public AccountDto registerStaff(@Argument(name = "staff") AccountStaffCreateDto account) {
+        return accountService.registerStaff(account);
     }
 
     @QueryMapping(name = "getAccount")
@@ -69,5 +69,10 @@ public class AccountController {
     @QueryMapping
     public AccountReadDto getAccountByUsername(@Argument(name = "username") String username) {
         return accountService.getAccountByUsername(username);
+    }
+
+    @MutationMapping(name = "updateAccountState")
+    public AccountDto updateAccountState(@Argument(name = "id") UUID id, @Argument(name = "accountState") String accountState) {
+        return accountService.updateAccountState(id, accountState);
     }
 }

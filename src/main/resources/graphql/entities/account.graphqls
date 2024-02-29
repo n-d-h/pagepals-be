@@ -55,6 +55,12 @@ input AccountUpdate {
     fullName: String
     phoneNumber: String
 }
+input AccountStaffCreate {
+    username: String!
+    email: String!
+    fullName: String!
+    phoneNumber: String!
+}
 
 extend type Query {
     getAccount(id: ID!): Account
@@ -66,7 +72,8 @@ extend type Mutation {
     login(account: LoginRequest): LoginResponse
     loginWithGoogle(token: String!): LoginResponse
     register(register: LoginRequest): LoginResponse
-    registerStaff(username: String!): LoginStaffResponse
+    registerStaff(staff: AccountStaffCreate!): Account
     refreshToken: LoginResponse
     updateAccount(id: ID!, account: AccountUpdate): Account
+    updateAccountState(id: ID!, accountState: String): Account
 }

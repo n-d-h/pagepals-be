@@ -11,8 +11,9 @@ public interface AccountService {
     AccountResponse authenticateWithGoogle(String token);
     AccountResponse refresh(String token);
     AccountDto getAccountById(UUID id);
-    AccountStaffResponse registerStaff(String username);
+    AccountDto registerStaff(AccountStaffCreateDto account);
     List<AccountDto> getListStaff();
     AccountDto updateAccount(UUID id, AccountUpdateDto accountUpdateDto);
     AccountReadDto getAccountByUsername(String username);
+    AccountDto updateAccountState(UUID id, String accountState);
 }
