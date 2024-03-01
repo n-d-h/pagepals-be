@@ -96,10 +96,11 @@ public class AccountServiceImplTest {
     void canUpdateAccount() {
         when(accountRepository.save(any())).thenReturn(new Account());
         when(accountRepository.findById(any())).thenReturn(Optional.of(new Account()));
+        when(accountStateRepository.findByNameAndStatus(any(), any())).thenReturn(Optional.of(new AccountState()));
         when(passwordEncoder.encode(any())).thenReturn("secret");
         UUID id = UUID.randomUUID();
         AccountDto actualUpdateAccountResult = accountServiceImpl.updateAccount(id,
-                new AccountUpdateDto("janedoe", "iloveyou", "jane.doe@example.org", "fullName1","0123456789"));
+                new AccountUpdateDto("janedoe", "iloveyou", "jane.doe@example.org", "fullName1","0123456789","ACTIVE"));
         assertNull(actualUpdateAccountResult.getUsername());
         assertNull(actualUpdateAccountResult.getPassword());
         assertNull(actualUpdateAccountResult.getLoginType());
@@ -122,7 +123,7 @@ public class AccountServiceImplTest {
         when(passwordEncoder.encode(any())).thenReturn("secret");
         UUID id = UUID.randomUUID();
         assertThrows(EntityNotFoundException.class, () -> accountServiceImpl.updateAccount(id,
-                new AccountUpdateDto("janedoe", "iloveyou", "jane.doe@example.org","fullName1","0123456789")));
+                new AccountUpdateDto("janedoe", "iloveyou", "jane.doe@example.org","fullName1","0123456789", "ACTIVE")));
         verify(accountRepository).findById(any());
     }
 
