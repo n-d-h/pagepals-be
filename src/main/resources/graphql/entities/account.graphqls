@@ -54,6 +54,7 @@ input AccountUpdate {
     email: String
     fullName: String
     phoneNumber: String
+    accountState: String
 }
 input AccountStaffCreate {
     username: String!

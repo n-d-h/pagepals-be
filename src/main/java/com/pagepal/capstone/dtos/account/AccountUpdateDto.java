@@ -14,4 +14,6 @@ public class AccountUpdateDto {
     private String email;
     private String fullName;
     private String phoneNumber;
+
+    private String accountState;
 }
