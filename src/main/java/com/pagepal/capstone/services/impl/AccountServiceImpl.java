@@ -81,9 +81,9 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository
                 .findByEmail(accountGoogleDto.getEmail())
                 .orElse(null);
-        if(account == null){
+        if (account == null) {
             boolean result = createAccountWithGoogle(accountGoogleDto);
-            if(!result){
+            if (!result) {
                 throw new RuntimeException("Create account with google failed");
             }
             account = accountRepository.findByEmail(accountGoogleDto.getEmail()).orElse(null);
@@ -94,7 +94,7 @@ public class AccountServiceImpl implements AccountService {
         return new AccountResponse(accessToken, refreshToken);
     }
 
-    private boolean createAccountWithGoogle(AccountGoogleDto accountGoogleDto){
+    private boolean createAccountWithGoogle(AccountGoogleDto accountGoogleDto) {
         var role = roleRepository.findByName(ROLE_CUSTOMER).orElseThrow(
                 () -> new RuntimeException("Role not found")
         );
@@ -110,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
         );
         accountCreate.setAccountState(state);
         Account account = accountRepository.save(accountCreate);
-        if(account != null){
+        if (account != null) {
             Customer cusCreate = new Customer();
             cusCreate.setAccount(account);
             cusCreate.setFullName(accountGoogleDto.getName());
@@ -131,7 +131,7 @@ public class AccountServiceImpl implements AccountService {
             if (jwtService.isTokenValid(token, userDetails)) {
                 String accessToken = jwtService.generateAccessToken(userDetails);
                 return new AccountResponse(accessToken, token);
-            }else{
+            } else {
                 throw new RuntimeException("Refresh token is invalid");
             }
 
@@ -156,7 +156,7 @@ public class AccountServiceImpl implements AccountService {
                 .findByUsername(account.getUsername())
                 .orElse(new Account());
 
-        if(accountCreate.getId() != null){
+        if (accountCreate.getId() != null) {
             throw new RuntimeException("Username is already existed");
         }
 
@@ -207,11 +207,20 @@ public class AccountServiceImpl implements AccountService {
         if (accountUpdateDto.getPhoneNumber() != null) {
             account.setPhoneNumber(accountUpdateDto.getPhoneNumber());
         }
+        if (accountUpdateDto.getAccountState() != null && !accountUpdateDto.getAccountState().isEmpty()) {
+            AccountState state = accountStateRepository
+                    .findByNameAndStatus(accountUpdateDto.getAccountState().toUpperCase(), Status.ACTIVE)
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Account State not found")
+                    );
+            account.setAccountState(state);
+        }
+        account.setUpdatedAt(new Date());
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.toDto(account);
     }
 
-    @Secured({"CUSTOMER", "READER","STAFF","ADMIN"})
+    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public AccountReadDto getAccountByUsername(String username) {
         Account account = accountRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("Account not found"));
@@ -219,7 +228,7 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new EntityNotFoundException("Account not found"));
     }
 
-    @Secured({"STAFF","ADMIN"})
+    @Secured({"STAFF", "ADMIN"})
     @Override
     public AccountDto updateAccountState(UUID id, String accountState) {
 
@@ -230,6 +239,7 @@ public class AccountServiceImpl implements AccountService {
         );
 
         account.setAccountState(state);
+        account.setUpdatedAt(new Date());
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.toDto(account);
     }
