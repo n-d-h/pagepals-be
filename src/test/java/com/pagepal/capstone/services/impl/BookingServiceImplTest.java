@@ -3,6 +3,7 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.repositories.postgre.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,8 +44,9 @@ class BookingServiceImplTest {
      */
     @Test
     void canGetListBookingByCustomer() {
-        when(bookingRepository.findAllByCustomerId(any(), any()))
+        when(bookingRepository.findByCustomer(any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
+        when(customerRepository.findById(any())).thenReturn(java.util.Optional.of(new Customer()));
         UUID cusId = UUID.randomUUID();
         QueryDto queryDto = new QueryDto();
         ListBookingDto actualListBookingByCustomer = bookingServiceImpl.getListBookingByCustomer(cusId, queryDto);
@@ -55,7 +57,7 @@ class BookingServiceImplTest {
         assertEquals(0L, pagination.getTotalOfElements().longValue());
         assertEquals("UNSORTED", pagination.getSort());
         assertEquals(0, pagination.getPageSize().intValue());
-        verify(bookingRepository).findAllByCustomerId(any(), any());
+        verify(bookingRepository).findByCustomer(any(), any());
         assertEquals(0, queryDto.getPage().intValue());
         assertEquals(10, queryDto.getPageSize().intValue());
     }
@@ -65,13 +67,14 @@ class BookingServiceImplTest {
      */
     @Test
     void canGetListBookingByCustomer2() {
-        when(bookingRepository.findAllByCustomerId(any(), any())).thenReturn(null);
+        when(bookingRepository.findByCustomer(any(), any())).thenReturn(null);
+        when(customerRepository.findById(any())).thenReturn(java.util.Optional.of(new Customer()));
         UUID cusId = UUID.randomUUID();
         QueryDto queryDto = new QueryDto();
         ListBookingDto actualListBookingByCustomer = bookingServiceImpl.getListBookingByCustomer(cusId, queryDto);
         assertTrue(actualListBookingByCustomer.getList().isEmpty());
         assertNull(actualListBookingByCustomer.getPagination());
-        verify(bookingRepository).findAllByCustomerId(any(), any());
+        verify(bookingRepository).findByCustomer(any(), any());
         assertEquals(0, queryDto.getPage().intValue());
         assertEquals(10, queryDto.getPageSize().intValue());
     }
@@ -82,8 +85,9 @@ class BookingServiceImplTest {
      */
     @Test
     void canGetListBookingByCustomer4() {
-        when(bookingRepository.findAllByCustomerId(any(), any()))
+        when(bookingRepository.findByCustomer(any(), any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
+        when(customerRepository.findById(any())).thenReturn(java.util.Optional.of(new Customer()));
         UUID cusId = UUID.randomUUID();
         ListBookingDto actualListBookingByCustomer = bookingServiceImpl.getListBookingByCustomer(cusId,
                 new QueryDto("createdAt", 10, 3));
@@ -94,7 +98,7 @@ class BookingServiceImplTest {
         assertEquals(0L, pagination.getTotalOfElements().longValue());
         assertEquals("UNSORTED", pagination.getSort());
         assertEquals(0, pagination.getPageSize().intValue());
-        verify(bookingRepository).findAllByCustomerId(any(), any());
+        verify(bookingRepository).findByCustomer(any(), any());
     }
 
 
