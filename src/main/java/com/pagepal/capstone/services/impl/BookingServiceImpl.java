@@ -55,14 +55,18 @@ public class BookingServiceImpl implements BookingService {
 
         Pageable pageable;
         if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
-            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createdAt").descending());
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createAt").descending());
         } else {
-            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createdAt").ascending());
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createAt").ascending());
         }
 
         Page<Booking> bookings;
 
-        bookings = bookingRepository.findAllByCustomerId(cusId, pageable);
+        Customer customer = customerRepository
+                .findById(cusId)
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+
+        bookings = bookingRepository.findByCustomer(customer, pageable);
 
         ListBookingDto listBookingDto = new ListBookingDto();
         if (bookings == null) {
