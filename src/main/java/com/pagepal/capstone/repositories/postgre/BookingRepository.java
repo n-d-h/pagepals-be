@@ -20,7 +20,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             WHERE b.meeting.reader.id = :readerId
             AND b.meeting.reader.status = 'ACTIVE'
             """)
-    List<Booking> findAllByReaderId(UUID readerId);
+    Page<Booking> findAllByReaderId(UUID readerId, Pageable pageable);
 
 
     Page<Booking> findByCustomer(Customer customer, Pageable pageable);

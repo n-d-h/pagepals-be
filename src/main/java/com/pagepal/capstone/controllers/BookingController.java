@@ -21,10 +21,11 @@ public class BookingController {
     private final BookingService bookingService;
 
     @QueryMapping(name = "getListBookingByReader")
-    public List<BookingDto> getListBookingByReader(
-            @Argument(name = "readerId") String readerId
+    public ListBookingDto getListBookingByReader(
+            @Argument(name = "readerId") String readerId,
+            @Argument(name = "filter") QueryDto queryDto
     ) {
-        return bookingService.getListBookingByReader(UUID.fromString(readerId));
+        return bookingService.getListBookingByReader(UUID.fromString(readerId), queryDto);
     }
 
     @QueryMapping

@@ -39,9 +39,42 @@ public class BookingServiceImpl implements BookingService {
 
     @Secured("READER")
     @Override
-    public List<BookingDto> getListBookingByReader(UUID readerId) {
-        var res = bookingRepository.findAllByReaderId(readerId);
-        return res.stream().map(BookingMapper.INSTANCE::toDto).toList();
+    public ListBookingDto getListBookingByReader(UUID readerId, QueryDto queryDto) {
+
+        if (queryDto.getPage() == null || queryDto.getPage() < 0)
+            queryDto.setPage(0);
+        if (queryDto.getPageSize() == null || queryDto.getPageSize() < 0)
+            queryDto.setPageSize(10);
+
+        Pageable pageable;
+        if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createAt").descending());
+        } else {
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createAt").ascending());
+        }
+
+        Page<Booking> bookings;
+
+        bookings = bookingRepository.findAllByReaderId(readerId, pageable);
+
+        ListBookingDto listBookingDto = new ListBookingDto();
+
+        if (bookings == null) {
+            listBookingDto.setList(Collections.emptyList());
+            listBookingDto.setPagination(null);
+            return listBookingDto;
+        } else {
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(bookings.getTotalPages());
+            pagingDto.setTotalOfElements(bookings.getTotalElements());
+            pagingDto.setSort(bookings.getSort().toString());
+            pagingDto.setCurrentPage(bookings.getNumber());
+            pagingDto.setPageSize(bookings.getSize());
+
+            listBookingDto.setList(bookings.map(BookingMapper.INSTANCE::toDto).toList());
+            listBookingDto.setPagination(pagingDto);
+            return listBookingDto;
+        }
     }
 
     @Secured({"CUSTOMER", "READER"})
