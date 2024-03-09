@@ -122,7 +122,15 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Override
     public List<ReaderDto> getListPopularReaders() {
-        List<Reader> readers = readerRepository.findTop10ByOrderByRatingDesc();
+        AccountState accountState = accountStateRepository
+                .findByNameAndStatus("ACTIVE", Status.ACTIVE)
+                .orElseThrow(() -> new EntityNotFoundException("Account State not found"));
+        Role role = roleRepository
+                .findByName("READER")
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+        List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
+
+        List<Reader> readers = readerRepository.findTop10ByAccountInOrderByRatingDesc(accounts);
         return readers.stream().map(ReaderMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
