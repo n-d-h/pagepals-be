@@ -1,6 +1,9 @@
 package com.pagepal.capstone.repositories.postgre;
 
+import com.pagepal.capstone.entities.postgre.Account;
+import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.Status;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +15,24 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ContextConfiguration(classes = {ReaderRepository.class})
+@ContextConfiguration(classes = {ReaderRepository.class, AccountRepository.class, AccountStateRepository.class, RoleRepository.class})
 @EnableAutoConfiguration
 @EntityScan(basePackages = {"com.pagepal.capstone.entities.postgre"})
 @DataJpaTest(properties = {"spring.main.allow-bean-definition-overriding=true"})
 class ReaderRepositoryTest {
     @Autowired
     private ReaderRepository readerRepository;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private AccountStateRepository accountStateRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     //Date
     LocalDate localDate1 = LocalDate.of(2023, 12, 21);
@@ -54,6 +60,7 @@ class ReaderRepositoryTest {
             null, "vid3", null, null, date3,
             null, null, Status.ACTIVE, null, null, null,
             null, null, null, null, null);
+    private List<Reader> result;
 
 
     /**
@@ -111,15 +118,53 @@ class ReaderRepositoryTest {
     }
 
     /**
-     * Method under test: {@link ReaderRepository#findTop10ByOrderByRatingDesc()}
+     * Method under test: {@link ReaderRepository#findTop10ByAccountInOrderByRatingDesc(List)}
      */
 
     @Test
-    void canFindTop10ByOrderByRatingDesc() {
+    void canFindTop10ByAccountInOrderByRatingDesc() {
         // Arrange
+
+        /* Role */
+        Role role1 = new Role();
+        role1.setName("READER");
+        role1.setStatus(Status.ACTIVE);
+
+
+        roleRepository.save(role1);
+
+        /* AccountState */
+        AccountState accountState = new AccountState();
+        accountState.setName("ACTIVE");
+        accountState.setStatus(Status.ACTIVE);
+
+        accountStateRepository.save(accountState);
+
+        /* Account */
+
+        Account account1 = new Account();
+        account1.setRole(role1);
+        account1.setAccountState(accountState);
+
+        Account account2 = new Account();
+        account2.setRole(role1);
+        account2.setAccountState(accountState);
+
+        Account account3 = new Account();
+        account3.setRole(role1);
+        account3.setAccountState(accountState);
+
+        accountRepository.saveAll(Arrays.asList(account1, account2, account3));
+
+        /* Reader */
+
+        reader1.setAccount(account1);
+        reader2.setAccount(account2);
+        reader3.setAccount(account3);
+
         readerRepository.saveAll(Arrays.asList(reader1, reader2, reader3));
         // Act
-        List<Reader> result = readerRepository.findTop10ByOrderByRatingDesc();
+        List<Reader> result = readerRepository.findTop10ByAccountInOrderByRatingDesc(Arrays.asList(account1, account2, account3));
         // Assert
         assertEquals(3, result.size());
         assertEquals(5, result.get(0).getRating());
