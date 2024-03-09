@@ -1,5 +1,6 @@
 package com.pagepal.capstone.repositories.postgre;
 
+import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.Reader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,5 +27,5 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
     Page<Reader> findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase(
             String name, String genre, String language, String countryAccent, Pageable pageable);
 
-    List<Reader> findTop10ByOrderByRatingDesc();
+    List<Reader> findTop10ByAccountInOrderByRatingDesc(List<Account> account);
 }
