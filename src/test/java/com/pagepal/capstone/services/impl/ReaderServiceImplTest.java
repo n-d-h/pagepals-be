@@ -282,9 +282,23 @@ class ReaderServiceImplTest {
      */
     @Test
     void canGetListPopularReaders() {
-        when(readerRepository.findTop10ByOrderByRatingDesc()).thenReturn(new ArrayList<>());
-        assertTrue(readerServiceImpl.getListPopularReaders().isEmpty());
-        verify(readerRepository).findTop10ByOrderByRatingDesc();
+        // Mock setup
+        when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE)).thenReturn(Optional.of(accountState1));
+        when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
+        when(accountRepository.findByAccountStateAndRole(accountState1, role1)).thenReturn(Collections.singletonList(account1));
+        when(readerRepository.findTop10ByAccountInOrderByRatingDesc(Collections.singletonList(account1))).thenReturn(Collections.singletonList(reader1));
+
+        // Call the method under test
+        List<ReaderDto> result = readerServiceImpl.getListPopularReaders();
+
+        // Verify the interaction with the mock
+        verify(readerRepository).findTop10ByAccountInOrderByRatingDesc(Collections.singletonList(account1));
+
+        // Additional assertions if needed
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        // Add more assertions as needed
     }
+
 }
 
