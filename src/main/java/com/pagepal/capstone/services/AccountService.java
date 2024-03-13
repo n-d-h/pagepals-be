@@ -13,6 +13,8 @@ public interface AccountService {
     AccountDto getAccountById(UUID id);
     AccountDto registerStaff(AccountStaffCreateDto account);
     List<AccountDto> getListStaff();
+    List<AccountDto> getListCustomer();
+    List<AccountDto> getListReader();
     AccountDto updateAccount(UUID id, AccountUpdateDto accountUpdateDto);
     AccountReadDto getAccountByUsername(String username);
     AccountDto updateAccountState(UUID id, String accountState);

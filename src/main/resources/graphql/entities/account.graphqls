@@ -67,6 +67,8 @@ extend type Query {
     getAccount(id: ID!): Account
     getAccountByUsername(username: String!): AccountRead
     getListStaff: [Account]
+    getListCustomer: [Account]
+    getListReader: [Account]
 }
 
 extend type Mutation {

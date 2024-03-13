@@ -54,6 +54,16 @@ public class AccountController {
         return accountService.getListStaff();
     }
 
+    @QueryMapping(name = "getListCustomer")
+    public List<AccountDto> getListCustomer() {
+        return accountService.getListCustomer();
+    }
+
+    @QueryMapping(name = "getListReader")
+    public List<AccountDto> getListReader() {
+        return accountService.getListReader();
+    }
+
     @MutationMapping(name = "refreshToken")
     public AccountResponse refresh() {
         String refreshToken = request.getHeader("Authorization");
