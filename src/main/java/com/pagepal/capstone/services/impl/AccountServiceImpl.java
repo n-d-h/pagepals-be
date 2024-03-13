@@ -14,6 +14,7 @@ import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.CustomerRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
 import com.pagepal.capstone.services.AccountService;
+import com.pagepal.capstone.services.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -38,6 +39,8 @@ public class AccountServiceImpl implements AccountService {
     private final AuthenticationManager authenticationManager;
     private final AccountStateRepository accountStateRepository;
     private final UserDetailsService userDetailsService;
+
+    private final EmailService emailService;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
     private final static String ROLE_ADMIN = "ADMIN";
@@ -45,21 +48,75 @@ public class AccountServiceImpl implements AccountService {
     private final static String ACTIVE = "ACTIVE";
     private final CustomerRepository customerRepository;
 
+    public String verifyEmailRegister(RegisterRequest request) {
+
+        checkExits(request.getUsername(), request.getEmail());
+
+        String code = generateVerificationCode();
+        emailService.sendSimpleEmail(
+                request.getEmail(),
+                "Verification Code",
+                "Your verification code is: " + code);
+
+        return code;
+    }
+
+    private static String generateVerificationCode() {
+        Random random = new Random();
+        int codeLength = 6; // Length of the verification code
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < codeLength; i++) {
+            int digit = random.nextInt(10); // Generate a random digit between 0 and 9
+            sb.append(digit);
+        }
+
+        return sb.toString();
+    }
+
     public AccountResponse register(RegisterRequest request) {
+
+        checkExits(request.getUsername(), request.getEmail());
+
         var role = roleRepository.findByName(ROLE_CUSTOMER).orElseThrow(
                 () -> new RuntimeException("Role not found")
         );
+
         var account = new Account();
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setEmail(request.getEmail());
         account.setLoginType(LoginTypeEnum.NORMAL);
         account.setRole(role);
         var savedAccount = accountRepository.save(account);
+        Customer result = null;
+        if(savedAccount != null) {
+            Customer customer = new Customer();
+            customer.setAccount(savedAccount);
+            customer.setFullName(request.getUsername());
+            customer.setCreatedAt(new Date());
+            customer.setStatus(Status.ACTIVE);
+            result = customerRepository.save(customer);
+        }
+
+        if (result == null) {
+            throw new RuntimeException("Create customer failed! Please try again!");
+        }
 
         var accessToken = jwtService.generateAccessToken(savedAccount);
         var refreshToken = jwtService.generateRefreshToken(savedAccount);
 
         return new AccountResponse(accessToken, refreshToken);
+    }
+
+    private void checkExits(String username, String email) {
+        if (accountRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email is already existed");
+        }
+
+        if (accountRepository.findByUsername(username).isPresent()) {
+            throw new RuntimeException("Username is already existed");
+        }
     }
 
     public AccountResponse authenticate(AccountRequest request) {
