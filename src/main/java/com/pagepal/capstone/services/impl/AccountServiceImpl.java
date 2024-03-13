@@ -25,6 +25,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +51,17 @@ public class AccountServiceImpl implements AccountService {
     private final static String ACTIVE = "ACTIVE";
     private final CustomerRepository customerRepository;
 
-    public String verifyEmailRegister(RegisterRequest request) {
+    private static final String SECRET_KEY = "jkHGs0lbxWwbirSG";
+
+    public static String encodeVerificationCode(String verificationCode) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+        byte[] encryptedBytes = cipher.doFinal(verificationCode.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+    public String verifyEmailRegister(RegisterRequest request) throws Exception {
 
         checkExits(request.getUsername(), request.getEmail());
 
@@ -58,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
                 "Verification Code",
                 "Your verification code is: " + code);
 
-        return code;
+        return encodeVerificationCode(code);
     }
 
     private static String generateVerificationCode() {
