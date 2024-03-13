@@ -43,6 +43,12 @@ type LoginStaffResponse {
     refreshToken: String
 }
 
+input RegisterRequest {
+    email: String
+    username: String!
+    password: String!
+}
+
 input LoginRequest {
     username: String!
     password: String!
@@ -74,9 +80,11 @@ extend type Query {
 extend type Mutation {
     login(account: LoginRequest): LoginResponse
     loginWithGoogle(token: String!): LoginResponse
-    register(register: LoginRequest): LoginResponse
+    register(register: RegisterRequest): LoginResponse
+    verifyEmailRegister(register: RegisterRequest): String
     registerStaff(staff: AccountStaffCreate!): Account
     refreshToken: LoginResponse
     updateAccount(id: ID!, account: AccountUpdate): Account
     updateAccountState(id: ID!, accountState: String): Account
+
 }

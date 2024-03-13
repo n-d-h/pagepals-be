@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AccountService {
+    String verifyEmailRegister(RegisterRequest request);
     AccountResponse register(RegisterRequest request);
     AccountResponse authenticate(AccountRequest request);
     AccountResponse authenticateWithGoogle(String token);

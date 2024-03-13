@@ -12,6 +12,7 @@ import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.CustomerRepository;
 import com.pagepal.capstone.repositories.postgre.RoleRepository;
+import com.pagepal.capstone.services.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +64,9 @@ public class AccountServiceImplTest {
 
     @MockBean
     private CustomerRepository customerRepository;
+
+    @MockBean
+    private EmailService emailService;
 
     //Mock data
     //Account State

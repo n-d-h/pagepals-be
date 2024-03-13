@@ -33,6 +33,11 @@ public class AccountController {
         return accountService.authenticateWithGoogle(token);
     }
 
+    @MutationMapping(name = "verifyEmailRegister")
+    public String verifyEmailRegister(@Argument(name = "register") RegisterRequest registerRequest) {
+        return accountService.verifyEmailRegister(registerRequest);
+    }
+
     @MutationMapping(name = "register")
     public AccountResponse register(@Argument(name = "register") RegisterRequest registerRequest) {
         return accountService.register(registerRequest);
