@@ -40,6 +40,8 @@ public class AccountServiceImpl implements AccountService {
     private final UserDetailsService userDetailsService;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
+    private final static String ROLE_ADMIN = "ADMIN";
+    private final static String ROLE_READER = "READER";
     private final static String ACTIVE = "ACTIVE";
     private final CustomerRepository customerRepository;
 
@@ -182,6 +184,26 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountDto> getListStaff() {
         Role role = roleRepository
                 .findByName(ROLE_STAFF)
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+        List<Account> accounts = accountRepository.findByRole(role);
+        return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
+    }
+
+    @Secured({"STAFF", "ADMIN"})
+    @Override
+    public List<AccountDto> getListCustomer() {
+        Role role = roleRepository
+                .findByName(ROLE_CUSTOMER)
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+        List<Account> accounts = accountRepository.findByRole(role);
+        return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
+    }
+
+    @Secured({"STAFF", "ADMIN"})
+    @Override
+    public List<AccountDto> getListReader() {
+        Role role = roleRepository
+                .findByName(ROLE_READER)
                 .orElseThrow(() -> new EntityNotFoundException("Role not found"));
         List<Account> accounts = accountRepository.findByRole(role);
         return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
