@@ -34,7 +34,7 @@ public class AccountController {
     }
 
     @MutationMapping(name = "verifyEmailRegister")
-    public String verifyEmailRegister(@Argument(name = "register") RegisterRequest registerRequest) {
+    public String verifyEmailRegister(@Argument(name = "register") RegisterRequest registerRequest) throws Exception {
         return accountService.verifyEmailRegister(registerRequest);
     }
 
