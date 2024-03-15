@@ -41,7 +41,7 @@ public class Account implements UserDetails {
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "phoneNumber")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "loginType")
