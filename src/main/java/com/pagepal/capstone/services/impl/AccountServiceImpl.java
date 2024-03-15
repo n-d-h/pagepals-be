@@ -95,12 +95,18 @@ public class AccountServiceImpl implements AccountService {
                 () -> new RuntimeException("Role not found")
         );
 
+        var accountState = accountStateRepository.findByNameAndStatus(ACTIVE, Status.ACTIVE).orElseThrow(
+                () -> new RuntimeException("Account State not found")
+        );
+
         var account = new Account();
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setEmail(request.getEmail());
         account.setLoginType(LoginTypeEnum.NORMAL);
         account.setRole(role);
+        account.setCreatedAt(new Date());
+        account.setAccountState(accountState);
         var savedAccount = accountRepository.save(account);
         Customer result = null;
         if(savedAccount != null) {
