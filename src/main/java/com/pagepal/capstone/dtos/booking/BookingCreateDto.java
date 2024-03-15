@@ -2,10 +2,10 @@ package com.pagepal.capstone.dtos.booking;
 
 import com.pagepal.capstone.dtos.bookingdetail.BookingDetailCreateDto;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 

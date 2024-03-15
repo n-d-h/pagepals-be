@@ -1,8 +1,9 @@
 package com.pagepal.capstone.dtos.book;
 
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 

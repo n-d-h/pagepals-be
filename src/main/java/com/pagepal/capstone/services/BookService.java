@@ -4,7 +4,6 @@ import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.book.WriteBookDto;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface BookService {

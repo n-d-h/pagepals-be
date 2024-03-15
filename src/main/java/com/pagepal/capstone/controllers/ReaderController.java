@@ -1,6 +1,5 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;

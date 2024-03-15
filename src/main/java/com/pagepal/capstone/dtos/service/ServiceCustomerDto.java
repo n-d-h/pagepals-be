@@ -4,8 +4,9 @@ import com.pagepal.capstone.dtos.chapter.ChapterDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.UUID;

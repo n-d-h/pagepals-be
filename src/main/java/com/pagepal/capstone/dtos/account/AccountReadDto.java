@@ -3,8 +3,9 @@ package com.pagepal.capstone.dtos.account;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;

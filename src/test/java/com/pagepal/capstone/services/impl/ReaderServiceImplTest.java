@@ -1,6 +1,9 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.reader.*;
+import com.pagepal.capstone.dtos.reader.ListReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
+import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
