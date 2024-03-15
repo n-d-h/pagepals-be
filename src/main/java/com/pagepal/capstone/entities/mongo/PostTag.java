@@ -3,8 +3,9 @@ package com.pagepal.capstone.entities.mongo;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 

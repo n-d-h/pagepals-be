@@ -5,8 +5,9 @@ import com.pagepal.capstone.entities.postgre.Booking;
 import com.pagepal.capstone.entities.postgre.Follow;
 import com.pagepal.capstone.enums.GenderEnum;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;

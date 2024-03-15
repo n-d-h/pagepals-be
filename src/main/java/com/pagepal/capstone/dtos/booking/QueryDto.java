@@ -1,8 +1,9 @@
 package com.pagepal.capstone.dtos.booking;
 
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Setter
 @Getter

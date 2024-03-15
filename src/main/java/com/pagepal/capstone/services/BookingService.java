@@ -5,7 +5,6 @@ import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.booking.QueryDto;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface BookingService {

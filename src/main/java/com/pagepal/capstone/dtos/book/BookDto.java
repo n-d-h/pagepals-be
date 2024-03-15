@@ -3,8 +3,9 @@ package com.pagepal.capstone.dtos.book;
 import com.pagepal.capstone.dtos.category.CategoryDto;
 import com.pagepal.capstone.entities.postgre.Chapter;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;

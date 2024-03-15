@@ -1,6 +1,5 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.dtos.chapter.ChapterDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;

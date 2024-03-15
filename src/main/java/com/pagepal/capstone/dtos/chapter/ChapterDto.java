@@ -3,8 +3,9 @@ package com.pagepal.capstone.dtos.chapter;
 import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 

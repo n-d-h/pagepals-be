@@ -4,8 +4,9 @@ import com.pagepal.capstone.dtos.promotion.PromotionDto;
 import com.pagepal.capstone.enums.CampaignEnum;
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;

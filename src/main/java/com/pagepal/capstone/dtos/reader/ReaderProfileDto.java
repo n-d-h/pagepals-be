@@ -2,8 +2,9 @@ package com.pagepal.capstone.dtos.reader;
 
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor

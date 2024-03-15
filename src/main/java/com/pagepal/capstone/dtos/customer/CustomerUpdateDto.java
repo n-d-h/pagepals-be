@@ -2,8 +2,9 @@ package com.pagepal.capstone.dtos.customer;
 
 import com.pagepal.capstone.enums.GenderEnum;
 import lombok.AllArgsConstructor;
-import lombok.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Setter
 @Getter
