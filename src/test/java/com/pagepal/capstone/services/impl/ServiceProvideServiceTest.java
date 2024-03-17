@@ -58,10 +58,9 @@ public class ServiceProvideServiceTest {
     );
 
     Book book = new Book(UUID.randomUUID(), "name", "long title", "author", "publisher",
-            20L, "US", "overview", "imageUrl", "edition",
-            new Date(), Status.ACTIVE, category, null
+            "20L", 200, "overview", "imageUrl", "edition",
+            Status.ACTIVE,null, null, null
     );
-
     Chapter chapter = new Chapter(UUID.randomUUID(), 10, 20L,
             Status.ACTIVE, book,null
     );

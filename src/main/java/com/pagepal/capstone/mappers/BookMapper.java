@@ -1,15 +1,10 @@
 package com.pagepal.capstone.mappers;
 
 import com.pagepal.capstone.dtos.book.BookDto;
-import com.pagepal.capstone.dtos.book.WriteBookDto;
 import com.pagepal.capstone.entities.postgre.Book;
-import com.pagepal.capstone.entities.postgre.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-
-import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface BookMapper {
@@ -17,19 +12,8 @@ public interface BookMapper {
 
     BookDto toDto(Book book);
 
-    @Mapping(target = "category", source = "category.id", qualifiedByName = "toEntityWithCategory")
     @Mapping(target = "chapters", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", ignore = true)
     Book toEntity(BookDto bookDto);
 
-    @Mapping(target = "category", source = "categoryId", qualifiedByName = "toEntityWithCategory")
-    @Mapping(target = "createdAt", ignore = true)
-    Book createBook(WriteBookDto bookDTO);
-    @Named("toEntityWithCategory")
-    default Category toEntityWithCategory(UUID id) {
-        Category category = new Category();
-        category.setId(id);
-        return category;
-    }
+
 }
