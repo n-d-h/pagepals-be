@@ -1,13 +1,13 @@
 package com.pagepal.capstone.dtos.book;
 
-import com.pagepal.capstone.dtos.category.CategoryDto;
-import com.pagepal.capstone.entities.postgre.Chapter;
+import com.pagepal.capstone.entities.postgre.Author;
+import com.pagepal.capstone.entities.postgre.Category;
+import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,16 +17,28 @@ import java.util.UUID;
 @AllArgsConstructor
 public class BookDto {
     private UUID id;
+
+    private String externalId;
+
     private String title;
-    private String longTitle;
-    private String author;
+
     private String publisher;
-    private Long pages;
+
+    private String publishedDate;
+
+    private String description;
+
+    private Integer pageCount;
+
+    private String smallThumbnailUrl;
+
+    private String thumbnailUrl;
+
     private String language;
-    private String overview;
-    private String imageUrl;
-    private String edition;
-    private Date createdAt;
-    private CategoryDto category;
-    private List<Chapter> chapters;
+
+    private Status status;
+
+    private List<Category> categories;
+
+    private List<Author> authors;
 }

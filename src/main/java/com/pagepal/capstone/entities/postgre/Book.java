@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,44 +31,54 @@ public class Book {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(name = "external_id")
+    private String externalId;
+
     @Column(name = "title")
     private String title;
-
-    @Column(name = "long_title")
-    private String longTitle;
-
-    @Column(name = "author")
-    private String author;
 
     @Column(name = "publisher")
     private String publisher;
 
-    @Column(name = "pages")
-    private Long pages;
+    @Column(name = "published_date")
+    private String publishedDate;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "page_count")
+    private Integer pageCount;
+
+    @Column(name = "small_thumbnail_url")
+    private String smallThumbnailUrl;
+
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
 
     @Column(name = "language")
     private String language;
-
-    @Column(name = "overview")
-    private String overview;
-
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @Column(name = "edition")
-    private String edition;
-
-    @Column(name = "created_at")
-    private Date createdAt;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private Category category;
+    @JoinTable(
+            name = "book_category",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @JoinTable(
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<Author> authors;
 
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @JsonBackReference

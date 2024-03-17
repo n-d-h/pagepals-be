@@ -18,9 +18,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "CATEGORY")
+@Table(name = "AUTHOR")
 @Where(clause = "status = 'ACTIVE'")
-public class Category {
+public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
@@ -33,9 +33,6 @@ public class Category {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
-    private String description;
-
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -43,4 +40,5 @@ public class Category {
     @ManyToMany
     @JsonBackReference
     private List<Book> books;
+
 }

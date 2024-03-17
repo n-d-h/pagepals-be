@@ -1,27 +1,21 @@
 type Query {
-    getListBook(query: searchBook): ListBook
-    bookById(id: ID!): Book
-}
-
-extend type Mutation {
-    createBook(book: BookInput): Book
+    searchBook(query: String, page: Int, pageSize: Int): BookSearchResult
 }
 
 type Book {
     id: ID!
     title: String
-    longTitle: String
-    author: String
+    externalId: String
+    authors: [String]
     publisher: String
-    pages: Int
+    publishedDate: String
+    description: String
+    pageCount: Int
+    categories: [String]
+    imageLinks: ImageLinks
     language: String
-    overview: String
-    imageUrl: String
-    edition: String
-    status: Status
-    createdAt: String
-    category: Category
-    chapters: [Chapter]
+    bookCategories: [Category]
+    bookAuthors: [Author]
 }
 
 type ListBook {
@@ -38,19 +32,31 @@ input searchBook {
     pageSize: Int
 }
 
-input BookInput {
+type BookSearchResult{
+    totalItems: Int
+    items: [GoogleBook]
+}
+
+type GoogleBook{
+    id: ID!
+    volumeInfo: VolumeInfo
+}
+
+type VolumeInfo{
     title: String
-    longTitle: String
-    author: String
+    authors: [String]
     publisher: String
-    pages: Int
+    publishedDate: String
+    description: String
+    pageCount: Int
+    categories: [String]
+    imageLinks: ImageLinks
     language: String
-    overview: String
-    imageUrl: String
-    edition: String
-    status: Status
-    createdAt: String
-    CategoryId: ID!
+}
+
+type ImageLinks{
+    smallThumbnail: String
+    thumbnail: String
 }
 
 
