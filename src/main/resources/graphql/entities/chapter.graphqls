@@ -1,9 +1,0 @@
-type Chapter {
-    id: ID!
-    chapterNumber: Int
-    pages: Int
-    status: Status
-    book: Book
-    services: [Service]
-
-}

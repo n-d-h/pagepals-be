@@ -76,9 +76,10 @@ public class Booking {
     @JsonManagedReference
     private WorkingTime workingTime;
 
-    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<BookingDetail> bookingDetails;
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    @JsonManagedReference
+    private Service service;
 
     @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
     @JsonBackReference

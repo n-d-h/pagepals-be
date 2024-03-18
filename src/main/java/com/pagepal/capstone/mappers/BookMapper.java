@@ -12,7 +12,7 @@ public interface BookMapper {
 
     BookDto toDto(Book book);
 
-    @Mapping(target = "chapters", ignore = true)
+    @Mapping(target = "services", ignore = true)
     Book toEntity(BookDto bookDto);
 
 

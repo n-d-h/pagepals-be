@@ -1,12 +1,10 @@
 package com.pagepal.capstone.dtos.booking;
 
-import com.pagepal.capstone.dtos.bookingdetail.BookingDetailCreateDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -19,5 +17,5 @@ public class BookingCreateDto {
     private Double totalPrice;
     private String promotionCode;
     private String description;
-    private List<BookingDetailCreateDto> bookingDetails;
+    private UUID serviceId;
 }

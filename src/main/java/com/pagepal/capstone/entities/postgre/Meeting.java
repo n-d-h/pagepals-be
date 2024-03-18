@@ -51,4 +51,8 @@ public class Meeting {
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Record> records;
 }

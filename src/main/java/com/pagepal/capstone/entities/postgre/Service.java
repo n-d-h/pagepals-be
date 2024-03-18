@@ -1,6 +1,5 @@
 package com.pagepal.capstone.entities.postgre;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -12,7 +11,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -57,17 +55,18 @@ public class Service {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "service", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<BookingDetail> bookingDetails;
-
     @ManyToOne
     @JoinColumn(name = "reader_id")
     @JsonManagedReference
     private Reader reader;
 
     @ManyToOne
-    @JoinColumn(name = "chapter_id")
+    @JoinColumn(name = "book_id")
     @JsonManagedReference
-    private Chapter chapter;
+    private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "service_type_id")
+    @JsonManagedReference
+    private ServiceType serviceType;
 }

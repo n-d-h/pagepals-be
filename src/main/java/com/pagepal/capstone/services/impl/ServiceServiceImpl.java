@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Transactional
@@ -27,17 +26,6 @@ public class ServiceServiceImpl implements ServiceService {
         return ServiceMapper.INSTANCE.toDto(serviceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Service not found")));
     }
 
-    @Secured("READER")
-    @Override
-    public ServiceDto createService(WriteServiceDto writeServiceDto) {
-        var service = ServiceMapper.INSTANCE.writeService(writeServiceDto);
-        service.setCreatedAt(new Date());
-        service.setStatus(Status.ACTIVE);
-        service.setTotalOfReview(0);
-        service.setTotalOfBooking(0);
-        service.setRating(0);
-        return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
-    }
 
     @Secured("READER")
     @Override

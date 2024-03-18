@@ -1,7 +1,7 @@
 package com.pagepal.capstone.dtos.reader;
 
 import com.pagepal.capstone.dtos.book.BookDto;
-import com.pagepal.capstone.dtos.chapter.ChapterDto;
+import com.pagepal.capstone.dtos.service.ServiceDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +16,5 @@ import java.util.List;
 @AllArgsConstructor
 public class ReaderBookDto {
     private BookDto book;
-    private List<ChapterDto> chapters = new ArrayList<>();
+    private List<ServiceDto> services = new ArrayList<>();
 }

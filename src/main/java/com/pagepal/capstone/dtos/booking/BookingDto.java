@@ -29,6 +29,6 @@ public class BookingDto {
     private Meeting meeting;
     private BookingState state;
     private WorkingTime workingTime;
-    private List<BookingDetail> bookingDetails;
+    private Service service;
     private List<Transaction> transactions;
 }

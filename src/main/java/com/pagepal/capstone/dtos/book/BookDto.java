@@ -41,4 +41,5 @@ public class BookDto {
     private List<Category> categories;
 
     private List<Author> authors;
+
 }

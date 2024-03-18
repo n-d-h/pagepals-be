@@ -1,7 +1,8 @@
 package com.pagepal.capstone.dtos.service;
 
-import com.pagepal.capstone.dtos.chapter.ChapterDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.entities.postgre.Book;
+import com.pagepal.capstone.entities.postgre.ServiceType;
 import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +27,6 @@ public class ServiceCustomerDto {
     private Integer rating;
     private Status status;
     private ReaderDto reader;
-    private ChapterDto chapter;
+    private Book book;
+    private ServiceType serviceType;
 }
