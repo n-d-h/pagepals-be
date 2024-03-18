@@ -53,7 +53,7 @@ public class Record {
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "booking_id")
+    @JoinColumn(name = "meeting_id")
     @JsonManagedReference
-    private Booking booking;
+    private Meeting meeting;
 }

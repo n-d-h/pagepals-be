@@ -42,11 +42,6 @@ public class ServiceController {
         return serviceService.serviceById(id);
     }
 
-    @MutationMapping(name = "createService")
-    public ServiceDto createService(@Argument(name = "service") WriteServiceDto writeServiceDto) {
-        return serviceService.createService(writeServiceDto);
-    }
-
     @MutationMapping(name = "updateService")
     public ServiceDto updateService(
             @Argument(name = "id") UUID id,

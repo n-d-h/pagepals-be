@@ -1,6 +1,5 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.chapter.ChapterDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.service.ServiceDto;
@@ -10,7 +9,10 @@ import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.mappers.*;
+import com.pagepal.capstone.mappers.BookMapper;
+import com.pagepal.capstone.mappers.ReaderMapper;
+import com.pagepal.capstone.mappers.ServiceMapper;
+import com.pagepal.capstone.mappers.WorkingTimeMapper;
 import com.pagepal.capstone.repositories.postgre.AccountRepository;
 import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
@@ -205,20 +207,20 @@ public class ReaderServiceImpl implements ReaderService {
         if (services != null) {
             for (var service : services) {
                 boolean isAdded = false;
-                Book b = service.getChapter().getBook();
+                Book b = service.getBook();
                 if(books.isEmpty()){
-                    books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ChapterMapper.INSTANCE.toDto(service.getChapter()))) );
+                    books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ServiceMapper.INSTANCE.toDto(service))));
                 }else{
                     for(var book: books){
                         if(book.getBook().getId().equals(b.getId())){
-                            List<ChapterDto> chapters = new ArrayList<>(book.getChapters());
-                            chapters.add(ChapterMapper.INSTANCE.toDto(service.getChapter()));
-                            book.setChapters(chapters);
+                            List<ServiceDto> serviceDtos = new ArrayList<>(book.getServices());
+                            serviceDtos.add(ServiceMapper.INSTANCE.toDto(service));
+                            book.setServices(serviceDtos);
                             isAdded = true;
                         }
                     }
                     if(!isAdded){
-                        books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ChapterMapper.INSTANCE.toDto(service.getChapter()))) );
+                        books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ServiceMapper.INSTANCE.toDto(service))) );
                     }
                 }
             }

@@ -62,7 +62,7 @@ type listReader {
 
 type ReaderBook{
     book: Book
-    chapters: [Chapter]
+    services: [Service]
 }
 
 input ReaderUpdate{

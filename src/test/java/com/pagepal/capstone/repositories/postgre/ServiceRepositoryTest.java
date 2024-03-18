@@ -17,7 +17,6 @@ import java.util.UUID;
 @ContextConfiguration(classes = {
         ServiceRepository.class,
         ReaderRepository.class,
-        ChapterRepository.class,
 })
 @EnableAutoConfiguration
 @EntityScan(basePackages = {"com.pagepal.capstone.entities.postgre"})
@@ -60,10 +59,6 @@ public class ServiceRepositoryTest {
              Status.ACTIVE,null, null, null
     );
 
-    Chapter chapter = new Chapter(UUID.randomUUID(), 10, 20L,
-            Status.ACTIVE, book, null
-    );
-
     @Test
     void testCanFindServiceDescription() {
         String description = "description";
@@ -78,7 +73,6 @@ public class ServiceRepositoryTest {
         service.setRating(4);
         service.setStatus(Status.ACTIVE);
         service.setReader(reader);
-        service.setChapter(chapter);
 
         var serviceEntity = serviceRepository.save(service);
 

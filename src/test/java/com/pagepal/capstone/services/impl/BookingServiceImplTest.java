@@ -31,8 +31,6 @@ class BookingServiceImplTest {
     @MockBean
     private BookingStateRepository bookingStateRepository;
     @MockBean
-    private BookingDetailRepository bookingDetailRepository;
-    @MockBean
     private WorkingTimeRepository workingTimeRepository;
     @MockBean
     private MeetingRepository meetingRepository;

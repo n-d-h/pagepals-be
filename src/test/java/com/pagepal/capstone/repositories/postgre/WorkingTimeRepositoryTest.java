@@ -17,7 +17,6 @@ import java.util.UUID;
 @ContextConfiguration(classes = {
         WorkingTimeRepository.class,
         ReaderRepository.class,
-        ChapterRepository.class,
 })
 @EnableAutoConfiguration
 @EntityScan(basePackages = {"com.pagepal.capstone.entities.postgre"})

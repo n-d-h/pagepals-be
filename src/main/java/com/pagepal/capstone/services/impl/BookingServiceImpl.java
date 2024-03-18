@@ -5,9 +5,11 @@ import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.entities.postgre.Booking;
+import com.pagepal.capstone.entities.postgre.Customer;
+import com.pagepal.capstone.entities.postgre.Meeting;
+import com.pagepal.capstone.entities.postgre.WorkingTime;
 import com.pagepal.capstone.enums.MeetingEnum;
-import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.postgre.*;
 import com.pagepal.capstone.services.BookingService;
@@ -22,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,7 +34,6 @@ public class BookingServiceImpl implements BookingService {
     private final CustomerRepository customerRepository;
     private final ServiceRepository serviceRepository;
     private final BookingStateRepository bookingStateRepository;
-    private final BookingDetailRepository bookingDetailRepository;
     private final WorkingTimeRepository workingTimeRepository;
     private final MeetingRepository meetingRepository;
 
@@ -129,11 +129,14 @@ public class BookingServiceImpl implements BookingService {
         WorkingTime wt = workingTimeRepository
                 .findById(bookingDto.getWorkingTimeId())
                 .orElseThrow(() -> new EntityNotFoundException("Working time not found"));
+        var service = serviceRepository.findById(bookingDto.getServiceId())
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
         Meeting meeting = meetingRepository
                 .findByMeetingCodeAndState(bookingDto.getMeetingCode(), MeetingEnum.AVAILABLE)
                 .orElse(null);
         if (meeting == null) {
-            meeting = new Meeting(null, bookingDto.getMeetingCode(), new Date(), 2, MeetingEnum.AVAILABLE, wt.getReader(), null);
+            meeting = new Meeting(null, bookingDto.getMeetingCode(), new Date(), 2,
+                    MeetingEnum.AVAILABLE, wt.getReader(),null, null);
             meeting = meetingRepository.save(meeting);
         }
         Booking booking = new Booking();
@@ -146,6 +149,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setMeeting(meeting);
         booking.setWorkingTime(wt);
         booking.setStartAt(wt.getStartTime());
+        booking.setService(service);
         booking.setState(
                 bookingStateRepository
                         .findByName("PENDING")
@@ -154,30 +158,6 @@ public class BookingServiceImpl implements BookingService {
 
         Booking res = bookingRepository.save(booking);
 
-        if (res != null) {
-            UUID bookingId = res.getId();
-            List<BookingDetail> listDetail = bookingDto.getBookingDetails().stream().map(bookingDetailCreateDto -> {
-                BookingDetail dt = new BookingDetail();
-                Chapter chapter = new Chapter();
-                chapter.setId(bookingDetailCreateDto.getChapterId());
-                var service = serviceRepository
-                        .findByChapterAndReader(chapter, wt.getReader())
-                        .orElseThrow(() -> new EntityNotFoundException("Service not found"));
-                dt.setBooking(res);
-                dt.setPrice(service.getPrice());
-                dt.setDescription(bookingDetailCreateDto.getDescription());
-                dt.setService(service);
-                dt.setStatus(Status.ACTIVE);
-                return dt;
-            }).toList();
-
-            listDetail = bookingDetailRepository.saveAll(listDetail);
-            if (listDetail != null) {
-                res.setBookingDetails(listDetail);
-                return BookingMapper.INSTANCE.toDto(res);
-            }
-        }
-
-        return null;
+        return  BookingMapper.INSTANCE.toDto(res);
     }
 }

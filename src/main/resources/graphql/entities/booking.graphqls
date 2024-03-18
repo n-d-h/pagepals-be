@@ -12,7 +12,7 @@ type Booking {
     meeting: Meeting
     state: BookingState
     workingTime: WorkingTime
-    bookingDetails: [BookingDetail]
+    service: Service
     transactions: [Transaction]
 }
 
@@ -33,7 +33,7 @@ input BookingCreate {
     totalPrice: Float
     promotionCode: String
     description: String
-    bookingDetails: [BookingDetailCreate]
+    serviceId: ID
 }
 
 extend type Query {

@@ -115,6 +115,7 @@ public class BookingRepositoryTest {
             3,
             MeetingEnum.AVAILABLE,
             reader1,
+            null,
             null
     );
 

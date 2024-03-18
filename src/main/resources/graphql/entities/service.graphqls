@@ -8,9 +8,9 @@ type Service {
     totalOfBooking: Int
     rating: Int
     status: Status
-    bookingDetails: [BookingDetail]
     reader: Reader
-    chapter: Chapter
+    book: Book
+    serviceType: ServiceType
 }
 
 input QueryInput {
@@ -36,7 +36,6 @@ input serviceInput {
 
 
 extend type Mutation {
-    createService(service: serviceInput): Service
     updateService(
         id: ID!
         service: serviceInput

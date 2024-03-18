@@ -61,15 +61,16 @@ public class ServiceProvideServiceTest {
             "20L", 200, "overview", "imageUrl", "edition",
             Status.ACTIVE,null, null, null
     );
-    Chapter chapter = new Chapter(UUID.randomUUID(), 10, 20L,
-            Status.ACTIVE, book,null
+
+    ServiceType serviceType = new ServiceType(UUID.randomUUID(), "name", "description",
+            Status.ACTIVE, null
     );
 
     Service service = new Service(UUID.randomUUID(), 255.0,
             new Date(), "description", 10.0,
             1, 1, 1,
-            Status.ACTIVE, null,
-            reader, chapter
+            Status.ACTIVE,
+            reader, book, serviceType
     );
 
 //    @Test

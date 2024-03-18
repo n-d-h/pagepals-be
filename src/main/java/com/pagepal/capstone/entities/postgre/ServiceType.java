@@ -1,6 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
+import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -17,9 +18,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "BOOKING_DETAIL")
+@Table(name = "SERVICE_TYPE")
 @Where(clause = "status = 'ACTIVE'")
-public class BookingDetail {
+public class ServiceType {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
@@ -29,28 +30,17 @@ public class BookingDetail {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "price")
-    private Double price;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "rating")
-    private Integer rating;
-
-    @Column(name = "review")
-    private String review;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
-
-    @ManyToOne
-    @JoinColumn(name = "service_id")
-    @JsonManagedReference
-    private Service service;
+    @OneToMany(mappedBy = "serviceType", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Service> services;
 }

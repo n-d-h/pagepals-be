@@ -1,0 +1,5 @@
+type ServiceType{
+    id: ID!
+    name: String!
+    description: String!
+}

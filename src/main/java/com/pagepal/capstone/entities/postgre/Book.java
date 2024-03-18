@@ -82,5 +82,5 @@ public class Book {
 
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Chapter> chapters;
+    private List<Service> services;
 }
