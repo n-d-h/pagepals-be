@@ -12,7 +12,8 @@ type Book {
     description: String
     pageCount: Int
     categories: [String]
-    imageLinks: ImageLinks
+    thumbnailUrl: String
+    smallThumbnailUrl: String
     language: String
     bookCategories: [Category]
     bookAuthors: [Author]
