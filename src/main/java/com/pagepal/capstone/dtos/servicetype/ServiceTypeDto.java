@@ -1,6 +1,5 @@
 package com.pagepal.capstone.dtos.servicetype;
 
-import com.pagepal.capstone.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,5 @@ public class ServiceTypeDto {
     private String name;
 
     private String description;
-
-    private Status status;
 
 }

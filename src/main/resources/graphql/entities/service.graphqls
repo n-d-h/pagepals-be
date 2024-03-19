@@ -26,20 +26,24 @@ extend type Query {
     getServicesByBook(bookId: ID!, filter: QueryInput): [Service]
 }
 
-input serviceInput {
+input ServiceInput {
     price: Float
     description: String
     duration: Float
     readerId: ID!
-    chapterId: ID!
+    serviceTypeId: ID!
+    book: GoogleBookInput
 }
 
 
 extend type Mutation {
     updateService(
         id: ID!
-        service: serviceInput
+        service: ServiceInput
     ): Service
     deleteService(id: ID!): String
+    createService(service: ServiceInput): Service
 }
+
+
 

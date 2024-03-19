@@ -1,6 +1,6 @@
 package com.pagepal.capstone.repositories.postgre;
 
-import com.pagepal.capstone.entities.postgre.Book;
+import com.pagepal.capstone.entities.postgre.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,8 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, UUID> {
+public interface AuthorRepository extends JpaRepository<Author, UUID> {
 
-    Optional<Book> findByExternalId(String externalId);
-
+    Optional<Author> findByName(String name);
 }

@@ -22,12 +22,17 @@ public class GoogleBookServiceImpl implements GoogleBookService {
         this.webClient = webClientBuilder.baseUrl("https://www.googleapis.com/books/v1/").build();
     }
 
-    public BookSearchResult searchBook(String query, Integer page, Integer pageSize) {
+    public BookSearchResult searchBook(String title, String author, Integer page, Integer pageSize) {
+        String query = title;
+        if(author != null && !author.isEmpty()) {
+            query += "+inauthor:" + author;
+        }
         try {
+            String finalQuery = query;
             return webClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("volumes")
-                            .queryParam("q", query)
+                            .queryParam("q", finalQuery)
                             .queryParam("key", apiKey)
                             .queryParam("startIndex", (page - 1) * pageSize)
                             .queryParam("maxResults", pageSize)

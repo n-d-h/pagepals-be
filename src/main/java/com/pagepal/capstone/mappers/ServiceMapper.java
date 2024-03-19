@@ -2,8 +2,10 @@ package com.pagepal.capstone.mappers;
 
 import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
+import com.pagepal.capstone.dtos.servicetype.ServiceTypeDto;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Service;
+import com.pagepal.capstone.entities.postgre.ServiceType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -29,4 +31,6 @@ public interface ServiceMapper {
     ServiceCustomerDto toCustomerDto(Service book);
 
     Service toEntity(ServiceDto serviceDto);
+
+    ServiceTypeDto toServiceTypeDto(ServiceType serviceType);
 }

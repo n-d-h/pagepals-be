@@ -1,5 +1,6 @@
 package com.pagepal.capstone.dtos.service;
 
+import com.pagepal.capstone.dtos.googlebook.GoogleBook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,6 @@ public class WriteServiceDto {
     private String description;
     private Double duration;
     private UUID readerId;
-    private UUID chapterId;
+    private UUID serviceTypeId;
+    private GoogleBook book;
 }

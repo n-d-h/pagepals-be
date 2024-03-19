@@ -3,3 +3,7 @@ type ServiceType{
     name: String!
     description: String!
 }
+
+extend type Query{
+    getListServiceType: [ServiceType]
+}
