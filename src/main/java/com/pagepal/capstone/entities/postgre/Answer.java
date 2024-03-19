@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Setter
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "QUESTION")
 @Where(clause = "status = 'ACTIVE'")
-public class Answer {
+public class Answer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(

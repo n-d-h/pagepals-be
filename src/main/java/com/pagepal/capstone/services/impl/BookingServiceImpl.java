@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -36,6 +37,8 @@ public class BookingServiceImpl implements BookingService {
     private final BookingStateRepository bookingStateRepository;
     private final WorkingTimeRepository workingTimeRepository;
     private final MeetingRepository meetingRepository;
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     @Secured("READER")
     @Override
@@ -131,11 +134,12 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new EntityNotFoundException("Working time not found"));
         var service = serviceRepository.findById(bookingDto.getServiceId())
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
+        String roomId = generateRoomId(6);
         Meeting meeting = meetingRepository
-                .findByMeetingCodeAndState(bookingDto.getMeetingCode(), MeetingEnum.AVAILABLE)
+                .findByMeetingCodeAndState(roomId, MeetingEnum.AVAILABLE)
                 .orElse(null);
         if (meeting == null) {
-            meeting = new Meeting(null, bookingDto.getMeetingCode(), new Date(), 2,
+            meeting = new Meeting(null, roomId, new Date(), 2,
                     MeetingEnum.AVAILABLE, wt.getReader(),null, null);
             meeting = meetingRepository.save(meeting);
         }
@@ -159,5 +163,17 @@ public class BookingServiceImpl implements BookingService {
         Booking res = bookingRepository.save(booking);
 
         return  BookingMapper.INSTANCE.toDto(res);
+    }
+
+    private static String generateRoomId(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(index);
+            sb.append(randomChar);
+        }
+        return sb.toString();
     }
 }

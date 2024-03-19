@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "BOOKING")
-public class Booking {
+public class Booking implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(

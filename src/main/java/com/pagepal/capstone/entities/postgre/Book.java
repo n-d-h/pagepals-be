@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "BOOK")
 @Where(clause = "status = 'ACTIVE'")
-public class Book {
+public class Book implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(

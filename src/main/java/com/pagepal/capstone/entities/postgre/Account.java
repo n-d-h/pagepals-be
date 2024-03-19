@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Setter
@@ -22,7 +23,7 @@ import java.util.*;
 @Entity
 @Table(name = "ACCOUNT")
 //@Where(clause = "status = 'ACTIVE'")
-public class Account implements UserDetails {
+public class Account implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(

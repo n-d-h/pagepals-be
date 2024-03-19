@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "WORKING_TIME")
-public class WorkingTime {
+public class WorkingTime implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
