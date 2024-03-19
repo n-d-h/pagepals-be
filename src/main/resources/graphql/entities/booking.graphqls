@@ -29,7 +29,6 @@ input filterBooking{
 
 input BookingCreate {
     workingTimeId: ID
-    meetingCode: String
     totalPrice: Float
     promotionCode: String
     description: String

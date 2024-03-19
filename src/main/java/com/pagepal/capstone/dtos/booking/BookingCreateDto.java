@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BookingCreateDto {
     private UUID workingTimeId;
-    private String meetingCode;
     private Double totalPrice;
     private String promotionCode;
     private String description;

@@ -1,5 +1,7 @@
 package com.pagepal.capstone.controllers;
 
+import com.pagepal.capstone.dtos.book.BookQueryDto;
+import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.googlebook.BookSearchResult;
 import com.pagepal.capstone.services.BookService;
 import com.pagepal.capstone.services.GoogleBookService;
@@ -15,11 +17,22 @@ public class BookController {
     private final GoogleBookService googleBookService;
 
     @QueryMapping(name = "searchBook")
-    public BookSearchResult searchBook(@Argument(name ="title") String title,
-                                        @Argument(name = "author") String author,
-                                      @Argument(name = "page") Integer page,
-                                      @Argument(name = "pageSize") Integer pageSize) {
+    public BookSearchResult searchBook(@Argument(name = "title") String title,
+                                       @Argument(name = "author") String author,
+                                       @Argument(name = "page") Integer page,
+                                       @Argument(name = "pageSize") Integer pageSize) {
         return googleBookService.searchBook(title, author, page, pageSize);
+    }
+
+    @QueryMapping
+    public ListBookDto getListBookForCustomer(@Argument(name = "searchBook") BookQueryDto bookQueryDto) {
+        return bookService.getListBookForCustomer(
+                bookQueryDto.getSearch(),
+                bookQueryDto.getSort(),
+                bookQueryDto.getAuthor(),
+                bookQueryDto.getCategoryId(),
+                bookQueryDto.getPage(),
+                bookQueryDto.getPageSize());
     }
 
 }
