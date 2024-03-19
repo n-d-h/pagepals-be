@@ -2,7 +2,9 @@ package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.service.WriteServiceDto;
+import com.pagepal.capstone.dtos.servicetype.ServiceTypeDto;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ServiceService {
@@ -11,4 +13,8 @@ public interface ServiceService {
     ServiceDto updateService(UUID id, WriteServiceDto writeServiceDto);
 
     String deleteService(UUID id);
+
+    List<ServiceTypeDto> getListServiceType();
+
+    ServiceDto createService(WriteServiceDto writeServiceDto);
 }

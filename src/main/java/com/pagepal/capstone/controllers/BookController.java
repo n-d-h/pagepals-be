@@ -15,10 +15,11 @@ public class BookController {
     private final GoogleBookService googleBookService;
 
     @QueryMapping(name = "searchBook")
-    public BookSearchResult searchBook(@Argument(name ="query") String query,
+    public BookSearchResult searchBook(@Argument(name ="title") String title,
+                                        @Argument(name = "author") String author,
                                       @Argument(name = "page") Integer page,
                                       @Argument(name = "pageSize") Integer pageSize) {
-        return googleBookService.searchBook(query, page, pageSize);
+        return googleBookService.searchBook(title, author, page, pageSize);
     }
 
 }

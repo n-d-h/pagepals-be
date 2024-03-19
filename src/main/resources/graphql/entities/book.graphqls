@@ -1,5 +1,5 @@
 type Query {
-    searchBook(query: String, page: Int, pageSize: Int): BookSearchResult
+    searchBook(title: String, author: String, page: Int, pageSize: Int): BookSearchResult
 }
 
 type Book {
@@ -56,6 +56,29 @@ type VolumeInfo{
 }
 
 type ImageLinks{
+    smallThumbnail: String
+    thumbnail: String
+}
+
+
+input GoogleBookInput{
+    id: ID!
+    volumeInfo: VolumeInfoInput
+}
+
+input VolumeInfoInput{
+    title: String
+    authors: [String]
+    publisher: String
+    publishedDate: String
+    description: String
+    pageCount: Int
+    categories: [String]
+    imageLinks: ImageLinksInput
+    language: String
+}
+
+input ImageLinksInput{
     smallThumbnail: String
     thumbnail: String
 }

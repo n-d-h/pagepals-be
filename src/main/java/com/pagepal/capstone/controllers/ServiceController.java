@@ -4,6 +4,7 @@ import com.pagepal.capstone.dtos.service.QueryDto;
 import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.service.WriteServiceDto;
+import com.pagepal.capstone.dtos.servicetype.ServiceTypeDto;
 import com.pagepal.capstone.services.ServiceProvideService;
 import com.pagepal.capstone.services.ServiceService;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +53,15 @@ public class ServiceController {
     @MutationMapping(name = "deleteService")
     public String deleteService(@Argument(name = "id") UUID id) {
         return serviceService.deleteService(id);
+    }
+
+    @QueryMapping
+    public List<ServiceTypeDto> getListServiceType() {
+        return serviceService.getListServiceType();
+    }
+
+    @MutationMapping(name = "createService")
+    public ServiceDto createService(@Argument(name = "service") WriteServiceDto writeServiceDto) {
+        return serviceService.createService(writeServiceDto);
     }
 }
