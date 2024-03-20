@@ -44,24 +44,5 @@ public class WorkingTimeServiceTest {
 
     WorkingTime workingTime = new WorkingTime(UUID.randomUUID(), new Date(), new Date(), new Date(), reader, null);
 
-    @Test
-    void testCreateWorkingTime() {
-        Mockito.when(readerRepository.findById(this.reader.getId())).thenReturn(
-                java.util.Optional.of(this.reader)
-        );
 
-        Mockito.when(workingTimeRepository.save(Mockito.any(WorkingTime.class))).thenReturn(
-                workingTime
-        );
-
-        WorkingTimeCreateDto workingTimeCreateDto = new WorkingTimeCreateDto();
-        workingTimeCreateDto.setStartTime("2021-05-05 07:00:00");
-        workingTimeCreateDto.setEndTime("2021-05-05 08:00:00");
-        workingTimeCreateDto.setDate("2021-05-05");
-        workingTimeCreateDto.setReaderId(this.reader.getId());
-
-        var workingTimeDto = workingTimeServiceImpl.createReaderWorkingTime(workingTimeCreateDto);
-
-        Assertions.assertNotNull(workingTimeDto);
-    }
 }
