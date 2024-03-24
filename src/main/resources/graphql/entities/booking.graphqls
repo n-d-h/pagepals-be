@@ -22,6 +22,7 @@ type ListBooking{
 }
 
 input filterBooking{
+    bookingState: String
     sort: String
     page: Int
     pageSize: Int

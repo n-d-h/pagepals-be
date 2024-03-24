@@ -16,11 +16,29 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     @Query("""
             SELECT b
             FROM Booking b
-            WHERE b.meeting.reader.id = :readerId
-            AND b.meeting.reader.status = 'ACTIVE'
+            WHERE b.workingTime.reader.id = :readerId
+            AND b.workingTime.reader.status = 'ACTIVE'
             """)
     Page<Booking> findAllByReaderId(UUID readerId, Pageable pageable);
 
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.workingTime.reader.id = :readerId
+            AND b.workingTime.reader.status = 'ACTIVE'
+            AND b.state.name = :state
+            """)
+    Page<Booking> findAllByReaderIdAndBookingState(UUID readerId, String state, Pageable pageable);
+
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.customer.id = :cusId
+            AND b.customer.status = 'ACTIVE'
+            AND b.state.name = :state
+            """)
+    Page<Booking> findAllByCustomerIdAndBookingState(UUID cusId, String state, Pageable pageable);
 
     Page<Booking> findByCustomer(Customer customer, Pageable pageable);
+
 }

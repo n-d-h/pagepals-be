@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QueryDto {
+    private String bookingState;
     private String sort;
     private Integer page;
     private Integer pageSize;

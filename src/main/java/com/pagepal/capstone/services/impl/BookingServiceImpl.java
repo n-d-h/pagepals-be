@@ -5,10 +5,7 @@ import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.entities.postgre.Booking;
-import com.pagepal.capstone.entities.postgre.Customer;
-import com.pagepal.capstone.entities.postgre.Meeting;
-import com.pagepal.capstone.entities.postgre.WorkingTime;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.MeetingEnum;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.postgre.*;
@@ -56,9 +53,17 @@ public class BookingServiceImpl implements BookingService {
             pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createAt").ascending());
         }
 
+
         Page<Booking> bookings;
 
-        bookings = bookingRepository.findAllByReaderId(readerId, pageable);
+        if (queryDto.getBookingState() == null || queryDto.getBookingState().isEmpty())
+            bookings = bookingRepository.findAllByReaderId(readerId, pageable);
+        else {
+            bookings = bookingRepository
+                    .findAllByReaderIdAndBookingState(readerId,
+                            queryDto.getBookingState().toUpperCase(),
+                            pageable);
+        }
 
         ListBookingDto listBookingDto = new ListBookingDto();
 
@@ -102,7 +107,14 @@ public class BookingServiceImpl implements BookingService {
                 .findById(cusId)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
 
-        bookings = bookingRepository.findByCustomer(customer, pageable);
+        if (queryDto.getBookingState() == null || queryDto.getBookingState().isEmpty())
+            bookings = bookingRepository.findByCustomer(customer, pageable);
+        else {
+            bookings = bookingRepository
+                    .findAllByCustomerIdAndBookingState(cusId,
+                            queryDto.getBookingState().toUpperCase(),
+                            pageable);
+        }
 
         ListBookingDto listBookingDto = new ListBookingDto();
         if (bookings == null) {
@@ -140,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElse(null);
         if (meeting == null) {
             meeting = new Meeting(null, roomId, new Date(), 2,
-                    MeetingEnum.AVAILABLE, wt.getReader(),null, null);
+                    MeetingEnum.AVAILABLE, wt.getReader(), null, null);
             meeting = meetingRepository.save(meeting);
         }
         Booking booking = new Booking();
@@ -162,7 +174,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking res = bookingRepository.save(booking);
 
-        return  BookingMapper.INSTANCE.toDto(res);
+        return BookingMapper.INSTANCE.toDto(res);
     }
 
     private static String generateRoomId(int length) {
