@@ -1,6 +1,7 @@
 type Query {
     searchBook(title: String, author: String, page: Int, pageSize: Int): BookSearchResult
     getListBookForCustomer(searchBook: SearchBook): ListBook
+    getBookById(id: ID!): Book
 }
 
 type Book {

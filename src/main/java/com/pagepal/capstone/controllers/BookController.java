@@ -1,5 +1,6 @@
 package com.pagepal.capstone.controllers;
 
+import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.dtos.book.BookQueryDto;
 import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.googlebook.BookSearchResult;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,6 +36,11 @@ public class BookController {
                 bookQueryDto.getCategoryId(),
                 bookQueryDto.getPage(),
                 bookQueryDto.getPageSize());
+    }
+
+    @QueryMapping
+    public BookDto getBookById(@Argument(name = "id") UUID id) {
+        return bookService.getBookById(id);
     }
 
 }
