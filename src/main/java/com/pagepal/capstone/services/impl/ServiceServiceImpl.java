@@ -2,6 +2,7 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.googlebook.GoogleBook;
 import com.pagepal.capstone.dtos.service.ServiceDto;
+import com.pagepal.capstone.dtos.service.ServiceUpdate;
 import com.pagepal.capstone.dtos.service.WriteServiceDto;
 import com.pagepal.capstone.dtos.servicetype.ServiceTypeDto;
 import com.pagepal.capstone.entities.postgre.*;
@@ -44,13 +45,12 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Secured("READER")
     @Override
-    public ServiceDto updateService(UUID id, WriteServiceDto writeServiceDto) {
+    public ServiceDto updateService(UUID id, ServiceUpdate writeServiceDto) {
         var service = serviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
         service.setId(id);
         service.setPrice(writeServiceDto.getPrice());
         service.setDescription(writeServiceDto.getDescription());
-        service.setDuration(writeServiceDto.getDuration());
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
     }
 

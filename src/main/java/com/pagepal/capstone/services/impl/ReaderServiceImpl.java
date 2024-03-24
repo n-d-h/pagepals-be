@@ -192,7 +192,7 @@ public class ReaderServiceImpl implements ReaderService {
         if (workingTimes != null) {
             Date now = new Date();
             result = workingTimes.stream()
-                    .filter(p -> p.getDate().after(now))
+                    .filter(p -> p.getDate().after(now) && p.getBooking() == null)
                     .map(WorkingTimeMapper.INSTANCE::toDto).toList();
             list = divideWorkingTimes(result);
         }
