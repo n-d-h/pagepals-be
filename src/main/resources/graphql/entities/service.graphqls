@@ -20,10 +20,15 @@ input QueryInput {
     pageSize: Int
 }
 
+type ListService{
+    services: [Service]
+    paging: Paging
+}
+
 extend type Query {
     serviceById(id: ID!): Service
-    getServicesByReader(readerId: ID!, filter: QueryInput): [Service]
-    getServicesByBook(bookId: ID!, filter: QueryInput): [Service]
+    getServicesByReader(readerId: ID!, filter: QueryInput): ListService
+    getServicesByBook(bookId: ID!, filter: QueryInput): ListService
 }
 
 input ServiceInput {
@@ -35,11 +40,16 @@ input ServiceInput {
     book: GoogleBookInput
 }
 
+input ServiceUpdate {
+    price: Float
+    description: String
+    serviceTypeId: ID
+}
 
 extend type Mutation {
     updateService(
         id: ID!
-        service: ServiceInput
+        service: ServiceUpdate
     ): Service
     deleteService(id: ID!): String
     createService(service: ServiceInput): Service

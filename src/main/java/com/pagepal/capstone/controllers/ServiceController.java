@@ -1,9 +1,6 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.service.QueryDto;
-import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
-import com.pagepal.capstone.dtos.service.ServiceDto;
-import com.pagepal.capstone.dtos.service.WriteServiceDto;
+import com.pagepal.capstone.dtos.service.*;
 import com.pagepal.capstone.dtos.servicetype.ServiceTypeDto;
 import com.pagepal.capstone.services.ServiceProvideService;
 import com.pagepal.capstone.services.ServiceService;
@@ -23,7 +20,7 @@ public class ServiceController {
     private final ServiceService serviceService;
 
     @QueryMapping(name = "getServicesByReader")
-    public List<ServiceCustomerDto> getServicesByReaderId(
+    public ListService getServicesByReaderId(
             @Argument(name = "readerId") UUID readerId,
             @Argument(name = "filter") QueryDto queryDto
     ) {
@@ -31,7 +28,7 @@ public class ServiceController {
     }
 
     @QueryMapping(name = "getServicesByBook")
-    public List<ServiceCustomerDto> getServicesByBookId(
+    public ListService getServicesByBookId(
             @Argument(name = "bookId") UUID bookId,
             @Argument(name = "filter") QueryDto queryDto
     ) {
@@ -46,7 +43,7 @@ public class ServiceController {
     @MutationMapping(name = "updateService")
     public ServiceDto updateService(
             @Argument(name = "id") UUID id,
-            @Argument(name = "service") WriteServiceDto writeServiceDto) {
+            @Argument(name = "service") ServiceUpdate writeServiceDto) {
         return serviceService.updateService(id, writeServiceDto);
     }
 

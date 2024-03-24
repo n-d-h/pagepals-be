@@ -44,7 +44,7 @@ public class Book implements Serializable {
     @Column(name = "published_date")
     private String publishedDate;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @Column(name = "page_count")

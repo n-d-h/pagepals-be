@@ -1,7 +1,11 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.book.ListBookDto;
+import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.service.ListService;
 import com.pagepal.capstone.dtos.service.QueryDto;
 import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
+import com.pagepal.capstone.mappers.BookMapper;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.postgre.BookRepository;
 import com.pagepal.capstone.repositories.postgre.ReaderRepository;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,9 +32,8 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
     private final ReaderRepository readerRepository;
     private final BookRepository bookRepository;
 
-    @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
     @Override
-    public List<ServiceCustomerDto> getAllServicesByReaderId(UUID readerId, QueryDto queryDto) {
+    public ListService getAllServicesByReaderId(UUID readerId, QueryDto queryDto) {
         if(queryDto.getPage() == null || queryDto.getPage() < 0)
             queryDto.setPage(0);
 
@@ -53,12 +57,28 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
         );
 
         var services = serviceRepository.findAllByReaderAndBookTitleContainsIgnoreCase(reader, queryDto.getSearch(), pageable);
-        return services.stream().map(ServiceMapper.INSTANCE::toCustomerDto).collect(Collectors.toList());
+
+        ListService list = new ListService();
+        if (services == null) {
+            list.setServices(Collections.emptyList());
+            list.setPaging(null);
+            return list;
+        } else {
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(services.getTotalPages());
+            pagingDto.setTotalOfElements(services.getTotalElements());
+            pagingDto.setSort(services.getSort().toString());
+            pagingDto.setCurrentPage(services.getNumber());
+            pagingDto.setPageSize(services.getSize());
+
+            list.setServices(services.map(ServiceMapper.INSTANCE::toDto).toList());
+            list.setPaging(pagingDto);
+            return list;
+        }
     }
 
-    @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
     @Override
-    public List<ServiceCustomerDto> getAllServicesByBookId(UUID bookId, QueryDto queryDto) {
+    public ListService getAllServicesByBookId(UUID bookId, QueryDto queryDto) {
         if(queryDto.getPage() == null || queryDto.getPage() < 0)
             queryDto.setPage(0);
 
@@ -82,6 +102,22 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
         );
 
         var services = serviceRepository.findAllByBookId(book, queryDto.getSearch(), pageable);
-        return services.stream().map(ServiceMapper.INSTANCE::toCustomerDto).collect(Collectors.toList());
+        ListService list = new ListService();
+        if (services == null) {
+            list.setServices(Collections.emptyList());
+            list.setPaging(null);
+            return list;
+        } else {
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(services.getTotalPages());
+            pagingDto.setTotalOfElements(services.getTotalElements());
+            pagingDto.setSort(services.getSort().toString());
+            pagingDto.setCurrentPage(services.getNumber());
+            pagingDto.setPageSize(services.getSize());
+
+            list.setServices(services.map(ServiceMapper.INSTANCE::toDto).toList());
+            list.setPaging(pagingDto);
+            return list;
+        }
     }
 }
