@@ -1,5 +1,6 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Author;
@@ -80,5 +81,12 @@ public class BookServiceImpl implements BookService {
             listBookDto.setPagination(pagingDto);
             return listBookDto;
         }
+    }
+
+    @Override
+    public BookDto getBookById(UUID id) {
+        return bookRepository.findById(id)
+                .map(BookMapper.INSTANCE::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
     }
 }
