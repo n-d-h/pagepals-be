@@ -88,7 +88,7 @@ class BookingServiceImplTest {
         when(customerRepository.findById(any())).thenReturn(java.util.Optional.of(new Customer()));
         UUID cusId = UUID.randomUUID();
         ListBookingDto actualListBookingByCustomer = bookingServiceImpl.getListBookingByCustomer(cusId,
-                new QueryDto("createdAt", 10, 3));
+                new QueryDto("","createdAt", 10, 3));
         assertTrue(actualListBookingByCustomer.getList().isEmpty());
         PagingDto pagination = actualListBookingByCustomer.getPagination();
         assertEquals(0, pagination.getCurrentPage().intValue());
