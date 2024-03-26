@@ -13,10 +13,10 @@
 //import com.pagepal.capstone.enums.LoginTypeEnum;
 //import com.pagepal.capstone.enums.Status;
 //import com.pagepal.capstone.mappers.ReaderMapper;
-//import com.pagepal.capstone.repositories.postgre.AccountRepository;
-//import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
-//import com.pagepal.capstone.repositories.postgre.ReaderRepository;
-//import com.pagepal.capstone.repositories.postgre.RoleRepository;
+//import com.pagepal.capstone.repositories.AccountRepository;
+//import com.pagepal.capstone.repositories.AccountStateRepository;
+//import com.pagepal.capstone.repositories.ReaderRepository;
+//import com.pagepal.capstone.repositories.RoleRepository;
 //import com.pagepal.capstone.services.ReaderService;
 //
 //import java.util.*;

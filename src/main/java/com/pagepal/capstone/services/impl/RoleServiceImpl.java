@@ -5,7 +5,7 @@ import com.pagepal.capstone.dtos.role.RoleDto;
 import com.pagepal.capstone.dtos.role.UpdateRoleDto;
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.mappers.RoleMapper;
-import com.pagepal.capstone.repositories.postgre.RoleRepository;
+import com.pagepal.capstone.repositories.RoleRepository;
 import com.pagepal.capstone.services.RoleService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

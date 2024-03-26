@@ -1,28 +1,22 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.book.ListBookDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.service.ListService;
 import com.pagepal.capstone.dtos.service.QueryDto;
-import com.pagepal.capstone.dtos.service.ServiceCustomerDto;
-import com.pagepal.capstone.mappers.BookMapper;
 import com.pagepal.capstone.mappers.ServiceMapper;
-import com.pagepal.capstone.repositories.postgre.BookRepository;
-import com.pagepal.capstone.repositories.postgre.ReaderRepository;
-import com.pagepal.capstone.repositories.postgre.ServiceRepository;
+import com.pagepal.capstone.repositories.BookRepository;
+import com.pagepal.capstone.repositories.ReaderRepository;
+import com.pagepal.capstone.repositories.ServiceRepository;
 import com.pagepal.capstone.services.ServiceProvideService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

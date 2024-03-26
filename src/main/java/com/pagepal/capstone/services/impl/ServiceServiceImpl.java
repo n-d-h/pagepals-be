@@ -8,7 +8,7 @@ import com.pagepal.capstone.dtos.servicetype.ServiceTypeDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ServiceMapper;
-import com.pagepal.capstone.repositories.postgre.*;
+import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.ServiceService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

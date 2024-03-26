@@ -7,10 +7,10 @@ import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.GenderEnum;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.postgre.AccountRepository;
-import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
-import com.pagepal.capstone.repositories.postgre.CustomerRepository;
-import com.pagepal.capstone.repositories.postgre.RoleRepository;
+import com.pagepal.capstone.repositories.AccountRepository;
+import com.pagepal.capstone.repositories.AccountStateRepository;
+import com.pagepal.capstone.repositories.CustomerRepository;
+import com.pagepal.capstone.repositories.RoleRepository;
 import com.pagepal.capstone.services.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -25,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,7 +91,7 @@ public class AccountServiceImplTest {
             new Date(), new Date(), new Date(), null, account1, null, null, null, null,
             null, null, null);
     Customer customer1 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "customer name 1", GenderEnum.MALE, new Date(), "url",
-            new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null);
+            new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null, new ArrayList<>());
 
     /**
      * Method under test: {@link AccountServiceImpl#updateAccount(UUID, AccountUpdateDto)}

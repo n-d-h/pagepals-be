@@ -1,6 +1,6 @@
 package com.pagepal.capstone.configurations.appconfig;
 
-import com.pagepal.capstone.repositories.postgre.AccountRepository;
+import com.pagepal.capstone.repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

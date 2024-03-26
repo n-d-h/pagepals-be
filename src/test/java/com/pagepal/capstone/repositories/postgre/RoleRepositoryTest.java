@@ -2,6 +2,7 @@ package com.pagepal.capstone.repositories.postgre;
 
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.Status;
+import com.pagepal.capstone.repositories.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

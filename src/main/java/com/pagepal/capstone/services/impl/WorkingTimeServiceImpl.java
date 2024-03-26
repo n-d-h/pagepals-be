@@ -1,13 +1,11 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeCreateDto;
-import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListCreateDto;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.WorkingTime;
-import com.pagepal.capstone.mappers.WorkingTimeMapper;
-import com.pagepal.capstone.repositories.postgre.ReaderRepository;
-import com.pagepal.capstone.repositories.postgre.WorkingTimeRepository;
+import com.pagepal.capstone.repositories.ReaderRepository;
+import com.pagepal.capstone.repositories.WorkingTimeRepository;
 import com.pagepal.capstone.services.WorkingTimeService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
