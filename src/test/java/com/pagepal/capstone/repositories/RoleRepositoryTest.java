@@ -1,4 +1,4 @@
-package com.pagepal.capstone.repositories.postgre;
+package com.pagepal.capstone.repositories;
 
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.Status;
