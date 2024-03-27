@@ -4,7 +4,7 @@ import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Customer;
-import com.pagepal.capstone.repositories.postgre.*;
+import com.pagepal.capstone.repositories.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

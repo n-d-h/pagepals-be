@@ -2,7 +2,7 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.accountstate.AccountStateRead;
 import com.pagepal.capstone.mappers.AccountStateMapper;
-import com.pagepal.capstone.repositories.postgre.AccountStateRepository;
+import com.pagepal.capstone.repositories.AccountStateRepository;
 import com.pagepal.capstone.services.AccountStateService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

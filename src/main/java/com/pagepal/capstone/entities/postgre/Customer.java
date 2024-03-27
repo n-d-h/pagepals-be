@@ -75,4 +75,8 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<PostComment> postComments;
 }

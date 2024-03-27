@@ -8,7 +8,7 @@ import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.MeetingEnum;
 import com.pagepal.capstone.mappers.BookingMapper;
-import com.pagepal.capstone.repositories.postgre.*;
+import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookingService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

@@ -1,15 +1,11 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.workingtime.WorkingTimeCreateDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.postgre.ReaderRepository;
-import com.pagepal.capstone.repositories.postgre.WorkingTimeRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.pagepal.capstone.repositories.ReaderRepository;
+import com.pagepal.capstone.repositories.WorkingTimeRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;

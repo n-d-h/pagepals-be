@@ -8,7 +8,7 @@ import com.pagepal.capstone.entities.postgre.Campaign;
 import com.pagepal.capstone.enums.CampaignEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.CampaignMapper;
-import com.pagepal.capstone.repositories.postgre.CampaignRepository;
+import com.pagepal.capstone.repositories.CampaignRepository;
 import com.pagepal.capstone.services.CampaignService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

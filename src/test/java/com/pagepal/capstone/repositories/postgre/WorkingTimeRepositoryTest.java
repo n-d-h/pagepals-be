@@ -3,6 +3,8 @@ package com.pagepal.capstone.repositories.postgre;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
+import com.pagepal.capstone.repositories.ReaderRepository;
+import com.pagepal.capstone.repositories.WorkingTimeRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

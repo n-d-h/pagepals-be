@@ -3,6 +3,7 @@ package com.pagepal.capstone.repositories.postgre;
 import com.pagepal.capstone.entities.postgre.Campaign;
 import com.pagepal.capstone.enums.CampaignEnum;
 import com.pagepal.capstone.enums.Status;
+import com.pagepal.capstone.repositories.CampaignRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
