@@ -123,7 +123,7 @@ public class BookingRepositoryTest {
 
     Booking booking1 = new Booking(
             UUID.randomUUID(),
-            100.0,
+            100,
             "ABCD",
             "description",
             "",
@@ -139,9 +139,6 @@ public class BookingRepositoryTest {
             null,
             null
     );
-
-
-
 
     @Test
     void testGetListBookingByReader() {

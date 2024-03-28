@@ -1,6 +1,6 @@
 type Booking {
     id: ID!
-    totalPrice: Float
+    totalPrice: Int
     promotionCode: String
     description: String
     review: String
@@ -30,7 +30,7 @@ input filterBooking{
 
 input BookingCreate {
     workingTimeId: ID
-    totalPrice: Float
+    totalPrice: Int
     promotionCode: String
     description: String
     serviceId: ID
@@ -43,4 +43,6 @@ extend type Query {
 
 extend type Mutation {
     createBooking(customerId: ID, booking: BookingCreate): Booking
+    cancelBooking(bookingId: ID): Booking
+    completeBooking(bookingId: ID): Booking
 }

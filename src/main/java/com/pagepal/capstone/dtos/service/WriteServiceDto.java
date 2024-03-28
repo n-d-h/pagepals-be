@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WriteServiceDto {
-    private Double price;
+    private Integer price;
     private String description;
     private Double duration;
     private UUID readerId;

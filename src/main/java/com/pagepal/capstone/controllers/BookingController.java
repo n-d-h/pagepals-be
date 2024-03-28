@@ -36,4 +36,14 @@ public class BookingController {
     public BookingDto createBooking(@Argument(name = "customerId") String id, @Argument(name = "booking") BookingCreateDto bookingDto) {
         return bookingService.createBooking(UUID.fromString(id), bookingDto);
     }
+
+    @MutationMapping
+    public BookingDto cancelBooking(@Argument(name = "bookingId") UUID id) {
+        return bookingService.cancelBooking(id);
+    }
+
+    @MutationMapping
+    public BookingDto completeBooking(@Argument(name = "bookingId") UUID id) {
+        return bookingService.completeBooking(id);
+    }
 }

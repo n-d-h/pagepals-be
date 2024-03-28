@@ -82,9 +82,9 @@ public class Account implements UserDetails, Serializable {
     @JsonManagedReference
     private Role role;
 
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "account")
     @JsonBackReference
-    private List<Wallet> wallets;
+    private Wallet wallet;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

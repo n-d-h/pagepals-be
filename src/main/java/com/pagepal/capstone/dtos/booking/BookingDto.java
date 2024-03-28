@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BookingDto {
     private UUID id;
-    private Double totalPrice;
+    private Integer totalPrice;
     private String promotionCode;
     private String description;
     private String review;

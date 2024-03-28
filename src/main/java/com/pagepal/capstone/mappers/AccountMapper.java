@@ -17,7 +17,6 @@ public interface AccountMapper {
     @Mapping(target = "customer", ignore = true)
     @Mapping(target = "reader", ignore = true)
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "wallets", ignore = true)
     Account toEntity(AccountDto accountDto);
 
     AccountReadDto toAccountReadDto(Account account);

@@ -3,6 +3,7 @@ package com.pagepal.capstone.dtos.account;
 import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.Wallet;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,4 +31,5 @@ public class AccountDto {
     private Customer customer;
     private Reader reader;
     private AccountState accountState;
+    private Wallet wallet;
 }

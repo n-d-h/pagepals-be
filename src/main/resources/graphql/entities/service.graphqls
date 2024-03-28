@@ -1,6 +1,6 @@
 type Service {
     id: ID!
-    price: Float
+    price: Int
     createdAt: String
     description: String
     duration: Float

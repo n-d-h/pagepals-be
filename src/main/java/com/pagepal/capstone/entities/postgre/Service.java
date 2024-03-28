@@ -32,7 +32,7 @@ public class Service implements Serializable {
     private UUID id;
 
     @Column(name = "price")
-    private Double price;
+    private Integer price;
 
     @Column(name = "created_at")
     private Date createdAt;

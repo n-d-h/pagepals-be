@@ -13,6 +13,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ServiceUpdate {
     private String description;
-    private Double price;
+    private Integer price;
     private UUID serviceTypeId;
 }

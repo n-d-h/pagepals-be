@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ServiceCustomerDto {
     private UUID id;
-    private Double price;
+    private Integer price;
     private Date createdAt;
     private String description;
     private Double duration;

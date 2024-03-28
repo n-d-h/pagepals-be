@@ -35,6 +35,9 @@ public class Wallet implements Serializable {
     @Column(name = "token_amount")
     private Integer tokenAmount;
 
+    @Column(name = "cash")
+    private Float cash;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt = new Date();
@@ -51,15 +54,10 @@ public class Wallet implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "account_id")
     @JsonManagedReference
     private Account account;
-
-    @ManyToOne
-    @JoinColumn(name = "wallet_type_id")
-    @JsonManagedReference
-    private WalletType walletType;
 
     @ManyToMany
     @JoinTable(

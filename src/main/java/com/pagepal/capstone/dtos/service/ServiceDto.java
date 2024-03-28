@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ServiceDto {
     private UUID id;
-    private Float price;
+    private Integer price;
     private Date createdAt;
     private String description;
     private Float duration;

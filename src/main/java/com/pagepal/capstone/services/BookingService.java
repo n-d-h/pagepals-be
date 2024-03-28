@@ -13,4 +13,9 @@ public interface BookingService {
     ListBookingDto getListBookingByCustomer(UUID cusId, QueryDto queryDto);
 
     BookingDto createBooking(UUID cusId, BookingCreateDto bookingDto);
+
+    BookingDto cancelBooking(UUID id);
+
+    BookingDto completeBooking(UUID id);
+
 }
