@@ -1,6 +1,9 @@
 package com.pagepal.capstone.enums;
 
 public enum RequestStateEnum {
-    AVAILABLE,
-    UNAVAILABLE,
+    ANSWER_CHECKING,
+    INTERVIEW_PENDING,
+    APPROVING,
+    PASS,
+    REJECT,
 }

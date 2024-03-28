@@ -33,6 +33,8 @@ public class ReaderDto {
 
     private String audioDescriptionUrl;
 
+    private String avatarUrl;
+
     private String description;
 
     private String totalOfReviews;

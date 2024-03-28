@@ -2,29 +2,25 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;
+import com.pagepal.capstone.dtos.request.RequestInputDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.TimeSlot;
 import com.pagepal.capstone.dtos.workingtime.WorkingDate;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.enums.RequestStateEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.BookMapper;
 import com.pagepal.capstone.mappers.ReaderMapper;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.mappers.WorkingTimeMapper;
-import com.pagepal.capstone.repositories.AccountRepository;
-import com.pagepal.capstone.repositories.AccountStateRepository;
-import com.pagepal.capstone.repositories.ReaderRepository;
-import com.pagepal.capstone.repositories.RoleRepository;
+import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.ReaderService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +36,18 @@ public class ReaderServiceImpl implements ReaderService {
     private final AccountRepository accountRepository;
     private final AccountStateRepository accountStateRepository;
     private final RoleRepository roleRepository;
+    private final RequestRepository requestRepository;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+
+    private final String readerActive = "READER_ACTIVE";
+
+    private final String readerPending = "READER_PENDING";
 
     @Override
     public List<ReaderDto> getReadersActive() {
         AccountState accountState = accountStateRepository
-                .findByNameAndStatus("ACTIVE", Status.ACTIVE)
+                .findByNameAndStatus(readerActive, Status.ACTIVE)
                 .orElseThrow(() -> new EntityNotFoundException("Account State not found"));
         Role role = roleRepository
                 .findByName("READER")
@@ -102,12 +105,16 @@ public class ReaderServiceImpl implements ReaderService {
                         pageable
                 );
 
+
         ListReaderDto listReaderDto = new ListReaderDto();
         if (page == null) {
             listReaderDto.setList(Collections.emptyList());
             listReaderDto.setPagination(null);
             return listReaderDto;
         } else {
+            page = new PageImpl<>(page.stream()
+                    .filter(reader -> reader.getAccount().getAccountState().getName().equals(readerActive))
+                    .collect(Collectors.toList()), pageable, page.getTotalElements());
             PagingDto pagingDto = new PagingDto();
             pagingDto.setTotalOfPages(page.getTotalPages());
             pagingDto.setTotalOfElements(page.getTotalElements());
@@ -124,7 +131,7 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public List<ReaderDto> getListPopularReaders() {
         AccountState accountState = accountStateRepository
-                .findByNameAndStatus("ACTIVE", Status.ACTIVE)
+                .findByNameAndStatus(readerActive, Status.ACTIVE)
                 .orElseThrow(() -> new EntityNotFoundException("Account State not found"));
         Role role = roleRepository
                 .findByName("READER")
@@ -178,6 +185,7 @@ public class ReaderServiceImpl implements ReaderService {
         reader.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
         reader.setTags(readerUpdateDto.getTags());
         reader.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
+        reader.setAvatarUrl(readerUpdateDto.getAvatarUrl());
         reader.setUpdatedAt(new Date());
         Reader result = readerRepository.save(reader);
         return getReaderProfileById(result.getId());
@@ -208,24 +216,72 @@ public class ReaderServiceImpl implements ReaderService {
             for (var service : services) {
                 boolean isAdded = false;
                 Book b = service.getBook();
-                if(books.isEmpty()){
+                if (books.isEmpty()) {
                     books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ServiceMapper.INSTANCE.toDto(service))));
-                }else{
-                    for(var book: books){
-                        if(book.getBook().getId().equals(b.getId())){
+                } else {
+                    for (var book : books) {
+                        if (book.getBook().getId().equals(b.getId())) {
                             List<ServiceDto> serviceDtos = new ArrayList<>(book.getServices());
                             serviceDtos.add(ServiceMapper.INSTANCE.toDto(service));
                             book.setServices(serviceDtos);
                             isAdded = true;
                         }
                     }
-                    if(!isAdded){
-                        books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ServiceMapper.INSTANCE.toDto(service))) );
+                    if (!isAdded) {
+                        books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ServiceMapper.INSTANCE.toDto(service))));
                     }
                 }
             }
         }
         return books;
+    }
+
+    @Override
+    public String registerReader(UUID accountId, RequestInputDto requestInputDto) {
+
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+
+        Reader reader = new Reader();
+        reader.setNickname(requestInputDto.getInformation().getNickname());
+        reader.setGenre(requestInputDto.getInformation().getGenres().toString().replaceAll("\\[|\\]", ""));
+        reader.setLanguage(requestInputDto.getInformation().getLanguages().toString().replaceAll("\\[|\\]", ""));
+        reader.setAvatarUrl(requestInputDto.getInformation().getAvatarUrl());
+        reader.setCountryAccent(requestInputDto.getInformation().getCountryAscent());
+        reader.setDescription(requestInputDto.getInformation().getDescription());
+        reader.setIntroductionVideoUrl(requestInputDto.getInformation().getIntroductionVideoUrl());
+        reader.setAudioDescriptionUrl(requestInputDto.getInformation().getAudioDescriptionUrl());
+        reader.setStatus(Status.ACTIVE);
+        reader.setAccount(account);
+
+        reader = readerRepository.save(reader);
+        if (reader != null) {
+            account.setAccountState(accountStateRepository
+                    .findByNameAndStatus(readerPending, Status.ACTIVE)
+                    .orElseThrow(() -> new EntityNotFoundException("Account State not found")));
+            accountRepository.save(account);
+
+            Request request = new Request();
+            request.setCreatedAt(new Date());
+            request.setUpdatedAt(new Date());
+            request.setReader(reader);
+            request.setState(RequestStateEnum.ANSWER_CHECKING);
+            request = requestRepository.save(request);
+
+            for (var answer : requestInputDto.getAnswers()) {
+                Question question = questionRepository.findById(answer.getQuestionId())
+                        .orElseThrow(() -> new EntityNotFoundException("Question not found"));
+                Answer a = new Answer();
+                a.setQuestion(question);
+                a.setContent(answer.getContent());
+                a.setStatus(Status.ACTIVE);
+                a.setRequest(request);
+                answerRepository.save(a);
+            }
+            return "Register reader success!";
+        }
+
+        return "Register fail! Please try again!";
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {

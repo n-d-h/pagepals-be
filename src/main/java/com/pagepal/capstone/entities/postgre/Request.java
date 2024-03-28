@@ -44,8 +44,11 @@ public class Request implements Serializable {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "meeting_code")
+    private String meetingCode;
+
     @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonManagedReference
     private List<Answer> answers;
 
     @ManyToOne

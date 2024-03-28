@@ -5,20 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ReaderUpdateDto {
-
+@AllArgsConstructor
+public class ReaderRequestInputDto {
     private String nickname;
-    private String genre;
-    private String language;
-    private String countryAccent;
+    private List<String> genres;
+    private List<String> languages;
+    private String countryAscent;
     private String audioDescriptionUrl;
-    private String description;
     private String introductionVideoUrl;
+    private String description;
     private String avatarUrl;
-    private String tags;
-
 }

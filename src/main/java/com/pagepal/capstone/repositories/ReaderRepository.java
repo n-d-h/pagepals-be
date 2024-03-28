@@ -27,5 +27,7 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
     Page<Reader> findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase(
             String name, String genre, String language, String countryAccent, Pageable pageable);
 
+
+
     List<Reader> findTop10ByAccountInOrderByRatingDesc(List<Account> account);
 }

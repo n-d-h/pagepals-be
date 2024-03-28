@@ -12,6 +12,7 @@ import com.pagepal.capstone.repositories.BookRepository;
 import com.pagepal.capstone.repositories.CategoryRepository;
 import com.pagepal.capstone.services.BookService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 

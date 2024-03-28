@@ -63,6 +63,9 @@ public class Reader implements Serializable {
     @Column(name = "introduction_video_url")
     private String introductionVideoUrl;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     @Column(name = "experience")
     private Double experience;
 

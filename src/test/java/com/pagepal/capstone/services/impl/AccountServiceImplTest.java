@@ -87,7 +87,7 @@ public class AccountServiceImplTest {
             new Date(), new Date(), new Date(), accountState1, null, null, role3, null);
     //Reader
     Reader reader1 = new Reader(UUID.randomUUID(), "name1", 5, "genre1", "Vietnamese", "accent1",
-            "url", "des1", "123", "123", "url", 123.2, "tag",
+            "url", "des1", "123", "123", "url","avt",  123.2, "tag",
             new Date(), new Date(), new Date(), null, account1, null, null, null, null,
             null, null, null);
     Customer customer1 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "customer name 1", GenderEnum.MALE, new Date(), "url",

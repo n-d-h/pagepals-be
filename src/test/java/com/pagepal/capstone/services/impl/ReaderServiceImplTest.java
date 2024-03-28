@@ -7,10 +7,7 @@ import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.AccountRepository;
-import com.pagepal.capstone.repositories.AccountStateRepository;
-import com.pagepal.capstone.repositories.ReaderRepository;
-import com.pagepal.capstone.repositories.RoleRepository;
+import com.pagepal.capstone.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,12 +42,22 @@ class ReaderServiceImplTest {
     @MockBean
     private RoleRepository roleRepository;
 
+    @MockBean
+    private RequestRepository requestRepository;
+
+    @MockBean
+    private QuestionRepository questionRepository;
+
+    @MockBean
+    private AnswerRepository answerRepository;
+
     @Autowired
     private ReaderServiceImpl readerServiceImpl;
 
+
     //Mock data
     //Account State
-    AccountState accountState1 = new AccountState(UUID.randomUUID(), "ACTIVE", Status.ACTIVE, null);
+    AccountState accountState1 = new AccountState(UUID.randomUUID(), "READER_ACTIVE", Status.ACTIVE, null);
     AccountState accountState2 = new AccountState(UUID.randomUUID(), "INACTIVE", Status.ACTIVE, null);
 
     //Role
@@ -64,11 +71,11 @@ class ReaderServiceImplTest {
             new Date(), new Date(), new Date(), accountState2, null, null, role2, null);
     //Reader
     Reader reader1 = new Reader(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"), "name1", 5, "genre1", "Vietnamese", "accent1",
-            "url", "des1", "123", "123", "url", 123.2, "tag",
+            "url", "des1", "123", "123", "url","avt",  123.2, "tag",
             new Date(), new Date(), new Date(), null, account1, null, null, null, null,
             null, null, null);
     Reader reader2 = new Reader(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "name2", 5, "genre1", "Vietnamese", "accent1",
-            "url", "des1", "123", "123", "url", 123.2, "tag",
+            "url", "des1", "123", "123", "url","avt",  123.2, "tag",
             new Date(), new Date(), new Date(), null, account2, null, null, null, null,
             null, null, null);
 
@@ -80,13 +87,13 @@ class ReaderServiceImplTest {
         account1.setReader(reader1);
         account2.setReader(reader2);
         when(accountRepository.findByAccountStateAndRole(accountState1, role1)).thenReturn(Collections.singletonList(account1));
-        when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
+        when(accountStateRepository.findByNameAndStatus("READER_ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
         ReaderDto readerDto = readerServiceImpl.getReadersActive().get(0);
         assertEquals(readerDto.getNickname(), "name1");
         verify(accountRepository).findByAccountStateAndRole(accountState1, role1);
-        verify(accountStateRepository).findByNameAndStatus("ACTIVE", Status.ACTIVE);
+        verify(accountStateRepository).findByNameAndStatus("READER_ACTIVE", Status.ACTIVE);
         verify(roleRepository).findByName("READER");
     }
 
@@ -98,12 +105,12 @@ class ReaderServiceImplTest {
         account1.setReader(reader1);
         account2.setReader(reader2);
         when(accountRepository.findByAccountStateAndRole(accountState1, role1)).thenReturn(new ArrayList<>());
-        when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE))
+        when(accountStateRepository.findByNameAndStatus("READER_ACTIVE", Status.ACTIVE))
                 .thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
         assertTrue(readerServiceImpl.getReadersActive().isEmpty());
         verify(accountRepository).findByAccountStateAndRole(accountState1, role1);
-        verify(accountStateRepository).findByNameAndStatus("ACTIVE", Status.ACTIVE);
+        verify(accountStateRepository).findByNameAndStatus("READER_ACTIVE", Status.ACTIVE);
         verify(roleRepository).findByName("READER");
     }
 
@@ -228,7 +235,7 @@ class ReaderServiceImplTest {
         ArrayList<Request> requests = new ArrayList<>();
         when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
                 "GB", "https://example.org/example", "The characteristics of someone or something", "Total Of Reviews",
-                "Total Of Bookings", "https://example.org/example", 10.0d, "Tags", createdAt, updatedAt, deletedAt,
+                "Total Of Bookings", "https://example.org/example","avt",  10.0d, "Tags", createdAt, updatedAt, deletedAt,
                 Status.ACTIVE, account, level, workingTimes, services, follows, promotions, requests, new ArrayList<>())));
         assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
         verify(readerRepository).findById(any());
@@ -259,7 +266,7 @@ class ReaderServiceImplTest {
         assertThrows(EntityNotFoundException.class,
                 () -> readerServiceImpl.updateReaderProfile(id,
                         new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
-                                "The characteristics of someone or something", "https://example.org/example", "Tags")));
+                                "The characteristics of someone or something", "https://example.org/example","avt",  "Tags")));
         verify(readerRepository).save(any());
         verify(readerRepository).findById(any());
     }
@@ -276,7 +283,7 @@ class ReaderServiceImplTest {
         assertThrows(EntityNotFoundException.class,
                 () -> readerServiceImpl.updateReaderProfile(id,
                         new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
-                                "The characteristics of someone or something", "https://example.org/example", "Tags")));
+                                "The characteristics of someone or something", "https://example.org/example","avt",  "Tags")));
         verify(readerRepository).findById(any());
     }
 
@@ -286,7 +293,7 @@ class ReaderServiceImplTest {
     @Test
     void canGetListPopularReaders() {
         // Mock setup
-        when(accountStateRepository.findByNameAndStatus("ACTIVE", Status.ACTIVE)).thenReturn(Optional.of(accountState1));
+        when(accountStateRepository.findByNameAndStatus("READER_ACTIVE", Status.ACTIVE)).thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
         when(accountRepository.findByAccountStateAndRole(accountState1, role1)).thenReturn(Collections.singletonList(account1));
         when(readerRepository.findTop10ByAccountInOrderByRatingDesc(Collections.singletonList(account1))).thenReturn(Collections.singletonList(reader1));

@@ -16,6 +16,7 @@ import com.pagepal.capstone.repositories.RoleRepository;
 import com.pagepal.capstone.services.AccountService;
 import com.pagepal.capstone.services.EmailService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 

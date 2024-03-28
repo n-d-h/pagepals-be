@@ -11,6 +11,7 @@ import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookingService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
-
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {

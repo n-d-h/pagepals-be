@@ -8,6 +8,7 @@ import com.pagepal.capstone.repositories.ReaderRepository;
 import com.pagepal.capstone.repositories.WorkingTimeRepository;
 import com.pagepal.capstone.services.WorkingTimeService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class WorkingTimeServiceImpl implements WorkingTimeService {
 
     private final WorkingTimeRepository workingTimeRepository;

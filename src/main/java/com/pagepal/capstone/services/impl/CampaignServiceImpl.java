@@ -11,6 +11,7 @@ import com.pagepal.capstone.mappers.CampaignMapper;
 import com.pagepal.capstone.repositories.CampaignRepository;
 import com.pagepal.capstone.services.CampaignService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
 

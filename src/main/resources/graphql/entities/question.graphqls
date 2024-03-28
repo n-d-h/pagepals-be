@@ -1,6 +1,8 @@
 type Question {
     id: ID!
     content: String
-    status: Status
-    answers: [Answer]
+}
+
+extend type Query {
+    getListQuestion: [Question]
 }

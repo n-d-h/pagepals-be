@@ -8,6 +8,7 @@ import com.pagepal.capstone.mappers.RoleMapper;
 import com.pagepal.capstone.repositories.RoleRepository;
 import com.pagepal.capstone.services.RoleService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
