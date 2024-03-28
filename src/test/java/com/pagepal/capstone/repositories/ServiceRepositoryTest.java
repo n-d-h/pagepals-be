@@ -47,7 +47,7 @@ public class ServiceRepositoryTest {
 
     Reader reader = new Reader(UUID.randomUUID(), "nickname", 3, "Fiction",
             "US", "US", "", "description", "", "",
-            "", 2.5, "", new Date(), new Date(), null, Status.ACTIVE, account1, level,
+            "","avt",  2.5, "", new Date(), new Date(), null, Status.ACTIVE, account1, level,
             null, null, null, null,
             null, null
     );

@@ -10,6 +10,7 @@ type Reader {
     totalOfReviews: String
     totalOfBookings: String
     introductionVideoUrl: String
+    avatarUrl: String
     experience: Float
     tags: String
     createdAt: String
@@ -38,6 +39,7 @@ type ReaderRead{
     totalOfReviews: String
     totalOfBookings: String
     introductionVideoUrl: String
+    avatarUrl: String
     experience: Float
     tags: String
     createdAt: String
@@ -73,6 +75,7 @@ input ReaderUpdate{
     audioDescriptionUrl: String
     description: String
     introductionVideoUrl: String
+    avatarUrl: String
     tags: String
 }
 
@@ -87,6 +90,17 @@ input searchReaderInput {
     pageSize: Int
 }
 
+input ReaderRequestInput {
+    nickname: String
+    genres: [String]
+    languages: [String]
+    countryAccent: String
+    audioDescriptionUrl: String
+    description: String
+    introductionVideoUrl: String
+    avatarUrl: String
+}
+
 extend type Query {
     getReadersActive: [Reader]
     getReaderDetail(id: ID!): Reader
@@ -99,4 +113,5 @@ extend type Query {
 
 extend type Mutation {
     updateReader(id: ID!, data: ReaderUpdate): Reader
+    registerReader(accountId: ID, data: RequestInput): String
 }

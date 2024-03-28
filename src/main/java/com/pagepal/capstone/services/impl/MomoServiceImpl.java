@@ -2,6 +2,7 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.momo.Response;
 import com.pagepal.capstone.services.MomoService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MomoServiceImpl implements MomoService {
 

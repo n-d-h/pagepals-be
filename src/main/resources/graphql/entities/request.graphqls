@@ -4,6 +4,13 @@ type Request {
     state: RequestStateEnum
     createdAt: String
     updatedAt: String
+    meetingCode: String
     answers: [Answer]
     reader: Reader
 }
+
+input RequestInput{
+    information: ReaderRequestInput
+    answers: [AnswerInput]
+}
+

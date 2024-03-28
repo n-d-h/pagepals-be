@@ -10,6 +10,7 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.PostImageRepository;
 import com.pagepal.capstone.repositories.PostRepository;
 import com.pagepal.capstone.services.PostService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 

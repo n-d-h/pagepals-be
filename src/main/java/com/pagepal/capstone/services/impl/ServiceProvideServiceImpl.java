@@ -9,6 +9,7 @@ import com.pagepal.capstone.repositories.ReaderRepository;
 import com.pagepal.capstone.repositories.ServiceRepository;
 import com.pagepal.capstone.services.ServiceProvideService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ServiceProvideServiceImpl implements ServiceProvideService {
 
     private final ServiceRepository serviceRepository;

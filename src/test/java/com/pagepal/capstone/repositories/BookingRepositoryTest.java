@@ -92,6 +92,7 @@ public class BookingRepositoryTest {
             null,
             null,
             "vid1",
+            "avt1",
             null,
             null,
             date1,

@@ -1,6 +1,7 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.reader.*;
+import com.pagepal.capstone.dtos.request.RequestInputDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.services.ReaderService;
@@ -62,5 +63,10 @@ public class ReaderController {
     @QueryMapping
     public List<ReaderBookDto> getReaderBooks(@Argument UUID id) {
         return readerService.getBookOfReader(id);
+    }
+
+    @MutationMapping
+    public String registerReader(@Argument(name = "accountId") UUID id ,@Argument(name = "data") RequestInputDto readerRequestInputDto) {
+        return readerService.registerReader(id, readerRequestInputDto);
     }
 }

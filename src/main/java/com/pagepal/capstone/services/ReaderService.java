@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.dtos.reader.*;
+import com.pagepal.capstone.dtos.request.RequestInputDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 
@@ -26,4 +27,6 @@ public interface ReaderService {
     WorkingTimeListRead getWorkingTimesAvailableByReader(UUID id);
 
     List<ReaderBookDto> getBookOfReader(UUID id);
+
+    String registerReader(UUID accountId,RequestInputDto requestInputDto);
 }

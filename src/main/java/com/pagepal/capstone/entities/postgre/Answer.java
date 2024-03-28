@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "QUESTION")
+@Table(name = "ASNWER")
 @Where(clause = "status = 'ACTIVE'")
 public class Answer implements Serializable {
     @Id
@@ -44,6 +45,6 @@ public class Answer implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "request_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Request request;
 }
