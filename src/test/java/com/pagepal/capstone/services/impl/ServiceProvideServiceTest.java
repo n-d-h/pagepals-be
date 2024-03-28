@@ -66,7 +66,7 @@ public class ServiceProvideServiceTest {
             Status.ACTIVE, null
     );
 
-    Service service = new Service(UUID.randomUUID(), 255.0,
+    Service service = new Service(UUID.randomUUID(), 255,
             new Date(), "description", 10.0,
             1, 1, 1,
             Status.ACTIVE,
@@ -74,7 +74,7 @@ public class ServiceProvideServiceTest {
     );
 
 //    @Test
-//    void testGetAllServicesByReaderId() {
+//    void testGetAllServicesByReaderId() {s
 //        reader.setServices(List.of(service));
 //
 //        var queryDto = new QueryDto();

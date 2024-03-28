@@ -43,5 +43,5 @@ public class AccountReadDto {
 
     private Role role;
 
-    private List<Wallet> wallets;
+    private Wallet wallet;
 }

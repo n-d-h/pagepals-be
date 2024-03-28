@@ -2,17 +2,11 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.*;
-import com.pagepal.capstone.entities.postgre.Account;
-import com.pagepal.capstone.entities.postgre.AccountState;
-import com.pagepal.capstone.entities.postgre.Customer;
-import com.pagepal.capstone.entities.postgre.Role;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.AccountMapper;
-import com.pagepal.capstone.repositories.AccountRepository;
-import com.pagepal.capstone.repositories.AccountStateRepository;
-import com.pagepal.capstone.repositories.CustomerRepository;
-import com.pagepal.capstone.repositories.RoleRepository;
+import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.AccountService;
 import com.pagepal.capstone.services.EmailService;
 import jakarta.persistence.EntityNotFoundException;
@@ -54,6 +48,7 @@ public class AccountServiceImpl implements AccountService {
     private final CustomerRepository customerRepository;
 
     private static final String SECRET_KEY = "jkHGs0lbxWwbirSG";
+    private final WalletRepository walletRepository;
 
     public static String encodeVerificationCode(String verificationCode) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "AES");
@@ -123,6 +118,15 @@ public class AccountServiceImpl implements AccountService {
         if (result == null) {
             throw new RuntimeException("Create customer failed! Please try again!");
         }
+
+        Wallet wallet = new Wallet();
+        wallet.setAccount(savedAccount);
+        wallet.setStatus(Status.ACTIVE);
+        wallet.setCreatedAt(new Date());
+        wallet.setUpdatedAt(new Date());
+        wallet.setTokenAmount(0);
+        wallet.setCash((float) 0);
+        Wallet resultWallet = walletRepository.save(wallet);
 
         var accessToken = jwtService.generateAccessToken(savedAccount);
         var refreshToken = jwtService.generateRefreshToken(savedAccount);

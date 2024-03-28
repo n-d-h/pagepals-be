@@ -31,7 +31,7 @@ public class Booking implements Serializable {
     private UUID id;
 
     @Column(name = "total_price")
-    private Double totalPrice;
+    private Integer totalPrice;
 
     @Column(name = "promotion_code")
     private String promotionCode;

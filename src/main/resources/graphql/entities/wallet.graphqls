@@ -1,11 +1,9 @@
 type Wallet {
     id: ID!
     tokenAmount: Int
+    cash: Float
     createdAt: String!
     updatedAt: String
     deletedAt: String
-    status: Status
-    account: Account
-    walletType: WalletType
     transactions: [Transaction]
 }

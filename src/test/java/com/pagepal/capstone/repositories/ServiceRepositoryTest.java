@@ -66,7 +66,7 @@ public class ServiceRepositoryTest {
         String description = "description";
 
         Service service = new Service();
-        service.setPrice(300.0);
+        service.setPrice(300);
         service.setCreatedAt(new Date());
         service.setDescription(description);
         service.setDuration(1.0);
