@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.security.PrivateKey;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
@@ -45,6 +46,7 @@ public class BookingServiceImpl implements BookingService {
     private final String bookingComplete = "COMPLETE";
     private final String revenueString = "REVENUE_SHARE";
     private final String tokenPriceString = "TOKEN_PRICE";
+    private final String dollarExchangeString = "DOLLAR_EXCHANGE_RATE";
     private final WalletRepository walletRepository;
 
 

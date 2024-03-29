@@ -17,7 +17,7 @@ public interface MomoService {
             String signature
     ) throws InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException;
 
-    Object getPaymentUrl(Long amount, String orderId)
+    Object getPaymentUrl(Integer amount, String customer)
             throws InvalidKeyException,
             NoSuchAlgorithmException,
             IOException, UnsupportedEncodingException;

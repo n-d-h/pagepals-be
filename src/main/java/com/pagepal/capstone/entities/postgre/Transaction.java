@@ -3,6 +3,7 @@ package com.pagepal.capstone.entities.postgre;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.CurrencyEnum;
 import com.pagepal.capstone.enums.Status;
+import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -53,7 +54,7 @@ public class Transaction implements Serializable {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private TransactionStatusEnum status;
 
     @ManyToOne
     @JoinColumn(name = "booking_id")
@@ -64,4 +65,9 @@ public class Transaction implements Serializable {
     @JoinColumn(name = "payment_method_id")
     @JsonManagedReference
     private PaymentMethod paymentMethod;
+
+    @ManyToOne
+    @JoinColumn(name = "wallet_id")
+    @JsonManagedReference
+    private Wallet wallet;
 }

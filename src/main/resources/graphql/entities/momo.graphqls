@@ -1,0 +1,26 @@
+type Object {
+    message: String,
+    resultCode: Int,
+    payUrl: String
+}
+
+input MomoInfoCheck {
+    partnerCode: String,
+    orderId: String,
+    requestId: String,
+    amount: String,
+    orderInfo: String,
+    orderType: String,
+    transId: String,
+    resultCode: String,
+    message: String,
+    payType: String
+    responseTime: String,
+    extraData: String,
+    signature: String
+}
+
+extend type Mutation {
+    createOrder(amount: Int, customerId: ID): Object
+    checkPaymentMomo(info: MomoInfoCheck): String
+}

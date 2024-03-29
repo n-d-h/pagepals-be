@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -59,10 +60,7 @@ public class Wallet implements Serializable {
     @JsonManagedReference
     private Account account;
 
-    @ManyToMany
-    @JoinTable(
-            name = "WALLET_TRANSACTION",
-            joinColumns = @JoinColumn(name = "wallet_id"),
-            inverseJoinColumns = @JoinColumn(name = "transaction_id"))
+    @OneToMany(mappedBy = "wallet", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Transaction> transactions;
 }
