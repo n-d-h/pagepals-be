@@ -1,6 +1,7 @@
 package com.pagepal.capstone.enums;
 
 public enum TransactionTypeEnum {
-    AVAILABLE,
-    UNAVAILABLE,
+    DEPOSIT_TOKEN,
+    WITHDRAW_MONEY,
+    BOOKING_PAYMENT,
 }
