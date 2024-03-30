@@ -274,10 +274,11 @@ public class AccountServiceImpl implements AccountService {
     @Secured({"STAFF", "ADMIN"})
     @Override
     public List<AccountDto> getListCustomer() {
-        Role role = roleRepository
-                .findByName(ROLE_CUSTOMER)
-                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
-        List<Account> accounts = accountRepository.findByRole(role);
+//        Role role = roleRepository
+//                .findByName(ROLE_CUSTOMER)
+//                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+
+        List<Account> accounts = accountRepository.findByRoles(Arrays.asList(ROLE_CUSTOMER, ROLE_READER));
         return accounts.stream().map(AccountMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
