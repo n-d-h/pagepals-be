@@ -23,6 +23,13 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
     @Query("""
             SELECT a
             FROM Account a
+            WHERE a.role.name IN :roles
+            """)
+    List<Account> findByRoles(List<String> roles);
+
+    @Query("""
+            SELECT a
+            FROM Account a
             WHERE a.role.id = :roleId
             """)
     List<Account> findAccountsByRole(String roleId);
