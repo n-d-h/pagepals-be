@@ -66,7 +66,7 @@ public class ReaderController {
     }
 
     @MutationMapping
-    public String registerReader(@Argument(name = "accountId") UUID id ,@Argument(name = "data") RequestInputDto readerRequestInputDto) {
+    public ReaderDto registerReader(@Argument(name = "accountId") UUID id ,@Argument(name = "data") RequestInputDto readerRequestInputDto) {
         return readerService.registerReader(id, readerRequestInputDto);
     }
 }

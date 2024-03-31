@@ -23,7 +23,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "TRANSACTION")
-@Where(clause = "status = 'ACTIVE'")
 public class Transaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

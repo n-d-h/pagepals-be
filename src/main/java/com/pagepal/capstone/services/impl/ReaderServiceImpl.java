@@ -237,7 +237,7 @@ public class ReaderServiceImpl implements ReaderService {
     }
 
     @Override
-    public String registerReader(UUID accountId, RequestInputDto requestInputDto) {
+    public ReaderDto registerReader(UUID accountId, RequestInputDto requestInputDto) {
 
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found"));
@@ -278,10 +278,10 @@ public class ReaderServiceImpl implements ReaderService {
                 a.setRequest(request);
                 answerRepository.save(a);
             }
-            return "Register reader success!";
+            return ReaderMapper.INSTANCE.toDto(reader);
         }
 
-        return "Register fail! Please try again!";
+        return null;
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {
