@@ -32,6 +32,7 @@ public class AnalyticServiceImpl implements AnalyticService {
     private final String BOOKING_STATUS_COMPLETED = "COMPLETE";
     private final String BOOKING_STATUS_CANCELLED = "CANCEL";
     private final String BOOKING_STATUS_PENDING = "PENDING";
+    private final String FORMAT_DATE = "MM/dd/yyyy";
     private final TransactionRepository transactionRepository;
     private final SettingRepository settingRepository;
 
@@ -64,7 +65,7 @@ public class AnalyticServiceImpl implements AnalyticService {
     private BookingStatics getBookingStatics() {
         List<String> days = new ArrayList<>();
         LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
 
         // Get the last 12 months
         for (int i = 0; i < 12; i++) {
@@ -110,7 +111,7 @@ public class AnalyticServiceImpl implements AnalyticService {
             for (Booking booking : bookings) {
                 LocalDate bookingDate = booking.getCreateAt().toInstant()
                         .atZone(ZoneId.systemDefault()).toLocalDate();
-                LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern(FORMAT_DATE));
                 if (bookingDate.isBefore(monthDate.plusMonths(1))
                         && bookingDate.isAfter(monthDate.minusDays(1))) {
                     count++;
@@ -124,7 +125,7 @@ public class AnalyticServiceImpl implements AnalyticService {
     private IncomeByToken getIncomeByToken() {
         List<String> days = new ArrayList<>();
         LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
 
         // Get the last 12 months
         for (int i = 0; i < 12; i++) {
@@ -162,7 +163,7 @@ public class AnalyticServiceImpl implements AnalyticService {
             for (Transaction transaction : transactions) {
                 LocalDate transactionDate = transaction.getCreateAt().toInstant()
                         .atZone(ZoneId.systemDefault()).toLocalDate();
-                LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern(FORMAT_DATE));
                 if (transactionDate.isBefore(monthDate.plusMonths(1))
                         && transactionDate.isAfter(monthDate.minusDays(1))) {
                     totalTokenSale += transaction.getAmount();
@@ -177,7 +178,7 @@ public class AnalyticServiceImpl implements AnalyticService {
     private IncomeByRevenueShare getIncomeByRevenueShare() {
         List<String> days = new ArrayList<>();
         LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
 
         // Get the last 12 months
         for (int i = 0; i < 12; i++) {
@@ -199,7 +200,7 @@ public class AnalyticServiceImpl implements AnalyticService {
             for (Booking booking : completedBookings) {
                 LocalDate bookingDate = booking.getCreateAt().toInstant()
                         .atZone(ZoneId.systemDefault()).toLocalDate();
-                LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern(FORMAT_DATE));
                 if (bookingDate.isBefore(monthDate.plusMonths(1))
                         && bookingDate.isAfter(monthDate.minusDays(1))) {
                     totalToken += booking.getTotalPrice();
