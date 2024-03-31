@@ -46,6 +46,9 @@ public class MomoServiceImpl implements MomoService {
     @Value("${momo.notifyUrl}")
     private String notifyUrl;
 
+    @Value("${momo.returnUrlMoblie}")
+    private String returnUrlMobile;
+
     private String orderInfo = "PAY WITH MOMO";
     private String requestId = UUID.randomUUID().toString();
     private String requestType = "captureWallet";
@@ -141,6 +144,95 @@ public class MomoServiceImpl implements MomoService {
                 put("orderId", id);
                 put("orderInfo", orderInfo);
                 put("redirectUrl", returnUrl);
+                put("ipnUrl", notifyUrl);
+                put("lang", lang);
+                put("extraData", extraData);
+                put("requestType", requestType);
+                put("signature", signature);
+            }
+        };
+
+        WebClient.Builder builder = WebClient.builder();
+
+        WebClient webClient = builder.build();
+
+        Mono<Object> result = webClient.post()
+                .uri(endPoint)
+                .bodyValue(values)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Object.class);
+
+        return result.block();
+    }
+
+    @Override
+    public Object getPaymentUrlMobile(Integer amount, String customerId)
+            throws InvalidKeyException,
+            NoSuchAlgorithmException,
+            IOException, UnsupportedEncodingException {
+        requestId = UUID.randomUUID().toString();
+
+        Customer customer = customerRepository.findById(UUID.fromString(customerId))
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Customer not found")
+                );
+        List<Setting> settings = settingRepository.findByKeyIn(settingKeys);
+
+        if (settings.size() < settingKeys.size()) {
+            throw new EntityNotFoundException("Setting not found");
+        }
+
+        Map<String, Setting> settingMap = settings.stream()
+                .collect(Collectors.toMap(Setting::getKey, Function.identity()));
+
+        Setting revenueShare = settingMap.get(revenueString);
+        Setting tokenPrice = settingMap.get(tokenPriceString);
+        Setting dollarExchangeRate = settingMap.get(dollarExchangeString);
+
+        double total = (amount * Double.parseDouble(tokenPrice.getValue()))
+                * Double.parseDouble(dollarExchangeRate.getValue());
+
+        int totalWithoutDecimals = (int) total;
+
+        Transaction transaction = new Transaction();
+        transaction.setAmount(Double.parseDouble(String.valueOf(amount)));
+        transaction.setCurrency(CurrencyEnum.TOKEN);
+        transaction.setTransactionType(TransactionTypeEnum.DEPOSIT_TOKEN);
+        transaction.setPaymentMethod(paymentMethodRepository.findByName("MOMO").orElse(null));
+        transaction.setStatus(TransactionStatusEnum.PENDING);
+        transaction.setCreateAt(new Date());
+        transaction.setWallet(customer.getAccount().getWallet());
+        transaction = transactionRepository.save(transaction);
+        if (transaction == null) throw new RuntimeException("Cannot create transaction");
+
+        String id = transaction.getId().toString();
+
+        String requestRawData = new StringBuilder()
+                .append("accessKey").append("=").append(accessKey).append("&")
+                .append("amount").append("=").append(totalWithoutDecimals).append("&")
+                .append("extraData").append("=").append(extraData).append("&")
+                .append("ipnUrl").append("=").append(notifyUrl).append("&")
+                .append("orderId").append("=").append(id).append("&")
+                .append("orderInfo").append("=").append(orderInfo).append("&")
+                .append("partnerCode").append("=").append(partnerCode).append("&")
+                .append("redirectUrl").append("=").append(returnUrlMobile).append("&")
+                .append("requestId").append("=").append(requestId).append("&")
+                .append("requestType").append("=").append(requestType)
+                .toString();
+
+        String signature = signHmacSHA256(requestRawData, secretKey);
+
+        HashMap<String, String> values = new HashMap<String, String>() {
+            {
+                put("partnerCode", partnerCode);
+                put("partnerName", partnerName);
+                put("storeId", storeId);
+                put("requestId", requestId);
+                put("amount", String.valueOf(totalWithoutDecimals));
+                put("orderId", id);
+                put("orderInfo", orderInfo);
+                put("redirectUrl", returnUrlMobile);
                 put("ipnUrl", notifyUrl);
                 put("lang", lang);
                 put("extraData", extraData);

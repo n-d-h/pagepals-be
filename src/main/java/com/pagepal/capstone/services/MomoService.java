@@ -21,4 +21,9 @@ public interface MomoService {
             throws InvalidKeyException,
             NoSuchAlgorithmException,
             IOException, UnsupportedEncodingException;
+
+    Object getPaymentUrlMobile(Integer amount, String customer)
+            throws InvalidKeyException,
+            NoSuchAlgorithmException,
+            IOException, UnsupportedEncodingException;
 }
