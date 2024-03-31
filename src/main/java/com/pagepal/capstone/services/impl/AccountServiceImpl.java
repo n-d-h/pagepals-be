@@ -106,7 +106,7 @@ public class AccountServiceImpl implements AccountService {
         account.setAccountState(accountState);
         var savedAccount = accountRepository.save(account);
         Customer result = null;
-        if(savedAccount != null) {
+        if (savedAccount != null) {
             Customer customer = new Customer();
             customer.setAccount(savedAccount);
             customer.setFullName(request.getUsername());
@@ -201,6 +201,15 @@ public class AccountServiceImpl implements AccountService {
             cusCreate.setCreatedAt(new Date());
             cusCreate.setStatus(Status.ACTIVE);
             Customer result = customerRepository.save(cusCreate);
+            Wallet wallet = new Wallet();
+            wallet.setAccount(account);
+            wallet.setStatus(Status.ACTIVE);
+            wallet.setCreatedAt(new Date());
+            wallet.setUpdatedAt(new Date());
+            wallet.setTokenAmount(0);
+            wallet.setCash((float) 0);
+            Wallet resultWallet = walletRepository.save(wallet);
+
             return result != null;
         }
         return false;

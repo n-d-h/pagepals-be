@@ -12,7 +12,7 @@ type Account {
     customer: Customer
     reader: Reader
     role: Role
-    wallets: Wallet
+    wallet: Wallet
 }
 
 type AccountRead {
@@ -28,7 +28,7 @@ type AccountRead {
     customer: Customer
     reader: Reader
     role: Role
-    wallets: Wallet
+    wallet: Wallet
 }
 
 type LoginResponse {
