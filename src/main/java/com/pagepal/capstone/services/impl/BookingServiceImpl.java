@@ -6,7 +6,10 @@ import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.enums.CurrencyEnum;
 import com.pagepal.capstone.enums.MeetingEnum;
+import com.pagepal.capstone.enums.TransactionStatusEnum;
+import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookingService;
@@ -48,6 +51,7 @@ public class BookingServiceImpl implements BookingService {
     private final String tokenPriceString = "TOKEN_PRICE";
     private final String dollarExchangeString = "DOLLAR_EXCHANGE_RATE";
     private final WalletRepository walletRepository;
+    private final TransactionRepository transactionRepository;
 
 
     @Secured("READER")
@@ -193,6 +197,16 @@ public class BookingServiceImpl implements BookingService {
         if(res != null){
             customer.getAccount().getWallet().setTokenAmount(tokenLeft);
             customerRepository.save(customer);
+
+            Transaction transaction = new Transaction();
+            transaction.setStatus(TransactionStatusEnum.SUCCESS);
+            transaction.setCreateAt(new Date());
+            transaction.setTransactionType(TransactionTypeEnum.BOOKING_PAYMENT);
+            transaction.setCurrency(CurrencyEnum.TOKEN);
+            transaction.setBooking(res);
+            transaction.setAmount(Double.valueOf(bookingDto.getTotalPrice()));
+            transaction.setWallet(customer.getAccount().getWallet());
+            transactionRepository.save(transaction);
         }
         return BookingMapper.INSTANCE.toDto(res);
     }
@@ -215,6 +229,16 @@ public class BookingServiceImpl implements BookingService {
         if(customer == null){
             throw new ValidationException("Cannot refund token");
         }
+
+        Transaction transaction = new Transaction();
+        transaction.setStatus(TransactionStatusEnum.SUCCESS);
+        transaction.setCreateAt(new Date());
+        transaction.setTransactionType(TransactionTypeEnum.BOOKING_REFUND);
+        transaction.setCurrency(CurrencyEnum.TOKEN);
+        transaction.setBooking(booking);
+        transaction.setAmount(Double.valueOf(booking.getTotalPrice()));
+        transaction.setWallet(customer.getAccount().getWallet());
+        transactionRepository.save(transaction);
 
         BookingState state = bookingStateRepository
                 .findByName(bookingCancel)
@@ -247,7 +271,19 @@ public class BookingServiceImpl implements BookingService {
         Wallet wallet = booking.getService().getReader().getAccount().getWallet();
         wallet.setCash(wallet.getCash() + receiveCash);
         wallet = walletRepository.save(wallet);
+
         if(wallet != null){
+
+            Transaction transaction = new Transaction();
+            transaction.setStatus(TransactionStatusEnum.SUCCESS);
+            transaction.setCreateAt(new Date());
+            transaction.setTransactionType(TransactionTypeEnum.BOOKING_DONE_RECEIVE);
+            transaction.setCurrency(CurrencyEnum.DOLLAR);
+            transaction.setBooking(booking);
+            transaction.setAmount(Double.valueOf(receiveCash));
+            transaction.setWallet(booking.getService().getReader().getAccount().getWallet());
+            transactionRepository.save(transaction);
+
             BookingState state = bookingStateRepository
                     .findByName(bookingComplete)
                     .orElseThrow(() -> new EntityNotFoundException("State not found"));

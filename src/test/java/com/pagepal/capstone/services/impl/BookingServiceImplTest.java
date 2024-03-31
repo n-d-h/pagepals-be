@@ -40,6 +40,8 @@ class BookingServiceImplTest {
     private WalletRepository walletRepository;
     @Autowired
     private BookingServiceImpl bookingServiceImpl;
+    @MockBean
+    private TransactionRepository transactionRepository;
 
     /**
      * Method under test: {@link BookingServiceImpl#getListBookingByCustomer(UUID, QueryDto)}

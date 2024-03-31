@@ -18,6 +18,14 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
 
     List<Account> findByAccountStateAndRole(AccountState accountState, Role role);
 
+    @Query("""
+            SELECT a
+            FROM Account a
+            WHERE a.role.name IN :roles
+            AND a.accountState.name IN :accountStates
+            """)
+    List<Account> findByRoleStringAndAccountStateString(List<String> roles, List<String> accountStates);
+
     List<Account> findByRole(Role role);
 
     @Query("""

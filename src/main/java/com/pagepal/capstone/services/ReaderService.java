@@ -28,5 +28,5 @@ public interface ReaderService {
 
     List<ReaderBookDto> getBookOfReader(UUID id);
 
-    String registerReader(UUID accountId,RequestInputDto requestInputDto);
+    ReaderDto registerReader(UUID accountId,RequestInputDto requestInputDto);
 }

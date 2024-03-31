@@ -1,0 +1,56 @@
+type AnalyticAdmin{
+    totalCustomers: Int
+    totalReaders: Int
+    totalService: Int
+    totalBookings: Int
+    bookingStatics: BookingStatics
+    incomeByToken: IncomeByToken
+    incomeByRevenueShare: IncomeByRevenueShare
+}
+
+type BookingStatics{
+    percentageOfDone: Int
+    months: [String]
+    seriesData: [StateStatic]
+}
+
+type StateStatic{
+    state: String
+    data: [Int]
+}
+
+type IncomeByToken{
+    totalTokenSale: Int
+    totalIncome: Float
+    percentageIncrease: Float
+    seriesData: [IncomeByTokenData]
+}
+
+type IncomeByTokenData{
+    token: Int
+    income: Float
+    date: String
+}
+
+type IncomeByRevenueShare{
+    totalIncome: Float
+    percentageIncrease: Float
+    seriesData: [IncomeByRevenueShareData]
+}
+
+type IncomeByRevenueShareData{
+    income: Float
+    date: String
+}
+
+extend type Query{
+    getAnalyticAdmin: AnalyticAdmin
+}
+
+
+
+
+
+
+
+
