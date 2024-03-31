@@ -45,4 +45,13 @@ public class MomoController {
         Object object = momoService.getPaymentUrl(amount, customerId);
         return object;
     }
+
+    @MutationMapping
+    public Object createOrderMobile(@Argument(name = "amount") Integer amount, @Argument(name = "customerId") String customerId)
+            throws InvalidKeyException,
+            NoSuchAlgorithmException,
+            UnsupportedEncodingException, IOException {
+        Object object = momoService.getPaymentUrlMobile(amount, customerId);
+        return object;
+    }
 }

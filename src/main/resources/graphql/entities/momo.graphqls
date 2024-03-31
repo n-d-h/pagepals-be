@@ -22,5 +22,6 @@ input MomoInfoCheck {
 
 extend type Mutation {
     createOrder(amount: Int, customerId: ID): Object
+    createOrderMobile(amount: Int, customerId: ID): Object
     checkPaymentMomo(info: MomoInfoCheck): String
 }
