@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.paypals.pagepals",
+      "sha256_cert_fingerprints": [
+        "E3:68:89:72:A2:93:F0:18:77:B7:D6:43:79:DE:65:1B:16:30:BC:0E:85:85:EB:DA:56:E5:E4:DD:DD:A5:04:52"
+      ]
+    }
+  }
+]
