@@ -69,4 +69,11 @@ public class ReaderController {
     public ReaderDto registerReader(@Argument(name = "accountId") UUID id ,@Argument(name = "data") RequestInputDto readerRequestInputDto) {
         return readerService.registerReader(id, readerRequestInputDto);
     }
+
+    @QueryMapping
+    public ListReaderReviewDto getReaderReviews(@Argument(name = "readerId") UUID id,
+                                                @Argument(name = "page") Integer page,
+                                                @Argument(name = "pageSize") Integer pageSize) {
+        return readerService.getReaderReviewsByReaderId(id, page, pageSize);
+    }
 }

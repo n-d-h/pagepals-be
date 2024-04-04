@@ -1,9 +1,6 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.booking.BookingCreateDto;
-import com.pagepal.capstone.dtos.booking.BookingDto;
-import com.pagepal.capstone.dtos.booking.ListBookingDto;
-import com.pagepal.capstone.dtos.booking.QueryDto;
+import com.pagepal.capstone.dtos.booking.*;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.CurrencyEnum;
@@ -293,6 +290,25 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return BookingMapper.INSTANCE.toDto(booking);
+    }
+
+    //@Secured("CUSTOMER")
+    @Override
+    public BookingDto reviewBooking(UUID id, ReviewBooking review) {
+        if(review.getRating() < 1 || review.getRating() > 5){
+            throw new ValidationException("Rating must be between 1 and 5");
+        }
+        Booking booking = bookingRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+        if(!booking.getState().getName().equals(bookingComplete)){
+            throw new ValidationException("Booking not completed yet!");
+        }
+        booking.setReview(review.getReview());
+        booking.setRating(review.getRating());
+        booking.setUpdateAt(new Date());
+        booking = bookingRepository.save(booking);
+        return booking != null ? BookingMapper.INSTANCE.toDto(booking) : null;
     }
 
     private static String generateRoomId(int length) {

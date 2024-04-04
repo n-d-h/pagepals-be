@@ -67,6 +67,19 @@ type ReaderBook{
     services: [Service]
 }
 
+type ReaderReview{
+    customer: Customer
+    date: String
+    service: Service
+    rating: Int
+    review: String
+}
+
+type ListReaderReview{
+    pagination: Paging
+    list: [ReaderReview]
+}
+
 input ReaderUpdate{
     nickname: String
     genre: String
@@ -109,6 +122,7 @@ extend type Query {
     getReaderProfile(id: ID!): ReaderProfile
     getReaderBooks(id: ID!): [ReaderBook]
     getListPopularReaders: [Reader]
+    getReaderReviews(readerId: ID!, page: Int, pageSize: Int): ListReaderReview
 }
 
 extend type Mutation {

@@ -29,4 +29,6 @@ public interface ReaderService {
     List<ReaderBookDto> getBookOfReader(UUID id);
 
     ReaderDto registerReader(UUID accountId,RequestInputDto requestInputDto);
+
+    ListReaderReviewDto getReaderReviewsByReaderId(UUID id, Integer page, Integer size);
 }
