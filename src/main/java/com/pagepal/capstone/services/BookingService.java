@@ -1,9 +1,6 @@
 package com.pagepal.capstone.services;
 
-import com.pagepal.capstone.dtos.booking.BookingCreateDto;
-import com.pagepal.capstone.dtos.booking.BookingDto;
-import com.pagepal.capstone.dtos.booking.ListBookingDto;
-import com.pagepal.capstone.dtos.booking.QueryDto;
+import com.pagepal.capstone.dtos.booking.*;
 
 import java.util.UUID;
 
@@ -18,4 +15,5 @@ public interface BookingService {
 
     BookingDto completeBooking(UUID id);
 
+    BookingDto reviewBooking(UUID id, ReviewBooking review);
 }

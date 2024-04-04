@@ -11,10 +11,7 @@ import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.mappers.BookMapper;
-import com.pagepal.capstone.mappers.ReaderMapper;
-import com.pagepal.capstone.mappers.ServiceMapper;
-import com.pagepal.capstone.mappers.WorkingTimeMapper;
+import com.pagepal.capstone.mappers.*;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.ReaderService;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,6 +40,7 @@ public class ReaderServiceImpl implements ReaderService {
     private final String readerActive = "READER_ACTIVE";
 
     private final String readerPending = "READER_PENDING";
+    private final BookingRepository bookingRepository;
 
     @Override
     public List<ReaderDto> getReadersActive() {
@@ -282,6 +280,50 @@ public class ReaderServiceImpl implements ReaderService {
         }
 
         return null;
+    }
+
+    @Override
+    public ListReaderReviewDto getReaderReviewsByReaderId(UUID id, Integer page, Integer size) {
+
+        if (page == null || page < 0)
+            page = 0;
+        if (size == null || size < 0)
+            size = 10;
+
+        Pageable pageable;
+        pageable = PageRequest.of(page, size, Sort.by("updateAt").descending());
+
+        Page<Booking> bookings = bookingRepository.findByRatingIsNotNullAndStateString("COMPLETE", id, pageable);
+
+        List<ReaderReviewDto> reviews = new ArrayList<>();
+
+        for (var booking : bookings) {
+            ReaderReviewDto review = new ReaderReviewDto();
+            review.setRating(booking.getRating());
+            review.setReview(booking.getReview());
+            review.setDate(booking.getUpdateAt());
+            review.setCustomer(CustomerMapper.INSTANCE.toDto(booking.getCustomer()));
+            review.setService(ServiceMapper.INSTANCE.toDto(booking.getService()));
+            reviews.add(review);
+        }
+
+        ListReaderReviewDto list = new ListReaderReviewDto();
+        if (reviews == null || reviews.isEmpty()) {
+            list.setList(Collections.emptyList());
+            list.setPagination(null);
+            return null;
+        } else {
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(bookings.getTotalPages());
+            pagingDto.setTotalOfElements(bookings.getTotalElements());
+            pagingDto.setSort(bookings.getSort().toString());
+            pagingDto.setCurrentPage(bookings.getNumber());
+            pagingDto.setPageSize(bookings.getSize());
+
+            list.setList(reviews);
+            list.setPagination(pagingDto);
+            return list;
+        }
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {

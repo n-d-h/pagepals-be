@@ -50,6 +50,8 @@ class ReaderServiceImplTest {
 
     @MockBean
     private AnswerRepository answerRepository;
+    @MockBean
+    private BookingRepository bookingRepository;
 
     @Autowired
     private ReaderServiceImpl readerServiceImpl;

@@ -36,6 +36,11 @@ input BookingCreate {
     serviceId: ID
 }
 
+input ReviewBooking {
+    review: String
+    rating: Int
+}
+
 extend type Query {
     getListBookingByCustomer(customerId: ID!, filter: filterBooking): ListBooking
     getListBookingByReader(readerId: ID!, filter: filterBooking): ListBooking
@@ -45,4 +50,5 @@ extend type Mutation {
     createBooking(customerId: ID, booking: BookingCreate): Booking
     cancelBooking(bookingId: ID): Booking
     completeBooking(bookingId: ID): Booking
+    reviewBooking(bookingId: ID, review: ReviewBooking): Booking
 }

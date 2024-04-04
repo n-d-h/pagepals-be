@@ -50,4 +50,13 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             """)
     List<Booking> findByStateString(String state);
 
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.workingTime.reader.id = :readerId
+            AND b.rating IS NOT NULL
+            AND b.state.name = :state
+            """)
+    Page<Booking> findByRatingIsNotNullAndStateString(String state, UUID readerId, Pageable pageable);
+
 }

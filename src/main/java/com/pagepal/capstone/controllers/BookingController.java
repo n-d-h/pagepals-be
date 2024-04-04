@@ -1,9 +1,6 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.booking.BookingCreateDto;
-import com.pagepal.capstone.dtos.booking.BookingDto;
-import com.pagepal.capstone.dtos.booking.ListBookingDto;
-import com.pagepal.capstone.dtos.booking.QueryDto;
+import com.pagepal.capstone.dtos.booking.*;
 import com.pagepal.capstone.services.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -45,5 +42,11 @@ public class BookingController {
     @MutationMapping
     public BookingDto completeBooking(@Argument(name = "bookingId") UUID id) {
         return bookingService.completeBooking(id);
+    }
+
+    @MutationMapping
+    public BookingDto reviewBooking(@Argument(name = "bookingId") UUID id,
+                                    @Argument(name = "review") ReviewBooking review) {
+        return bookingService.reviewBooking(id, review);
     }
 }
