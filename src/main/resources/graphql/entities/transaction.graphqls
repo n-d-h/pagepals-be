@@ -5,7 +5,26 @@ type Transaction {
     amount: Float
     currency: CurrencyEnum
     transactionType: TransactionTypeEnum
-    status: Status
+    status: TransactionStatusEnum
     booking: Booking
     paymentMethod: PaymentMethod
+}
+
+type ListTransaction{
+    list: [Transaction]
+    paging: Paging
+}
+
+input TransactionFilter {
+    startDate: String
+    endDate: String
+    transactionType: String
+    page: Int
+    pageSize: Int
+}
+
+extend type Query {
+    getListTransactionForCustomer(customerId: ID, filter: TransactionFilter): ListTransaction
+    getListTransactionForReader(readerId: ID, filter: TransactionFilter): ListTransaction
+    getTransactionById(id: ID!): Transaction
 }
