@@ -44,7 +44,7 @@ type IncomeByRevenueShareData{
 }
 
 extend type Query{
-    getAnalyticAdmin: AnalyticAdmin
+    getAnalyticAdmin(startDate: String, endDate: String): AnalyticAdmin
 }
 
 

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -39,6 +40,37 @@ public class AnalyticServiceImpl implements AnalyticService {
     @Override
     public AnalyticAdmin getAnalyticAdmin() {
         AnalyticAdmin analyticAdmin = new AnalyticAdmin();
+//        List<Account> accounts = accountRepository
+//                .findByRoleStringAndAccountStateString(
+//                        Arrays.asList(ROLE_READER, ROLE_CUSTOMER),
+//                        Arrays.asList(STATE_ACTIVE, STATE_READER_ACTIVE)
+//                );
+//        long totalCustomer = accounts.stream()
+//                .filter(account -> account.getRole().getName().equals(ROLE_CUSTOMER)).count();
+//        long totalReader = accounts.stream()
+//                .filter(account -> account.getRole().getName().equals(ROLE_READER)).count();
+//
+//        long totalService = serviceRepository.countByStatus(Status.ACTIVE);
+//        long totalBooking = bookingRepository.count();
+//
+//        analyticAdmin.setTotalCustomers(totalCustomer);
+//        analyticAdmin.setTotalReaders(totalReader);
+//        analyticAdmin.setTotalService(totalService);
+//        analyticAdmin.setTotalBookings(totalBooking);
+//        analyticAdmin.setBookingStatics(getBookingStatics());
+//        analyticAdmin.setIncomeByToken(getIncomeByToken());
+//        analyticAdmin.setIncomeByRevenueShare(getIncomeByRevenueShare());
+        return analyticAdmin;
+    }
+
+    @Override
+    public AnalyticAdmin getAnalyticAdminByDate(String startDate, String endDate) {
+
+        // Parse the start and end dates
+        LocalDate parsedStartDate = LocalDate.parse(startDate);
+        LocalDate parsedEndDate = LocalDate.parse(endDate);
+
+        AnalyticAdmin analyticAdmin = new AnalyticAdmin();
         List<Account> accounts = accountRepository
                 .findByRoleStringAndAccountStateString(
                         Arrays.asList(ROLE_READER, ROLE_CUSTOMER),
@@ -56,20 +88,19 @@ public class AnalyticServiceImpl implements AnalyticService {
         analyticAdmin.setTotalReaders(totalReader);
         analyticAdmin.setTotalService(totalService);
         analyticAdmin.setTotalBookings(totalBooking);
-        analyticAdmin.setBookingStatics(getBookingStatics());
-        analyticAdmin.setIncomeByToken(getIncomeByToken());
-        analyticAdmin.setIncomeByRevenueShare(getIncomeByRevenueShare());
+        analyticAdmin.setBookingStatics(getBookingStatics(parsedStartDate, parsedEndDate));
+        analyticAdmin.setIncomeByToken(getIncomeByToken(parsedStartDate, parsedEndDate));
+        analyticAdmin.setIncomeByRevenueShare(getIncomeByRevenueShare(parsedStartDate, parsedEndDate));
         return analyticAdmin;
     }
 
-    private BookingStatics getBookingStatics() {
+    private BookingStatics getBookingStatics(LocalDate startDate, LocalDate endDate) {
         List<String> days = new ArrayList<>();
-        LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
+        List<LocalDate> dateRange = startDate.datesUntil(endDate.plusDays(1), Period.ofMonths(1)).toList();
 
-        // Get the last 12 months
-        for (int i = 0; i < 12; i++) {
-            days.add(now.minusMonths(i).format(formatter));
+        for (var date : dateRange) {
+            days.add(date.format(formatter));
         }
         //Get all bookings
         List<Booking> bookings = bookingRepository.findAll();
@@ -122,14 +153,13 @@ public class AnalyticServiceImpl implements AnalyticService {
         return new StateStatic(stateName, data);
     }
 
-    private IncomeByToken getIncomeByToken() {
+    private IncomeByToken getIncomeByToken(LocalDate startDate, LocalDate endDate) {
         List<String> days = new ArrayList<>();
-        LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
+        List<LocalDate> dateRange = startDate.datesUntil(endDate.plusDays(1), Period.ofMonths(1)).toList();
 
-        // Get the last 12 months
-        for (int i = 0; i < 12; i++) {
-            days.add(now.minusMonths(i).format(formatter));
+        for (var date : dateRange) {
+            days.add(date.format(formatter));
         }
 
         List<Transaction> transactions = transactionRepository.findByTransactionTypeAndStatus(
@@ -175,14 +205,13 @@ public class AnalyticServiceImpl implements AnalyticService {
         return data;
     }
 
-    private IncomeByRevenueShare getIncomeByRevenueShare() {
+    private IncomeByRevenueShare getIncomeByRevenueShare(LocalDate startDate, LocalDate endDate) {
         List<String> days = new ArrayList<>();
-        LocalDate now = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
+        List<LocalDate> dateRange = startDate.datesUntil(endDate.plusDays(1), Period.ofMonths(1)).toList();
 
-        // Get the last 12 months
-        for (int i = 0; i < 12; i++) {
-            days.add(now.minusMonths(i).format(formatter));
+        for (var date : dateRange) {
+            days.add(date.format(formatter));
         }
 
         List<Booking> completedBookings = bookingRepository.findByStateString(BOOKING_STATUS_COMPLETED);
@@ -203,7 +232,7 @@ public class AnalyticServiceImpl implements AnalyticService {
                 LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern(FORMAT_DATE));
                 if (bookingDate.isBefore(monthDate.plusMonths(1))
                         && bookingDate.isAfter(monthDate.minusDays(1))) {
-                    totalToken += booking.getTotalPrice();
+                    totalToken += booking.getTotalPrice() != null ? booking.getTotalPrice() : 0;
                 }
             }
 

@@ -1,4 +1,5 @@
 enum CurrencyEnum {
-    AVAILABLE
-    UNAVAILABLE
+    TOKEN,
+    VND,
+    DOLLAR
 }
