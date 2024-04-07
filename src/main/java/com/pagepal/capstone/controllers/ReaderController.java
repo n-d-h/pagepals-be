@@ -51,7 +51,7 @@ public class ReaderController {
     }
 
     @MutationMapping
-    public ReaderProfileDto updateReader(@Argument UUID id, @Argument(name = "data") ReaderUpdateDto readerProfileDto) {
+    public String updateReader(@Argument UUID id, @Argument(name = "data") ReaderRequestInputDto readerProfileDto) {
         return readerService.updateReaderProfile(id, readerProfileDto);
     }
 

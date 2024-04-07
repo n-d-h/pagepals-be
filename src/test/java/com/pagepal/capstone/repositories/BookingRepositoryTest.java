@@ -97,6 +97,7 @@ public class BookingRepositoryTest {
             null,
             date1,
             null, null, Status.ACTIVE,
+            null, null,
             account1, null, null,
             null, null, null,
             null,

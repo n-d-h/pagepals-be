@@ -86,5 +86,6 @@ extend type Mutation {
     refreshToken: LoginResponse
     updateAccount(id: ID!, account: AccountUpdate): Account
     updateAccountState(id: ID!, accountState: String): Account
-
+    updatePassword(id: ID!, password: String!): AccountRead
+    verifyCode(id: ID!): String
 }

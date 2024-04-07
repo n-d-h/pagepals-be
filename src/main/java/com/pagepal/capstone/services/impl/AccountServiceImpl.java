@@ -358,6 +358,34 @@ public class AccountServiceImpl implements AccountService {
         return AccountMapper.INSTANCE.toDto(account);
     }
 
+    @Override
+    public AccountReadDto updatePassword(UUID id, String password) throws Exception {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+
+        if(passwordEncoder.encode(password).equals(account.getPassword())) {
+            throw new RuntimeException("New password must be different from the old password");
+        }
+
+        account.setPassword(passwordEncoder.encode(password));
+        account.setUpdatedAt(new Date());
+        account = accountRepository.save(account);
+
+        return AccountMapper.INSTANCE.toAccountReadDto(account);
+    }
+
+    @Override
+    public String verifyCode(UUID id) throws Exception {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+
+        String code = generateVerificationCode();
+        emailService.sendSimpleEmail(
+                account.getEmail(),
+                "Verification Code",
+                "Your verification code is: " + code);
+
+        return encodeVerificationCode(code);
+    }
+
     private String generatePassword() {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'

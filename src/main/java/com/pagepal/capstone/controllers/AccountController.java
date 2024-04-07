@@ -33,6 +33,15 @@ public class AccountController {
         return accountService.authenticateWithGoogle(token);
     }
 
+    @MutationMapping
+    public AccountReadDto updatePassword(@Argument(name = "id") UUID id, @Argument(name = "password") String password) throws Exception {
+        return accountService.updatePassword(id, password);
+    }
+
+    public String verifyCode(@Argument(name = "id") UUID id) throws Exception {
+        return accountService.verifyCode(id);
+    }
+
     @MutationMapping(name = "verifyEmailRegister")
     public String verifyEmailRegister(@Argument(name = "register") RegisterRequest registerRequest) throws Exception {
         return accountService.verifyEmailRegister(registerRequest);

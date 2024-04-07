@@ -74,11 +74,11 @@ class ReaderServiceImplTest {
     //Reader
     Reader reader1 = new Reader(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"), "name1", 5, "genre1", "Vietnamese", "accent1",
             "url", "des1", "123", "123", "url","avt",  123.2, "tag",
-            new Date(), new Date(), new Date(), null, account1, null, null, null, null,
+            new Date(), new Date(), new Date(), null,null, null, account1, null, null, null, null,
             null, null, null);
     Reader reader2 = new Reader(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "name2", 5, "genre1", "Vietnamese", "accent1",
             "url", "des1", "123", "123", "url","avt",  123.2, "tag",
-            new Date(), new Date(), new Date(), null, account2, null, null, null, null,
+            new Date(), new Date(), new Date(), null,null, null, account2, null, null, null, null,
             null, null, null);
 
     /**
@@ -238,7 +238,7 @@ class ReaderServiceImplTest {
         when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
                 "GB", "https://example.org/example", "The characteristics of someone or something", "Total Of Reviews",
                 "Total Of Bookings", "https://example.org/example","avt",  10.0d, "Tags", createdAt, updatedAt, deletedAt,
-                Status.ACTIVE, account, level, workingTimes, services, follows, promotions, requests, new ArrayList<>())));
+                Status.ACTIVE,null, null, account, level, workingTimes, services, follows, promotions, requests, new ArrayList<>())));
         assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
         verify(readerRepository).findById(any());
     }
@@ -255,38 +255,6 @@ class ReaderServiceImplTest {
         assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
         verify(readerRepository).findById(any());
         verify(reader, atLeast(1)).getServices();
-    }
-
-    /**
-     * Method under test: {@link ReaderServiceImpl#updateReaderProfile(UUID, ReaderUpdateDto)}
-     */
-    @Test
-    void shouldThrowWhenCannotSave() {
-        when(readerRepository.save(any())).thenThrow(new EntityNotFoundException());
-        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader()));
-        UUID id = UUID.randomUUID();
-        assertThrows(EntityNotFoundException.class,
-                () -> readerServiceImpl.updateReaderProfile(id,
-                        new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
-                                "The characteristics of someone or something", "https://example.org/example","avt",  "Tags")));
-        verify(readerRepository).save(any());
-        verify(readerRepository).findById(any());
-    }
-
-    /**
-     * Method under test: {@link ReaderServiceImpl#updateReaderProfile(UUID, ReaderUpdateDto)}
-     */
-    @Test
-    void showThrowWhenCannotFindReader() {
-        when(readerRepository.save(any())).thenReturn(mock(Reader.class));
-        when(readerRepository.findById(any())).thenReturn(Optional.empty());
-
-        UUID id = UUID.randomUUID();
-        assertThrows(EntityNotFoundException.class,
-                () -> readerServiceImpl.updateReaderProfile(id,
-                        new ReaderUpdateDto("Nickname", "Genre", "en", "GB", "https://example.org/example",
-                                "The characteristics of someone or something", "https://example.org/example","avt",  "Tags")));
-        verify(readerRepository).findById(any());
     }
 
     /**

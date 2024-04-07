@@ -19,4 +19,8 @@ public interface AccountService {
     AccountDto updateAccount(UUID id, AccountUpdateDto accountUpdateDto);
     AccountReadDto getAccountByUsername(String username);
     AccountDto updateAccountState(UUID id, String accountState);
+
+    AccountReadDto updatePassword(UUID id, String password) throws Exception;
+
+    String verifyCode(UUID id) throws Exception;
 }
