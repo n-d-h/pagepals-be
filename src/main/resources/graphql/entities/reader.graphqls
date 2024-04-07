@@ -126,6 +126,6 @@ extend type Query {
 }
 
 extend type Mutation {
-    updateReader(id: ID!, data: ReaderUpdate): Reader
+    updateReader(id: ID!, data: ReaderRequestInput): String
     registerReader(accountId: ID, data: RequestInput): Reader
 }

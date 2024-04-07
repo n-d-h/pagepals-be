@@ -170,25 +170,6 @@ public class ReaderServiceImpl implements ReaderService {
         return readerProfile;
     }
 
-    @Secured({"READER", "STAFF", "ADMIN"})
-    @Override
-    public ReaderProfileDto updateReaderProfile(UUID id, ReaderUpdateDto readerUpdateDto) {
-        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-
-        reader.setNickname(readerUpdateDto.getNickname());
-        reader.setGenre(readerUpdateDto.getGenre());
-        reader.setLanguage(readerUpdateDto.getLanguage());
-        reader.setCountryAccent(readerUpdateDto.getCountryAccent());
-        reader.setDescription(readerUpdateDto.getDescription());
-        reader.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
-        reader.setTags(readerUpdateDto.getTags());
-        reader.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
-        reader.setAvatarUrl(readerUpdateDto.getAvatarUrl());
-        reader.setUpdatedAt(new Date());
-        Reader result = readerRepository.save(reader);
-        return getReaderProfileById(result.getId());
-    }
-
     @Override
     public WorkingTimeListRead getWorkingTimesAvailableByReader(UUID id) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
@@ -280,6 +261,36 @@ public class ReaderServiceImpl implements ReaderService {
         }
 
         return null;
+    }
+
+    @Secured({"READER", "STAFF", "ADMIN"})
+    @Override
+    public String updateReaderProfile(UUID id, ReaderRequestInputDto readerUpdateDto) {
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        reader.setIsUpdating(true);
+
+        Reader readerUpdate = new Reader();
+
+        readerUpdate.setNickname(readerUpdateDto.getNickname());
+        reader.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
+        reader.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
+        readerUpdate.setCountryAccent(readerUpdateDto.getCountryAscent());
+        readerUpdate.setDescription(readerUpdateDto.getDescription());
+        readerUpdate.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
+        readerUpdate.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
+        readerUpdate.setAvatarUrl(readerUpdateDto.getAvatarUrl());
+        readerUpdate.setUpdatedAt(new Date());
+        readerUpdate.setIsUpdating(true);
+        readerUpdate.setReaderUpdateReferenceId(reader.getId());
+
+        readerUpdate = readerRepository.save(readerUpdate);
+
+        if(readerUpdate != null) {
+            reader = readerRepository.save(reader);
+            return reader != null ? "Request update success!" : "Fail!";
+        }
+
+        return "Fail!";
     }
 
     @Override

@@ -22,7 +22,7 @@ public interface ReaderService {
 
     ReaderProfileDto getReaderProfileById(UUID id);
 
-    ReaderProfileDto updateReaderProfile(UUID id, ReaderUpdateDto readerUpdateDto);
+    String updateReaderProfile(UUID id, ReaderRequestInputDto readerUpdateDto);
 
     WorkingTimeListRead getWorkingTimesAvailableByReader(UUID id);
 
