@@ -28,8 +28,8 @@ public class MomoController {
                 momoInfoCheckDto.getAmount(), momoInfoCheckDto.getOrderInfo(), momoInfoCheckDto.getOrderType(),
                 momoInfoCheckDto.getTransId(), momoInfoCheckDto.getResultCode(), momoInfoCheckDto.getMessage(),
                 momoInfoCheckDto.getPayType(), momoInfoCheckDto.getResponseTime(),
-                momoInfoCheckDto.getExtraData().orElse(""),
-                momoInfoCheckDto.getSignatur());
+                momoInfoCheckDto.getExtraData(),
+                momoInfoCheckDto.getSignature());
 
         if(res.getStatus().equals("0")) {
             return "Success";

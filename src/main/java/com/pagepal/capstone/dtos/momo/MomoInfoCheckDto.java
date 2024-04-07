@@ -21,6 +21,6 @@ public class MomoInfoCheckDto {
     String message;
     String payType;
     String responseTime;
-    Optional<String> extraData;
-    String signatur;
+    String extraData;
+    String signature;
 }
