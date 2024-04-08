@@ -38,6 +38,7 @@ public class AccountController {
         return accountService.updatePassword(id, password);
     }
 
+    @MutationMapping
     public String verifyCode(@Argument(name = "id") UUID id) throws Exception {
         return accountService.verifyCode(id);
     }
