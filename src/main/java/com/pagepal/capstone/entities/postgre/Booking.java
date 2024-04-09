@@ -72,7 +72,7 @@ public class Booking implements Serializable {
     @JsonManagedReference
     private BookingState state;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "working_time_id")
     @JsonManagedReference
     private WorkingTime workingTime;

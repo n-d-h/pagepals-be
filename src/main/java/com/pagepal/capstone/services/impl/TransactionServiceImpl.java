@@ -46,6 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+
     @Override
     public ListTransactionDto getListTransactionForCustomer(UUID customerId, TransactionFilterDto filter) throws ParseException {
 
@@ -55,7 +56,7 @@ public class TransactionServiceImpl implements TransactionService {
             filter.setPageSize(10);
 
         Pageable pageable;
-        pageable = PageRequest.of(filter.getPage(), filter.getPageSize(), Sort.by("createAt").descending());
+        pageable = PageRequest.of(filter.getPage(), filter.getPageSize(), Sort.by("createAt").ascending());
 
         Page<Transaction> transactions;
 

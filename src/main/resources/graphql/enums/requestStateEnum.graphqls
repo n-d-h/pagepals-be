@@ -1,4 +1,6 @@
 enum RequestStateEnum {
-    AVAILABLE
-    UNAVAILABLE
+    ANSWER_CHECKING
+    INTERVIEW_PENDING
+    PASS
+    REJECT
 }

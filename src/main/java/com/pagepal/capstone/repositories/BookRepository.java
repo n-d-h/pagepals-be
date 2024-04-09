@@ -42,4 +42,21 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     Page<Book> searchBooksByAuthorAndTitle(List<Author> author, String title, Pageable pageable);
 
     Page<Book> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    @Query("""
+        SELECT DISTINCT b
+        FROM Book b
+        JOIN b.services s
+        WHERE s.reader.id = :readerId
+        """)
+    Page<Book> findByReaderId(UUID readerId, Pageable pageable);
+
+    @Query("""
+        SELECT DISTINCT b
+        FROM Book b
+        JOIN b.services s
+        WHERE s.reader.id = :readerId
+        AND LOWER(b.title) LIKE %:title%
+        """)
+    Page<Book> findByReaderIdAndTitleContaining(UUID readerId,String title, Pageable pageable);
 }

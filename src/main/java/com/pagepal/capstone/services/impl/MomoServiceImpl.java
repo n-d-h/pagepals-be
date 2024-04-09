@@ -8,6 +8,7 @@ import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.MomoService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +68,7 @@ public class MomoServiceImpl implements MomoService {
     private final PaymentMethodRepository paymentMethodRepository;
     private final TransactionRepository transactionRepository;
     private final WalletRepository walletRepository;
+    private final DateUtils dateUtils;
 
 
     /**
@@ -112,7 +114,7 @@ public class MomoServiceImpl implements MomoService {
         transaction.setTransactionType(TransactionTypeEnum.DEPOSIT_TOKEN);
         transaction.setPaymentMethod(paymentMethodRepository.findByName("MOMO").orElse(null));
         transaction.setStatus(TransactionStatusEnum.PENDING);
-        transaction.setCreateAt(new Date());
+        transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
         transaction.setWallet(customer.getAccount().getWallet());
         transaction = transactionRepository.save(transaction);
         if (transaction == null) throw new RuntimeException("Cannot create transaction");
@@ -201,7 +203,7 @@ public class MomoServiceImpl implements MomoService {
         transaction.setTransactionType(TransactionTypeEnum.DEPOSIT_TOKEN);
         transaction.setPaymentMethod(paymentMethodRepository.findByName("MOMO").orElse(null));
         transaction.setStatus(TransactionStatusEnum.PENDING);
-        transaction.setCreateAt(new Date());
+        transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
         transaction.setWallet(customer.getAccount().getWallet());
         transaction = transactionRepository.save(transaction);
         if (transaction == null) throw new RuntimeException("Cannot create transaction");

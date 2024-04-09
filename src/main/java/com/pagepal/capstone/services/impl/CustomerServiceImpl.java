@@ -14,6 +14,7 @@ import com.pagepal.capstone.repositories.AccountStateRepository;
 import com.pagepal.capstone.repositories.CustomerRepository;
 import com.pagepal.capstone.repositories.RoleRepository;
 import com.pagepal.capstone.services.CustomerService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final AccountStateRepository accountStateRepository;
     private final RoleRepository roleRepository;
     private final CustomerRepository customerRepository;
+    private final DateUtils dateUtils;
 
     @Secured({"STAFF", "ADMIN"})
     @Override
@@ -95,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setImageUrl(customerUpdateDto.getImageUrl());
         }
 
-        customer.setUpdatedAt(new Date());
+        customer.setUpdatedAt(dateUtils.getCurrentVietnamDate());
 
         customerRepository.save(customer);
 

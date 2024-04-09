@@ -10,6 +10,7 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.ServiceService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class ServiceServiceImpl implements ServiceService {
     private final CategoryRepository categoryRepository;
 
     private final AuthorRepository authorRepository;
+    private final DateUtils dateUtils;
 
     @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
     @Override
@@ -89,7 +91,7 @@ public class ServiceServiceImpl implements ServiceService {
         service.setServiceType(serviceType);
         service.setReader(reader);
         service.setBook(book);
-        service.setCreatedAt(new Date());
+        service.setCreatedAt(dateUtils.getCurrentVietnamDate());
         service.setRating(0);
         service.setTotalOfBooking(0);
         service.setTotalOfReview(0);

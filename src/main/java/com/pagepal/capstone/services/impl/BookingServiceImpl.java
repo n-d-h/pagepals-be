@@ -10,6 +10,7 @@ import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookingService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
@@ -49,6 +50,8 @@ public class BookingServiceImpl implements BookingService {
     private final String dollarExchangeString = "DOLLAR_EXCHANGE_RATE";
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
+    private final ReaderRepository readerRepository;
+    private final DateUtils dateUtils;
 
 
     @Secured("READER")
@@ -165,7 +168,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByMeetingCodeAndState(roomId, MeetingEnum.AVAILABLE)
                 .orElse(null);
         if (meeting == null) {
-            meeting = new Meeting(null, roomId, new Date(), 2,
+            meeting = new Meeting(null, roomId, dateUtils.getCurrentVietnamDate(), 2,
                     MeetingEnum.AVAILABLE, wt.getReader(), null, null);
             meeting = meetingRepository.save(meeting);
         }
@@ -174,8 +177,8 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Not enough token");
         }
         Booking booking = new Booking();
-        booking.setCreateAt(new Date());
-        booking.setUpdateAt(new Date());
+        booking.setCreateAt(dateUtils.getCurrentVietnamDate());
+        booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
         booking.setDescription(bookingDto.getDescription());
         booking.setPromotionCode(bookingDto.getPromotionCode());
         booking.setCustomer(customer);
@@ -197,7 +200,7 @@ public class BookingServiceImpl implements BookingService {
 
             Transaction transaction = new Transaction();
             transaction.setStatus(TransactionStatusEnum.SUCCESS);
-            transaction.setCreateAt(new Date());
+            transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
             transaction.setTransactionType(TransactionTypeEnum.BOOKING_PAYMENT);
             transaction.setCurrency(CurrencyEnum.TOKEN);
             transaction.setBooking(res);
@@ -229,7 +232,7 @@ public class BookingServiceImpl implements BookingService {
 
         Transaction transaction = new Transaction();
         transaction.setStatus(TransactionStatusEnum.SUCCESS);
-        transaction.setCreateAt(new Date());
+        transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
         transaction.setTransactionType(TransactionTypeEnum.BOOKING_REFUND);
         transaction.setCurrency(CurrencyEnum.TOKEN);
         transaction.setBooking(booking);
@@ -241,7 +244,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByName(bookingCancel)
                 .orElseThrow(() -> new EntityNotFoundException("State not found"));
         booking.setState(state);
-        booking.setUpdateAt(new Date());
+        booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
         booking = bookingRepository.save(booking);
         return BookingMapper.INSTANCE.toDto(booking);
     }
@@ -273,7 +276,7 @@ public class BookingServiceImpl implements BookingService {
 
             Transaction transaction = new Transaction();
             transaction.setStatus(TransactionStatusEnum.SUCCESS);
-            transaction.setCreateAt(new Date());
+            transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
             transaction.setTransactionType(TransactionTypeEnum.BOOKING_DONE_RECEIVE);
             transaction.setCurrency(CurrencyEnum.DOLLAR);
             transaction.setBooking(booking);
@@ -285,8 +288,16 @@ public class BookingServiceImpl implements BookingService {
                     .findByName(bookingComplete)
                     .orElseThrow(() -> new EntityNotFoundException("State not found"));
             booking.setState(state);
-            booking.setUpdateAt(new Date());
+            booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
             booking = bookingRepository.save(booking);
+
+            var service = booking.getService();
+            service.setTotalOfBooking(service.getTotalOfBooking() + 1);
+            serviceRepository.save(service);
+
+            var reader = service.getReader();
+            reader.setTotalOfBookings(reader.getTotalOfBookings() + 1);
+            readerRepository.save(reader);
         }
 
         return BookingMapper.INSTANCE.toDto(booking);
@@ -306,8 +317,22 @@ public class BookingServiceImpl implements BookingService {
         }
         booking.setReview(review.getReview());
         booking.setRating(review.getRating());
-        booking.setUpdateAt(new Date());
+        booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
         booking = bookingRepository.save(booking);
+        var service = booking.getService();
+        int serviceRating = (service.getRating() * service.getTotalOfReview());
+        service.setTotalOfReview(service.getTotalOfReview() + 1);
+        int newServiceRating = Math.round((serviceRating + review.getRating()) / (service.getTotalOfReview()));
+        service.setRating(newServiceRating);
+        serviceRepository.save(service);
+
+        var reader = service.getReader();
+        int rating = (reader.getRating() * reader.getTotalOfReviews());
+        reader.setTotalOfReviews(reader.getTotalOfReviews() + 1);
+        int newRating = Math.round((rating + review.getRating()) / (reader.getTotalOfReviews()));
+        reader.setRating(newRating);
+        readerRepository.save(reader);
+
         return booking != null ? BookingMapper.INSTANCE.toDto(booking) : null;
     }
 

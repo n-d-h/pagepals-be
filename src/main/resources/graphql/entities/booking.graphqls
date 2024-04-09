@@ -5,8 +5,8 @@ type Booking {
     description: String
     review: String
     rating: Int
-    createdAt: String
-    updatedAt: String
+    createAt: String
+    updateAt: String
     startAt: String
     customer: Customer
     meeting: Meeting

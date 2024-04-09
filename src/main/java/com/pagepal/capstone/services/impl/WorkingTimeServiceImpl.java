@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -30,7 +31,7 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
     @Override
     public String createReaderWorkingTime(WorkingTimeListCreateDto list) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+        ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
         Reader reader = readerRepository.findById(list.getReaderId())
                 .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
@@ -42,7 +43,7 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
             if (list.getIsWeekly()) {
                 LocalDate endDate = startDate.plusWeeks(1); // Calculate the end date of the first week
 
-                while (startDate.isBefore(LocalDate.now().plusMonths(3))) {
+                while (startDate.isBefore(LocalDate.now(vietnamTimeZone).plusMonths(3))) {
                     // Create working time slot for the current week
                     createWorkingTimeSlot(startDate, endDate, startTime, endTime, reader);
 

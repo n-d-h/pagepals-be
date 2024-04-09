@@ -8,6 +8,7 @@ import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.AnalyticService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,9 +38,10 @@ public class AnalyticServiceImpl implements AnalyticService {
     private final TransactionRepository transactionRepository;
     private final SettingRepository settingRepository;
 
+    @Secured("ADMIN")
     @Override
     public AnalyticAdmin getAnalyticAdmin() {
-        AnalyticAdmin analyticAdmin = new AnalyticAdmin();
+//        AnalyticAdmin analyticAdmin = new AnalyticAdmin();
 //        List<Account> accounts = accountRepository
 //                .findByRoleStringAndAccountStateString(
 //                        Arrays.asList(ROLE_READER, ROLE_CUSTOMER),
@@ -60,9 +62,10 @@ public class AnalyticServiceImpl implements AnalyticService {
 //        analyticAdmin.setBookingStatics(getBookingStatics());
 //        analyticAdmin.setIncomeByToken(getIncomeByToken());
 //        analyticAdmin.setIncomeByRevenueShare(getIncomeByRevenueShare());
-        return analyticAdmin;
+        return null;
     }
 
+    @Secured("ADMIN")
     @Override
     public AnalyticAdmin getAnalyticAdminByDate(String startDate, String endDate) {
 

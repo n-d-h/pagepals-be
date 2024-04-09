@@ -5,6 +5,7 @@ import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,10 @@ class BookingServiceImplTest {
     private BookingServiceImpl bookingServiceImpl;
     @MockBean
     private TransactionRepository transactionRepository;
+    @MockBean
+    private ReaderRepository readerRepository;
+    @MockBean
+    private DateUtils dateUtils;
 
     /**
      * Method under test: {@link BookingServiceImpl#getListBookingByCustomer(UUID, QueryDto)}

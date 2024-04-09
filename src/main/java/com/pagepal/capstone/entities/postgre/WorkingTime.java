@@ -11,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -43,7 +44,7 @@ public class WorkingTime implements Serializable {
     @JsonManagedReference
     private Reader reader;
 
-    @OneToOne(mappedBy = "workingTime", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workingTime", fetch = FetchType.LAZY)
     @JsonBackReference
-    private Booking booking;
+    private List<Booking> bookings;
 }

@@ -23,7 +23,7 @@ public class ReaderDto {
 
     private String nickname;
 
-    private int rating;
+    private Integer rating;
 
     private String genre;
 
@@ -37,9 +37,9 @@ public class ReaderDto {
 
     private String description;
 
-    private String totalOfReviews;
+    private Integer totalOfReviews;
 
-    private String totalOfBookings;
+    private Integer totalOfBookings;
 
     private String introductionVideoUrl;
 
