@@ -34,18 +34,27 @@ public class Request implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "state")
-    @Enumerated(EnumType.STRING)
-    private RequestStateEnum state;
-
     @Column(name = "created_at")
     private Date createdAt;
 
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "interview_at")
+    private Date interviewAt;
+
     @Column(name = "meeting_code")
     private String meetingCode;
+
+    @Column(name = "staff_id")
+    private UUID staffId;
+
+    @Column(name = "staff_name")
+    private String staffName;
+
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    private RequestStateEnum state;
 
     @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
     @JsonManagedReference

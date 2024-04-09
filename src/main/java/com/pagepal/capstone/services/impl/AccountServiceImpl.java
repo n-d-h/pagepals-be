@@ -9,6 +9,7 @@ import com.pagepal.capstone.mappers.AccountMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.AccountService;
 import com.pagepal.capstone.services.EmailService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,8 @@ public class AccountServiceImpl implements AccountService {
 
     private static final String SECRET_KEY = "jkHGs0lbxWwbirSG";
     private final WalletRepository walletRepository;
+    
+    private final DateUtils dateUtils;
 
     public static String encodeVerificationCode(String verificationCode) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "AES");
@@ -102,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
         account.setEmail(request.getEmail());
         account.setLoginType(LoginTypeEnum.NORMAL);
         account.setRole(role);
-        account.setCreatedAt(new Date());
+        account.setCreatedAt(dateUtils.getCurrentVietnamDate());
         account.setAccountState(accountState);
         var savedAccount = accountRepository.save(account);
         Customer result = null;
@@ -110,7 +113,7 @@ public class AccountServiceImpl implements AccountService {
             Customer customer = new Customer();
             customer.setAccount(savedAccount);
             customer.setFullName(request.getUsername());
-            customer.setCreatedAt(new Date());
+            customer.setCreatedAt(dateUtils.getCurrentVietnamDate());
             customer.setStatus(Status.ACTIVE);
             result = customerRepository.save(customer);
         }
@@ -122,8 +125,8 @@ public class AccountServiceImpl implements AccountService {
         Wallet wallet = new Wallet();
         wallet.setAccount(savedAccount);
         wallet.setStatus(Status.ACTIVE);
-        wallet.setCreatedAt(new Date());
-        wallet.setUpdatedAt(new Date());
+        wallet.setCreatedAt(dateUtils.getCurrentVietnamDate());
+        wallet.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         wallet.setTokenAmount(0);
         wallet.setCash((float) 0);
         Wallet resultWallet = walletRepository.save(wallet);
@@ -188,7 +191,7 @@ public class AccountServiceImpl implements AccountService {
         accountCreate.setEmail(accountGoogleDto.getEmail());
         accountCreate.setLoginType(LoginTypeEnum.GOOGLE);
         accountCreate.setRole(role);
-        accountCreate.setCreatedAt(new Date());
+        accountCreate.setCreatedAt(dateUtils.getCurrentVietnamDate());
         AccountState state = accountStateRepository.findByNameAndStatus(ACTIVE, Status.ACTIVE).orElseThrow(
                 () -> new RuntimeException("Account State not found")
         );
@@ -198,14 +201,14 @@ public class AccountServiceImpl implements AccountService {
             Customer cusCreate = new Customer();
             cusCreate.setAccount(account);
             cusCreate.setFullName(accountGoogleDto.getName());
-            cusCreate.setCreatedAt(new Date());
+            cusCreate.setCreatedAt(dateUtils.getCurrentVietnamDate());
             cusCreate.setStatus(Status.ACTIVE);
             Customer result = customerRepository.save(cusCreate);
             Wallet wallet = new Wallet();
             wallet.setAccount(account);
             wallet.setStatus(Status.ACTIVE);
-            wallet.setCreatedAt(new Date());
-            wallet.setUpdatedAt(new Date());
+            wallet.setCreatedAt(dateUtils.getCurrentVietnamDate());
+            wallet.setUpdatedAt(dateUtils.getCurrentVietnamDate());
             wallet.setTokenAmount(0);
             wallet.setCash((float) 0);
             Wallet resultWallet = walletRepository.save(wallet);
@@ -261,7 +264,7 @@ public class AccountServiceImpl implements AccountService {
         accountCreate.setFullName(account.getFullName());
         accountCreate.setEmail(account.getEmail());
         accountCreate.setPhoneNumber(account.getPhoneNumber());
-        accountCreate.setCreatedAt(new Date());
+        accountCreate.setCreatedAt(dateUtils.getCurrentVietnamDate());
         accountCreate.setAccountState(accountStateRepository.findByNameAndStatus(ACTIVE, Status.ACTIVE).orElseThrow(
                 () -> new EntityNotFoundException("Account State not found")
         ));
@@ -329,7 +332,7 @@ public class AccountServiceImpl implements AccountService {
                     );
             account.setAccountState(state);
         }
-        account.setUpdatedAt(new Date());
+        account.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.toDto(account);
     }
@@ -353,7 +356,7 @@ public class AccountServiceImpl implements AccountService {
         );
 
         account.setAccountState(state);
-        account.setUpdatedAt(new Date());
+        account.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.toDto(account);
     }
@@ -367,7 +370,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         account.setPassword(passwordEncoder.encode(password));
-        account.setUpdatedAt(new Date());
+        account.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         account = accountRepository.save(account);
 
         return AccountMapper.INSTANCE.toAccountReadDto(account);

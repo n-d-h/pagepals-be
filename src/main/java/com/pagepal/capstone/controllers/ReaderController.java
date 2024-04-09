@@ -56,17 +56,18 @@ public class ReaderController {
     }
 
     @QueryMapping
-    public WorkingTimeListRead getWorkingTimesAvailableByReader(@Argument(name ="readerId") UUID id) {
+    public WorkingTimeListRead getWorkingTimesAvailableByReader(@Argument(name = "readerId") UUID id) {
         return readerService.getWorkingTimesAvailableByReader(id);
     }
 
     @QueryMapping
-    public List<ReaderBookDto> getReaderBooks(@Argument UUID id) {
-        return readerService.getBookOfReader(id);
+    public ReaderBookListDto getReaderBooks(@Argument("id") UUID id,
+                                            @Argument(name = "filter") ReaderBookFilterDto filter) {
+        return readerService.getBookOfReader(id, filter);
     }
 
     @MutationMapping
-    public ReaderDto registerReader(@Argument(name = "accountId") UUID id ,@Argument(name = "data") RequestInputDto readerRequestInputDto) {
+    public ReaderDto registerReader(@Argument(name = "accountId") UUID id, @Argument(name = "data") RequestInputDto readerRequestInputDto) {
         return readerService.registerReader(id, readerRequestInputDto);
     }
 

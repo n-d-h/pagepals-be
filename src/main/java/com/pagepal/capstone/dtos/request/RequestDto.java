@@ -22,6 +22,9 @@ public class RequestDto {
     private RequestStateEnum state;
     private Date createdAt;
     private Date updatedAt;
+    private Date interviewAt;
+    private UUID staffId;
+    private String staffName;
     private String meetingCode;
     private List<AnswerDto> answers;
     private ReaderDto reader;

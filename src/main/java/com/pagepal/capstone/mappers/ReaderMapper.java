@@ -12,5 +12,4 @@ public interface ReaderMapper {
 
     ReaderDto toDto(Reader reader);
 
-
 }

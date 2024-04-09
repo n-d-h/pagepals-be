@@ -14,6 +14,7 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.*;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.ReaderService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,8 @@ public class ReaderServiceImpl implements ReaderService {
 
     private final String readerPending = "READER_PENDING";
     private final BookingRepository bookingRepository;
+    private final DateUtils dateUtils;
+    private final BookRepository bookRepository;
 
     @Override
     public List<ReaderDto> getReadersActive() {
@@ -177,42 +180,63 @@ public class ReaderServiceImpl implements ReaderService {
         List<WorkingTimeDto> result = new ArrayList<>();
         WorkingTimeListRead list = new WorkingTimeListRead();
         if (workingTimes != null) {
-            Date now = new Date();
-            result = workingTimes.stream()
-                    .filter(p -> p.getDate().after(now) && p.getBooking() == null)
-                    .map(WorkingTimeMapper.INSTANCE::toDto).toList();
+            Date now = dateUtils.getCurrentVietnamDate();
+            for (WorkingTime workingTime : workingTimes) {
+                if (workingTime.getStartTime().after(now) && workingTime.getBookings() == null) {
+                    result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));
+                } else if (workingTime.getStartTime().after(now) && workingTime.getBookings() != null) {
+                    List<Booking> bookings = workingTime.getBookings().stream()
+                            .filter(booking -> booking.getState().getName().equals("PENDING")).toList();
+                    if (bookings == null || bookings.isEmpty())
+                        result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));
+                }
+            }
             list = divideWorkingTimes(result);
         }
         return list;
     }
 
     @Override
-    public List<ReaderBookDto> getBookOfReader(UUID id) {
+    public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         List<ReaderBookDto> books = new ArrayList<>();
-        var services = reader.getServices();
-        if (services != null) {
-            for (var service : services) {
-                boolean isAdded = false;
-                Book b = service.getBook();
-                if (books.isEmpty()) {
-                    books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ServiceMapper.INSTANCE.toDto(service))));
-                } else {
-                    for (var book : books) {
-                        if (book.getBook().getId().equals(b.getId())) {
-                            List<ServiceDto> serviceDtos = new ArrayList<>(book.getServices());
-                            serviceDtos.add(ServiceMapper.INSTANCE.toDto(service));
-                            book.setServices(serviceDtos);
-                            isAdded = true;
-                        }
-                    }
-                    if (!isAdded) {
-                        books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(b), List.of(ServiceMapper.INSTANCE.toDto(service))));
-                    }
-                }
-            }
+
+        if (filter.getPage() == null || filter.getPage() < 0)
+            filter.setPage(0);
+        if (filter.getPageSize() == null || filter.getPageSize() < 0)
+            filter.setPageSize(10);
+
+        Pageable pageable;
+        pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
+
+        Page<Book> page;
+        if (filter.getTitle() == null || filter.getTitle().isEmpty()) {
+            page = bookRepository.findByReaderId(id, pageable);
+        } else {
+            page = bookRepository.findByReaderIdAndTitleContaining(id, filter.getTitle().toLowerCase(), pageable);
         }
-        return books;
+
+        ReaderBookListDto listReaderDto = new ReaderBookListDto();
+        if (page != null) {
+            for (var book : page) {
+                List<ServiceDto> services = book.getServices().stream().map(ServiceMapper.INSTANCE::toDto).collect(Collectors.toList());
+                books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(book), services));
+            }
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(page.getTotalPages());
+            pagingDto.setTotalOfElements(page.getTotalElements());
+            pagingDto.setSort(page.getSort().toString());
+            pagingDto.setCurrentPage(page.getNumber());
+            pagingDto.setPageSize(page.getSize());
+
+            listReaderDto.setList(books);
+            listReaderDto.setPaging(pagingDto);
+            return listReaderDto;
+        } else {
+            listReaderDto.setList(Collections.emptyList());
+            listReaderDto.setPaging(null);
+            return listReaderDto;
+        }
     }
 
     @Override
@@ -230,6 +254,10 @@ public class ReaderServiceImpl implements ReaderService {
         reader.setDescription(requestInputDto.getInformation().getDescription());
         reader.setIntroductionVideoUrl(requestInputDto.getInformation().getIntroductionVideoUrl());
         reader.setAudioDescriptionUrl(requestInputDto.getInformation().getAudioDescriptionUrl());
+        reader.setTotalOfReviews(0);
+        reader.setTotalOfBookings(0);
+        reader.setExperience(0.0);
+        reader.setRating(0);
         reader.setStatus(Status.ACTIVE);
         reader.setAccount(account);
 
@@ -241,8 +269,8 @@ public class ReaderServiceImpl implements ReaderService {
             accountRepository.save(account);
 
             Request request = new Request();
-            request.setCreatedAt(new Date());
-            request.setUpdatedAt(new Date());
+            request.setCreatedAt(dateUtils.getCurrentVietnamDate());
+            request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
             request.setReader(reader);
             request.setState(RequestStateEnum.ANSWER_CHECKING);
             request = requestRepository.save(request);
@@ -279,13 +307,13 @@ public class ReaderServiceImpl implements ReaderService {
         readerUpdate.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
         readerUpdate.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
         readerUpdate.setAvatarUrl(readerUpdateDto.getAvatarUrl());
-        readerUpdate.setUpdatedAt(new Date());
+        readerUpdate.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         readerUpdate.setIsUpdating(true);
         readerUpdate.setReaderUpdateReferenceId(reader.getId());
 
         readerUpdate = readerRepository.save(readerUpdate);
 
-        if(readerUpdate != null) {
+        if (readerUpdate != null) {
             reader = readerRepository.save(reader);
             return reader != null ? "Request update success!" : "Fail!";
         }

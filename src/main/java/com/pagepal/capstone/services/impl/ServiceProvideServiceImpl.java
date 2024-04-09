@@ -52,7 +52,7 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
                 () -> new EntityNotFoundException("Reader not found")
         );
 
-        var services = serviceRepository.findAllByReaderAndBookTitleContainsIgnoreCase(reader, queryDto.getSearch(), pageable);
+        var services = serviceRepository.findAllByReaderAndBookTitleContainsIgnoreCase(reader, queryDto.getSearch().toLowerCase(), pageable);
 
         ListService list = new ListService();
         if (services == null) {

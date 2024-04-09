@@ -37,7 +37,7 @@ public class Reader implements Serializable {
     private String nickname;
 
     @Column(name = "rating")
-    private int rating;
+    private Integer rating;
 
     @Column(name = "genre")
     private String genre;
@@ -55,10 +55,10 @@ public class Reader implements Serializable {
     private String description;
 
     @Column(name = "total_of_reviews")
-    private String totalOfReviews;
+    private Integer totalOfReviews;
 
     @Column(name = "total_of_bookings")
-    private String totalOfBookings;
+    private Integer totalOfBookings;
 
     @Column(name = "introduction_video_url")
     private String introductionVideoUrl;

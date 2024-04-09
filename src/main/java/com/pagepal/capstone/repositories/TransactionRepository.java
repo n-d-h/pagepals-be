@@ -89,7 +89,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             SELECT t
             FROM Transaction t
             WHERE t.createAt BETWEEN :startDate AND :endDate
-            AND t.wallet.account.customer.id = :customerId
+            AND t.wallet.account.reader.id = :customerId
             AND t.transactionType IN :transactionTypes
             """)
     Page<Transaction> findByCreateAtBetweenAndReaderIdAndTransactionTypes(Date startDate, Date endDate,

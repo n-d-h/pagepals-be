@@ -7,8 +7,8 @@ type Reader {
     countryAccent: String
     audioDescriptionUrl: String
     description: String
-    totalOfReviews: String
-    totalOfBookings: String
+    totalOfReviews: Int
+    totalOfBookings: Int
     introductionVideoUrl: String
     avatarUrl: String
     experience: Float
@@ -36,8 +36,8 @@ type ReaderRead{
     countryAccent: String
     audioDescriptionUrl: String
     description: String
-    totalOfReviews: String
-    totalOfBookings: String
+    totalOfReviews: Int
+    totalOfBookings: Int
     introductionVideoUrl: String
     avatarUrl: String
     experience: Float
@@ -65,6 +65,17 @@ type listReader {
 type ReaderBook{
     book: Book
     services: [Service]
+}
+
+input ReaderBookFilter{
+    title: String
+    page: Int
+    pageSize: Int
+}
+
+type ReaderBookList{
+    paging: Paging
+    list: [ReaderBook]
 }
 
 type ReaderReview{
@@ -120,7 +131,7 @@ extend type Query {
     getListReaders(query: searchReaderInput): listReader
     getListServicesOfReader(id: ID!): [Service]
     getReaderProfile(id: ID!): ReaderProfile
-    getReaderBooks(id: ID!): [ReaderBook]
+    getReaderBooks(id: ID!, filter: ReaderBookFilter): ReaderBookList
     getListPopularReaders: [Reader]
     getReaderReviews(readerId: ID!, page: Int, pageSize: Int): ListReaderReview
 }

@@ -10,6 +10,7 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.PostImageRepository;
 import com.pagepal.capstone.repositories.PostRepository;
 import com.pagepal.capstone.services.PostService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -27,6 +28,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final DateUtils dateUtils;
 
     @Secured({"READER"})
     @Override
@@ -71,8 +73,8 @@ public class PostServiceImpl implements PostService {
         savedPost.setTitle(postDto.getTitle());
         savedPost.setContent(postDto.getContent());
         savedPost.setReader(reader);
-        savedPost.setCreatedAt(new Date());
-        savedPost.setUpdatedAt(new Date());
+        savedPost.setCreatedAt(dateUtils.getCurrentVietnamDate());
+        savedPost.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         savedPost.setStatus(Status.ACTIVE);
         postRepository.save(savedPost);
 
@@ -104,7 +106,7 @@ public class PostServiceImpl implements PostService {
         }
         post.setTitle(postUpdatedDto.getTitle());
         post.setContent(postUpdatedDto.getContent());
-        post.setUpdatedAt(new Date());
+        post.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         post.setStatus(Status.ACTIVE);
         postRepository.save(post);
 

@@ -8,6 +8,7 @@ import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +53,11 @@ class ReaderServiceImplTest {
     private AnswerRepository answerRepository;
     @MockBean
     private BookingRepository bookingRepository;
+    @MockBean
+    private DateUtils dateUtils;
+    @MockBean
+    private BookRepository bookRepository;
+
 
     @Autowired
     private ReaderServiceImpl readerServiceImpl;
@@ -73,11 +79,11 @@ class ReaderServiceImplTest {
             new Date(), new Date(), new Date(), accountState2, null, null, role2, null);
     //Reader
     Reader reader1 = new Reader(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"), "name1", 5, "genre1", "Vietnamese", "accent1",
-            "url", "des1", "123", "123", "url","avt",  123.2, "tag",
+            "url", "des1", 0, 0, "url","avt",  123.2, "tag",
             new Date(), new Date(), new Date(), null,null, null, account1, null, null, null, null,
             null, null, null);
     Reader reader2 = new Reader(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "name2", 5, "genre1", "Vietnamese", "accent1",
-            "url", "des1", "123", "123", "url","avt",  123.2, "tag",
+            "url", "des1", 0, 0, "url","avt",  123.2, "tag",
             new Date(), new Date(), new Date(), null,null, null, account2, null, null, null, null,
             null, null, null);
 
@@ -236,8 +242,8 @@ class ReaderServiceImplTest {
         ArrayList<Promotion> promotions = new ArrayList<>();
         ArrayList<Request> requests = new ArrayList<>();
         when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
-                "GB", "https://example.org/example", "The characteristics of someone or something", "Total Of Reviews",
-                "Total Of Bookings", "https://example.org/example","avt",  10.0d, "Tags", createdAt, updatedAt, deletedAt,
+                "GB", "https://example.org/example", "The characteristics of someone or something", 0,
+                0, "https://example.org/example","avt",  10.0d, "Tags", createdAt, updatedAt, deletedAt,
                 Status.ACTIVE,null, null, account, level, workingTimes, services, follows, promotions, requests, new ArrayList<>())));
         assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
         verify(readerRepository).findById(any());
