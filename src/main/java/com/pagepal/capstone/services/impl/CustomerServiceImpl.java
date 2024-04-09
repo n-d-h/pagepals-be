@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -89,8 +89,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (customerUpdateDto.getDob() != null) {
             LocalDate localDate = LocalDate.parse(customerUpdateDto.getDob());
-            Date dob = Date.from(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant());
-            customer.setDob(dob);
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
+            ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+            Instant instant = localDateTime.atZone(zoneId).toInstant();
+            Date date = Date.from(instant);
+            customer.setDob(date);
         }
 
         if (customerUpdateDto.getImageUrl() != null) {
@@ -99,7 +102,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         customer.setUpdatedAt(dateUtils.getCurrentVietnamDate());
 
-        customerRepository.save(customer);
+        customer = customerRepository.save(customer);
 
         return CustomerMapper.INSTANCE.toDto(customer);
     }
