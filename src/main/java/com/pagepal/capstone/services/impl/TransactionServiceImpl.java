@@ -6,12 +6,17 @@ import com.pagepal.capstone.dtos.transaction.ListTransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionFilterDto;
 import com.pagepal.capstone.entities.postgre.Booking;
+import com.pagepal.capstone.entities.postgre.Customer;
+import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Transaction;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.mappers.TransactionMapper;
+import com.pagepal.capstone.repositories.CustomerRepository;
+import com.pagepal.capstone.repositories.ReaderRepository;
 import com.pagepal.capstone.repositories.TransactionRepository;
 import com.pagepal.capstone.services.TransactionService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,10 +50,15 @@ public class TransactionServiceImpl implements TransactionService {
             );
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private final CustomerRepository customerRepository;
+    private final ReaderRepository readerRepository;
 
 
     @Override
     public ListTransactionDto getListTransactionForCustomer(UUID customerId, TransactionFilterDto filter) throws ParseException {
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
 
         if (filter.getPage() == null || filter.getPage() < 0)
             filter.setPage(0);
@@ -56,7 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
             filter.setPageSize(10);
 
         Pageable pageable;
-        pageable = PageRequest.of(filter.getPage(), filter.getPageSize(), Sort.by("createAt").ascending());
+        pageable = PageRequest.of(filter.getPage(), filter.getPageSize(), Sort.by("createAt").descending());
 
         Page<Transaction> transactions;
 
@@ -121,6 +131,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public ListTransactionDto getListTransactionForReader(UUID readerId, TransactionFilterDto filter) throws ParseException {
+
+        Reader reader = readerRepository.findById(readerId)
+                .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
         if (filter.getPage() == null || filter.getPage() < 0)
             filter.setPage(0);
