@@ -4,6 +4,7 @@ import com.pagepal.capstone.dtos.customer.CustomerDto;
 import com.pagepal.capstone.dtos.customer.CustomerReadDto;
 import com.pagepal.capstone.dtos.customer.CustomerUpdateDto;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,5 +15,5 @@ public interface CustomerService {
 
     CustomerReadDto getCustomerProfile(UUID id);
 
-    CustomerDto updateCustomer(UUID id, CustomerUpdateDto customerUpdateDto);
+    CustomerDto updateCustomer(UUID id, CustomerUpdateDto customerUpdateDto) throws ParseException;
 }

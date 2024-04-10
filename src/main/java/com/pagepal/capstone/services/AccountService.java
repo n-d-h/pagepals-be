@@ -20,7 +20,7 @@ public interface AccountService {
     AccountReadDto getAccountByUsername(String username);
     AccountDto updateAccountState(UUID id, String accountState);
 
-    AccountReadDto updatePassword(UUID id, String password) throws Exception;
+    AccountReadDto updatePassword(UUID id, String password);
 
     String verifyCode(UUID id) throws Exception;
 }

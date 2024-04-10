@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Secured({"CUSTOMER", "READER"})
     @Override
-    public CustomerDto updateCustomer(UUID id, CustomerUpdateDto customerUpdateDto) {
+    public CustomerDto updateCustomer(UUID id, CustomerUpdateDto customerUpdateDto) throws ParseException {
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if (customerOptional.isEmpty()) {
             throw new EntityNotFoundException("Customer not found");
@@ -87,12 +89,9 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setGender(customerUpdateDto.getGender());
         }
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         if (customerUpdateDto.getDob() != null) {
-            LocalDate localDate = LocalDate.parse(customerUpdateDto.getDob());
-            LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
-            ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
-            Instant instant = localDateTime.atZone(zoneId).toInstant();
-            Date date = Date.from(instant);
+            Date date = dateFormat.parse(customerUpdateDto.getDob());
             customer.setDob(date);
         }
 
@@ -106,4 +105,5 @@ public class CustomerServiceImpl implements CustomerService {
 
         return CustomerMapper.INSTANCE.toDto(customer);
     }
+
 }

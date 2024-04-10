@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -362,7 +363,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountReadDto updatePassword(UUID id, String password) throws Exception {
+    public AccountReadDto updatePassword(UUID id, String password ){
         Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
         if(passwordEncoder.encode(password).equals(account.getPassword())) {

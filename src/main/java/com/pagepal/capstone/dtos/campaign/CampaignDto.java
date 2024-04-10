@@ -20,11 +20,11 @@ public class CampaignDto {
     private UUID id;
     private String title;
     private String description;
-    private Date startAt;
-    private Date endAt;
+    private String startAt;
+    private String endAt;
     private String imageUrl;
     private Integer saleLimit;
-    private Date expOfPromotion;
+    private String expOfPromotion;
     private Status status;
     private CampaignEnum state;
     private List<PromotionDto> promotions;

@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class ReaderReviewDto {
     private CustomerDto customer;
-    private Date date;
+    private String date;
     private ServiceDto service;
     private int rating;
     private String review;

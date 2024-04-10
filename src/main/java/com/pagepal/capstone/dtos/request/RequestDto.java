@@ -20,9 +20,9 @@ public class RequestDto {
     private UUID id;
     private String description;
     private RequestStateEnum state;
-    private Date createdAt;
-    private Date updatedAt;
-    private Date interviewAt;
+    private String createdAt;
+    private String updatedAt;
+    private String interviewAt;
     private UUID staffId;
     private String staffName;
     private String meetingCode;

@@ -29,11 +29,11 @@ public class AccountReadDto {
 
     private LoginTypeEnum loginType;
 
-    private Date createdAt = new Date();
+    private String createdAt ;
 
-    private Date updatedAt = new Date();
+    private String updatedAt ;
 
-    private Date deletedAt;
+    private String deletedAt;
 
     private AccountState accountState;
 

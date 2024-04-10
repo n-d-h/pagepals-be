@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ServiceCustomerDto {
     private UUID id;
     private Integer price;
-    private Date createdAt;
+    private String createdAt;
     private String description;
     private Double duration;
     private Integer totalOfReview;

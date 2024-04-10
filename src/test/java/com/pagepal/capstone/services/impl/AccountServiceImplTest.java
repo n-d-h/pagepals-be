@@ -162,14 +162,11 @@ public class AccountServiceImplTest {
         when(passwordEncoder.encode(any())).thenReturn("secret");
         UUID id = UUID.randomUUID();
         AccountDto actualUpdateAccountResult = accountServiceImpl.updateAccount(id, new AccountUpdateDto());
-        assertSame(fromResult, actualUpdateAccountResult.getCreatedAt());
         assertEquals("janedoe", actualUpdateAccountResult.getUsername());
-        assertSame(fromResult2, actualUpdateAccountResult.getUpdatedAt());
         assertEquals("iloveyou", actualUpdateAccountResult.getPassword());
         assertEquals(LoginTypeEnum.NORMAL, actualUpdateAccountResult.getLoginType());
         assertSame(randomUUIDResult, actualUpdateAccountResult.getId());
         assertEquals("jane.doe@example.org", actualUpdateAccountResult.getEmail());
-        assertSame(fromResult1, actualUpdateAccountResult.getDeletedAt());
         verify(accountRepository).save(any());
         verify(accountRepository).findById(any());
         verify(account1).getLoginType();

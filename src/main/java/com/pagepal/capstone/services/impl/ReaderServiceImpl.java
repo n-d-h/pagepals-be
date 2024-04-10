@@ -22,6 +22,7 @@ import org.springframework.data.domain.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -336,11 +337,13 @@ public class ReaderServiceImpl implements ReaderService {
 
         List<ReaderReviewDto> reviews = new ArrayList<>();
 
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         for (var booking : bookings) {
             ReaderReviewDto review = new ReaderReviewDto();
             review.setRating(booking.getRating());
             review.setReview(booking.getReview());
-            review.setDate(booking.getUpdateAt());
+            review.setDate(outputFormat.format(booking.getUpdateAt()));
             review.setCustomer(CustomerMapper.INSTANCE.toDto(booking.getCustomer()));
             review.setService(ServiceMapper.INSTANCE.toDto(booking.getService()));
             reviews.add(review);

@@ -20,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -160,7 +161,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void testUpdateCustomer() {
+    void testUpdateCustomer() throws ParseException {
         account1.setReader(reader1);
         account2.setCustomer(customer1);
         when(customerRepository.findById(any())).thenReturn(Optional.of(customer1));

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -19,9 +20,9 @@ import java.util.List;
 public class CustomerReadDto {
     private String fullName;
     private GenderEnum gender;
-    private Date dob;
+    private String dob;
     private String imageUrl;
-    private Date createdAt;
+    private String createdAt;
     private Account account;
     private List<Follow> follows;
     private List<Booking> bookings;

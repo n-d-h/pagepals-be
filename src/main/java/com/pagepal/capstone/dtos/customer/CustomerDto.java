@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -28,15 +29,15 @@ public class CustomerDto {
 
     private GenderEnum gender;
 
-    private Date dob;
+    private String dob;
 
     private String imageUrl;
 
-    private Date createdAt = new Date();
+    private String createdAt;
 
-    private Date updatedAt = new Date();
+    private String updatedAt;
 
-    private Date deletedAt;
+    private String deletedAt;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;

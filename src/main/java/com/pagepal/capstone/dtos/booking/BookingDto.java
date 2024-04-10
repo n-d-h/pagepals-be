@@ -21,10 +21,10 @@ public class BookingDto {
     private String description;
     private String review;
     private Integer rating;
-    private Date createAt;
-    private Date updateAt;
-    private Date deleteAt;
-    private Date startAt;
+    private String createAt;
+    private String updateAt;
+    private String deleteAt;
+    private String startAt;
     private Customer customer;
     private Meeting meeting;
     private BookingState state;

@@ -47,11 +47,11 @@ public class ReaderDto {
 
     private String tags;
 
-    private Date createdAt = new Date();
+    private String createdAt ;
 
-    private Date updatedAt = new Date();
+    private String updatedAt ;
 
-    private Date deletedAt;
+    private String deletedAt;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;

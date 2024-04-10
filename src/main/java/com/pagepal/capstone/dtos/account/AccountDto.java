@@ -23,9 +23,9 @@ public class AccountDto {
     private String fullName;
     private String phoneNumber;
     private LoginTypeEnum loginType;
-    private Date createdAt;
-    private Date updatedAt;
-    private Date deletedAt;
+    private String createdAt;
+    private String updatedAt;
+    private String deletedAt;
     private Customer customer;
     private Reader reader;
     private RoleDto role;

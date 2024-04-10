@@ -20,8 +20,8 @@ public class PromotionDto {
     private UUID id;
     private String code;
     private String description;
-    private Date beginUsageDate;
-    private Date endUsageDate;
+    private String beginUsageDate;
+    private String endUsageDate;
     private Integer numberOfRemain;
     private Status status;
     private PromotionType promotionType;

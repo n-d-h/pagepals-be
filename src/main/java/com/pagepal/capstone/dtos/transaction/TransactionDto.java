@@ -25,7 +25,7 @@ public class TransactionDto {
 
     private String description;
 
-    private Date createAt;
+    private String createAt;
 
     private Double amount;
 

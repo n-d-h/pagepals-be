@@ -10,6 +10,7 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ public class CustomerController {
     }
 
     @MutationMapping(name = "updateCustomer")
-    public CustomerDto updateCustomer(@Argument UUID id, @Argument(name = "customer") CustomerUpdateDto customerUpdateDto) {
+    public CustomerDto updateCustomer(@Argument UUID id, @Argument(name = "customer") CustomerUpdateDto customerUpdateDto) throws ParseException {
         return customerService.updateCustomer(id, customerUpdateDto);
     }
 }

@@ -41,6 +41,7 @@ public class Customer implements Serializable {
     @Enumerated(EnumType.STRING)
     private GenderEnum gender;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dob")
     private Date dob;
 

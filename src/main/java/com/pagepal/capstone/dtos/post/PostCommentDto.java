@@ -13,8 +13,8 @@ import java.util.UUID;
 public class PostCommentDto {
     private UUID id;
     private String content;
-    private Date createdAt;
-    private Date updatedAt;
+    private String createdAt;
+    private String updatedAt;
     private UUID postId;
     private UUID readerId;
     private UUID customerId;
