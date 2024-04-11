@@ -15,7 +15,7 @@ public class ReaderRequestInputDto {
     private String nickname;
     private List<String> genres;
     private List<String> languages;
-    private String countryAscent;
+    private String countryAccent;
     private String audioDescriptionUrl;
     private String introductionVideoUrl;
     private String description;

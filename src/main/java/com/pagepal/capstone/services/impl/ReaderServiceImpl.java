@@ -251,7 +251,7 @@ public class ReaderServiceImpl implements ReaderService {
         reader.setGenre(requestInputDto.getInformation().getGenres().toString().replaceAll("\\[|\\]", ""));
         reader.setLanguage(requestInputDto.getInformation().getLanguages().toString().replaceAll("\\[|\\]", ""));
         reader.setAvatarUrl(requestInputDto.getInformation().getAvatarUrl());
-        reader.setCountryAccent(requestInputDto.getInformation().getCountryAscent());
+        reader.setCountryAccent(requestInputDto.getInformation().getCountryAccent());
         reader.setDescription(requestInputDto.getInformation().getDescription());
         reader.setIntroductionVideoUrl(requestInputDto.getInformation().getIntroductionVideoUrl());
         reader.setAudioDescriptionUrl(requestInputDto.getInformation().getAudioDescriptionUrl());
@@ -303,7 +303,7 @@ public class ReaderServiceImpl implements ReaderService {
         readerUpdate.setNickname(readerUpdateDto.getNickname());
         reader.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
         reader.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
-        readerUpdate.setCountryAccent(readerUpdateDto.getCountryAscent());
+        readerUpdate.setCountryAccent(readerUpdateDto.getCountryAccent());
         readerUpdate.setDescription(readerUpdateDto.getDescription());
         readerUpdate.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
         readerUpdate.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
