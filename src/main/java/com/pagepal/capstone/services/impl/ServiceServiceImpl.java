@@ -99,6 +99,15 @@ public class ServiceServiceImpl implements ServiceService {
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
     }
 
+    @Override
+    public List<ServiceDto> getListServiceByServiceTypeAndBook(UUID serviceTypeId, UUID bookId) {
+        ServiceType serviceType = serviceTypeRepository.findById(serviceTypeId)
+                .orElseThrow(() -> new EntityNotFoundException("Service type not found"));
+        Book book = bookRepository.findById(bookId).orElseThrow();
+        return serviceRepository.findByServiceTypeAndBook(serviceType, book)
+                .stream().map(ServiceMapper.INSTANCE::toDto).toList();
+    }
+
     private Book createNewBook(GoogleBook book) {
         Book newBook = new Book();
         List<Category> categories = new ArrayList<>();
