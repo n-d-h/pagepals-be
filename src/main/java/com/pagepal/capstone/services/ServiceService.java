@@ -18,4 +18,6 @@ public interface ServiceService {
     List<ServiceTypeDto> getListServiceType();
 
     ServiceDto createService(WriteServiceDto writeServiceDto);
+
+    List<ServiceDto> getListServiceByServiceTypeAndBook(UUID serviceTypeId, UUID bookId);
 }

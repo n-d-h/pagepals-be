@@ -3,6 +3,7 @@ package com.pagepal.capstone.repositories;
 import com.pagepal.capstone.entities.postgre.Book;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Service;
+import com.pagepal.capstone.entities.postgre.ServiceType;
 import com.pagepal.capstone.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +25,6 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
     Page<Service> findAllByBookId(Book book, String title, Pageable pageable);
 
     long countByStatus(Status status);
+
+    List<Service> findByServiceTypeAndBook(ServiceType serviceType, Book book);
 }

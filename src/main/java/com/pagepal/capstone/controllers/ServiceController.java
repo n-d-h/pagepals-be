@@ -61,4 +61,12 @@ public class ServiceController {
     public ServiceDto createService(@Argument(name = "service") WriteServiceDto writeServiceDto) {
         return serviceService.createService(writeServiceDto);
     }
+
+    @QueryMapping(name = "getListServiceByServiceTypeAndBook")
+    public List<ServiceDto> getListServiceByServiceTypeAndBook(
+            @Argument(name = "serviceTypeId") UUID serviceTypeId,
+            @Argument(name = "bookId") UUID bookId
+    ) {
+        return serviceService.getListServiceByServiceTypeAndBook(serviceTypeId, bookId);
+    }
 }
