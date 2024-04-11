@@ -24,6 +24,11 @@ public class RequestController {
         return requestService.getListRequest();
     }
 
+    @QueryMapping
+    public RequestDto getRequestById(@Argument("requestId") UUID requestId) {
+        return requestService.getRequestById(requestId);
+    }
+
     @MutationMapping
     public RequestDto updateRequestInterview(@Argument("staffId") UUID staffId,
                                              @Argument("requestId") UUID requestId,

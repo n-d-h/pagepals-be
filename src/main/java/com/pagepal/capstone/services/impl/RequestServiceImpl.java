@@ -54,6 +54,14 @@ public class RequestServiceImpl implements RequestService {
 
     @Secured("STAFF")
     @Override
+    public RequestDto getRequestById(UUID requestId) {
+        return RequestMapper.INSTANCE.toDto(requestRepository.findById(requestId).orElseThrow(
+                () -> new EntityNotFoundException("Request not found")
+        ));
+    }
+
+    @Secured("STAFF")
+    @Override
     public RequestDto updateRequestInterview(UUID staffId, UUID requestId, String interviewAt, String description) throws ParseException {
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EntityNotFoundException("Request not found")
