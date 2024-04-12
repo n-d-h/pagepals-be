@@ -1,17 +1,11 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.request.RequestDto;
-import com.pagepal.capstone.entities.postgre.Account;
-import com.pagepal.capstone.entities.postgre.AccountState;
-import com.pagepal.capstone.entities.postgre.Reader;
-import com.pagepal.capstone.entities.postgre.Request;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.RequestMapper;
-import com.pagepal.capstone.repositories.AccountRepository;
-import com.pagepal.capstone.repositories.AccountStateRepository;
-import com.pagepal.capstone.repositories.ReaderRepository;
-import com.pagepal.capstone.repositories.RequestRepository;
+import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.EmailService;
 import com.pagepal.capstone.services.RequestService;
 import com.pagepal.capstone.utils.DateUtils;
@@ -44,6 +38,7 @@ public class RequestServiceImpl implements RequestService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private final DateUtils dateUtils;
+    private final RoleRepository roleRepository;
 
     @Secured("STAFF")
     @Override
@@ -150,7 +145,11 @@ public class RequestServiceImpl implements RequestService {
             AccountState accountState = accountStateRepository
                     .findByNameAndStatus(READER_STATE_ACTIVE, Status.ACTIVE)
                     .orElseThrow(() -> new EntityNotFoundException("Account state not found"));
+            Role role = roleRepository
+                    .findByName("READER")
+                    .orElseThrow(() -> new EntityNotFoundException("Role not found"));
             readerAccount.setAccountState(accountState);
+            readerAccount.setRole(role);
             readerAccount = accountRepository.save(readerAccount);
             if (readerAccount != null) {
                 String email = readerAccount.getEmail();
