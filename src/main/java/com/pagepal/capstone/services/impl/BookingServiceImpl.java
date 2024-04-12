@@ -113,9 +113,9 @@ public class BookingServiceImpl implements BookingService {
 
         Pageable pageable;
         if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
-            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createAt").descending());
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").descending());
         } else {
-            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("createAt").ascending());
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").ascending());
         }
 
         Page<Booking> bookings;
