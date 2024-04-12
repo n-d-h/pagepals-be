@@ -38,7 +38,7 @@ public class RequestServiceImpl implements RequestService {
     private final AccountStateRepository accountStateRepository;
 
     private final EmailService emailService;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     private final String READER_STATE_ACTIVE = "READER_ACTIVE";
 

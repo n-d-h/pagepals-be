@@ -301,8 +301,8 @@ public class ReaderServiceImpl implements ReaderService {
         Reader readerUpdate = new Reader();
 
         readerUpdate.setNickname(readerUpdateDto.getNickname());
-        reader.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
-        reader.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
+        readerUpdate.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
+        readerUpdate.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
         readerUpdate.setCountryAccent(readerUpdateDto.getCountryAccent());
         readerUpdate.setDescription(readerUpdateDto.getDescription());
         readerUpdate.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
