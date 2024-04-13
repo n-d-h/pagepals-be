@@ -1,6 +1,5 @@
 package com.pagepal.capstone.repositories;
 
-import com.pagepal.capstone.entities.postgre.Question;
 import com.pagepal.capstone.entities.postgre.Request;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

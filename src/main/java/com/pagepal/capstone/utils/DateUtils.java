@@ -14,4 +14,10 @@ public class DateUtils {
         Calendar calendar = Calendar.getInstance(VIETNAM_TIME_ZONE);
         return calendar.getTime();
     }
+
+    public Date formatDate(Date date) {
+        Calendar calendar = Calendar.getInstance(VIETNAM_TIME_ZONE);
+        calendar.setTime(date);
+        return calendar.getTime();
+    }
 }
