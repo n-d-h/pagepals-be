@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.dtos.reader.*;
+import com.pagepal.capstone.dtos.request.RequestDto;
 import com.pagepal.capstone.dtos.request.RequestInputDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
@@ -31,4 +32,6 @@ public interface ReaderService {
     ReaderDto registerReader(UUID accountId,RequestInputDto requestInputDto);
 
     ListReaderReviewDto getReaderReviewsByReaderId(UUID id, Integer page, Integer size);
+
+    RequestDto getRequestByReaderId(UUID readerId);
 }

@@ -2,6 +2,7 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;
+import com.pagepal.capstone.dtos.request.RequestDto;
 import com.pagepal.capstone.dtos.request.RequestInputDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.TimeSlot;
@@ -366,6 +367,14 @@ public class ReaderServiceImpl implements ReaderService {
             list.setPagination(pagingDto);
             return list;
         }
+    }
+
+    @Override
+    public RequestDto getRequestByReaderId(UUID readerId) {
+        var reader = readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        List<Request> requests = reader.getRequests();
+        var requestInterview = requests.stream().filter(request -> RequestStateEnum.INTERVIEW_PENDING.equals(request.getState())).findFirst();
+        return requestInterview.map(RequestMapper.INSTANCE::toDto).orElse(null);
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {

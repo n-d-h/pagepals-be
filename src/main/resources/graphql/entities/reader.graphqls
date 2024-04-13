@@ -134,6 +134,7 @@ extend type Query {
     getReaderBooks(id: ID!, filter: ReaderBookFilter): ReaderBookList
     getListPopularReaders: [Reader]
     getReaderReviews(readerId: ID!, page: Int, pageSize: Int): ListReaderReview
+    getRequestByReaderId(readerId: ID!): Request
 }
 
 extend type Mutation {

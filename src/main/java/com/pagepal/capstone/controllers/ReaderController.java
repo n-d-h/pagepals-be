@@ -1,10 +1,12 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.reader.*;
+import com.pagepal.capstone.dtos.request.RequestDto;
 import com.pagepal.capstone.dtos.request.RequestInputDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.services.ReaderService;
+import com.pagepal.capstone.services.RequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class ReaderController {
 
     private final ReaderService readerService;
+    private final RequestService requestService;
 
     @QueryMapping
     public List<ReaderDto> getReadersActive() {
@@ -76,5 +79,10 @@ public class ReaderController {
                                                 @Argument(name = "page") Integer page,
                                                 @Argument(name = "pageSize") Integer pageSize) {
         return readerService.getReaderReviewsByReaderId(id, page, pageSize);
+    }
+
+    @QueryMapping
+    public RequestDto getRequestByReaderId(@Argument("readerId") UUID readerId) {
+        return readerService.getRequestByReaderId(readerId);
     }
 }
