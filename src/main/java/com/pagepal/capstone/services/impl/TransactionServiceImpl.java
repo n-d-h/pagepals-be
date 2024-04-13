@@ -89,11 +89,16 @@ public class TransactionServiceImpl implements TransactionService {
         } else {
             Date startDate = dateFormat.parse(filter.getStartDate());
             Date endDate = dateFormat.parse(filter.getEndDate());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(endDate);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+
+            Date endDatePlusOneDay = calendar.getTime();
             if (filter.getTransactionType().isEmpty()) {
                 transactions = transactionRepository
                         .findByCreateAtBetweenAndCustomerIdAndTransactionTypes(
                                 startDate,
-                                endDate,
+                                endDatePlusOneDay,
                                 customerId,
                                 transactionTypesForCustomer,
                                 pageable
@@ -102,7 +107,7 @@ public class TransactionServiceImpl implements TransactionService {
                 transactions = transactionRepository
                         .findByCreateAtBetweenAndCustomerIdAndTransactionType(
                                 startDate,
-                                endDate,
+                                endDatePlusOneDay,
                                 customerId,
                                 TransactionTypeEnum.valueOf(filter.getTransactionType()),
                                 pageable
@@ -164,11 +169,16 @@ public class TransactionServiceImpl implements TransactionService {
         } else {
             Date startDate = dateFormat.parse(filter.getStartDate());
             Date endDate = dateFormat.parse(filter.getEndDate());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(endDate);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+
+            Date endDatePlusOneDay = calendar.getTime();
             if (filter.getTransactionType().isEmpty()) {
                 transactions = transactionRepository
                         .findByCreateAtBetweenAndReaderIdAndTransactionTypes(
                                 startDate,
-                                endDate,
+                                endDatePlusOneDay,
                                 readerId,
                                 transactionTypesForReader,
                                 pageable
@@ -177,7 +187,7 @@ public class TransactionServiceImpl implements TransactionService {
                 transactions = transactionRepository
                         .findByCreateAtBetweenAndReaderIdAndTransactionType(
                                 startDate,
-                                endDate,
+                                endDatePlusOneDay,
                                 readerId,
                                 TransactionTypeEnum.valueOf(filter.getTransactionType()),
                                 pageable
