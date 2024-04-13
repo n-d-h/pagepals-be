@@ -4,6 +4,12 @@ type Post {
     content: String
     readerId: ID
     postImages: [String]
+    createdAt: String
+}
+
+type ListPost {
+    pagination: Paging
+    list: [Post]
 }
 
 input PostInput {
@@ -11,6 +17,17 @@ input PostInput {
     content: String
     readerId: ID
     postImages: [String]
+}
+
+input PostSearch {
+    sort: String
+    page: Int
+    pageSize: Int
+}
+
+input PostReaderSearch {
+    readerId: ID
+    postSearch: PostSearch
 }
 
 input PostUpdateInput {
@@ -21,7 +38,8 @@ input PostUpdateInput {
 
 extend type Query {
     getPostById(id: ID!): Post
-    getAllPosts: [Post]
+    getAllPosts(sort: String, page: Int, pageSize: Int): ListPost
+    getAllPostsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int): ListPost
 }
 
 extend type Mutation {

@@ -1,5 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.post.ListPostDto;
 import com.pagepal.capstone.dtos.post.PostCreateDto;
 import com.pagepal.capstone.dtos.post.PostDto;
 import com.pagepal.capstone.dtos.post.PostUpdatedDto;
@@ -13,13 +15,14 @@ import com.pagepal.capstone.services.PostService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -30,7 +33,6 @@ public class PostServiceImpl implements PostService {
     private final PostImageRepository postImageRepository;
     private final DateUtils dateUtils;
 
-    @Secured({"READER"})
     @Override
     public List<PostDto> getAllPosts() {
         var listPosts = postRepository.findAll();
@@ -47,7 +49,6 @@ public class PostServiceImpl implements PostService {
         return listPostDtos;
     }
 
-    @Secured({"READER"})
     @Override
     public PostDto getPostById(UUID id) {
         var post = postRepository.findById(id).orElse(null);
@@ -149,5 +150,65 @@ public class PostServiceImpl implements PostService {
                 .readerId(post.getReader().getId())
                 .postImages(new ArrayList<>())
                 .build();
+    }
+
+    @Override
+    public ListPostDto getAllPostsByReaderId(UUID readerId, Integer page, Integer pageSize, String sort) {
+        Pageable pageable = createPageable(page, pageSize, sort);
+
+        Page<Post> posts = postRepository.findAllByReaderId(readerId, pageable);
+
+        return mapPostsToDto(posts);
+    }
+
+    @Override
+    public ListPostDto getAllPostsPagination(Integer page, Integer pageSize, String sort) {
+        Pageable pageable = createPageable(page, pageSize, sort);
+
+        Page<Post> posts = postRepository.findAll(pageable);
+
+        return mapPostsToDto(posts);
+    }
+
+    private Pageable createPageable(Integer page, Integer pageSize, String sort) {
+        if (page == null || page < 0)
+            page = 0;
+
+        if (pageSize == null || pageSize < 0)
+            pageSize = 10;
+
+        if (sort != null && sort.equals("desc")) {
+            return PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        } else {
+            return PageRequest.of(page, pageSize, Sort.by("createdAt").ascending());
+        }
+    }
+
+    private ListPostDto mapPostsToDto(Page<Post> posts) {
+        var listPostDto = new ListPostDto();
+
+        if(posts == null) {
+            listPostDto.setList(Collections.emptyList());
+            listPostDto.setPagination(null);
+            return listPostDto;
+        } else {
+            var pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(posts.getTotalPages());
+            pagingDto.setTotalOfElements(posts.getTotalElements());
+            pagingDto.setSort(posts.getSort().toString());
+            pagingDto.setCurrentPage(posts.getNumber());
+            pagingDto.setPageSize(posts.getSize());
+
+            listPostDto.setList(posts.map(post -> PostDto.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .readerId(post.getReader().getId())
+                    .postImages(post.getPostImages().stream().map(PostImage::getImageUrl).toList())
+                    .createdAt(dateUtils.getCurrentVietnamDate())
+                    .build()).toList());
+            listPostDto.setPagination(pagingDto);
+            return listPostDto;
+        }
     }
 }

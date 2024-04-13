@@ -1,5 +1,6 @@
 package com.pagepal.capstone.controllers;
 
+import com.pagepal.capstone.dtos.post.ListPostDto;
 import com.pagepal.capstone.dtos.post.PostCreateDto;
 import com.pagepal.capstone.dtos.post.PostDto;
 import com.pagepal.capstone.dtos.post.PostUpdatedDto;
@@ -19,8 +20,22 @@ public class PostController {
     private final PostService postService;
 
     @QueryMapping(name = "getAllPosts")
-    public List<PostDto> getAllPosts() {
-        return postService.getAllPosts();
+    public ListPostDto getAllPosts(
+            @Argument(name = "page") Integer page,
+            @Argument(name = "pageSize") Integer pageSize,
+            @Argument(name = "sort") String sort
+    ) {
+        return postService.getAllPostsPagination(page, pageSize, sort);
+    }
+
+    @QueryMapping(name = "getAllPostsByReaderId")
+    public ListPostDto getAllPostsByReaderId(
+            @Argument(name = "readerId") UUID readerId,
+            @Argument(name = "page") Integer page,
+            @Argument(name = "pageSize") Integer pageSize,
+            @Argument(name = "sort") String sort
+    ) {
+        return postService.getAllPostsByReaderId(readerId, page, pageSize, sort);
     }
 
     @QueryMapping(name = "getPostById")
