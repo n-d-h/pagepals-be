@@ -66,7 +66,6 @@ public class ReaderServiceImpl implements ReaderService {
         return ReaderMapper.INSTANCE.toDto(reader);
     }
 
-    @Secured({"CUSTOMER", "READER", "STAFF", "ADMIN"})
     @Override
     public ListReaderDto getListReaders(ReaderQueryDto readerQueryDto) {
 
@@ -116,7 +115,9 @@ public class ReaderServiceImpl implements ReaderService {
             return listReaderDto;
         } else {
             page = new PageImpl<>(page.stream()
-                    .filter(reader -> reader.getAccount().getAccountState().getName().equals(readerActive))
+                    .filter(reader -> reader.getAccount() != null
+                    && reader.getAccount().getAccountState().getName().equals(readerActive)
+                    )
                     .collect(Collectors.toList()), pageable, page.getTotalElements());
             PagingDto pagingDto = new PagingDto();
             pagingDto.setTotalOfPages(page.getTotalPages());
