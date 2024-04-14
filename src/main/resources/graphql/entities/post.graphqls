@@ -2,7 +2,7 @@ type Post {
     id: ID!
     title: String
     content: String
-    readerId: ID
+    reader: Reader
     postImages: [String]
     createdAt: String
 }

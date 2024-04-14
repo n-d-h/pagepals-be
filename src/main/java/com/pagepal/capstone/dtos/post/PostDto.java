@@ -1,5 +1,6 @@
 package com.pagepal.capstone.dtos.post;
 
+import com.pagepal.capstone.entities.postgre.Reader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class PostDto {
     private UUID id;
     private String title;
     private String content;
-    private UUID readerId;
+    private Reader reader;
     private List<String> postImages;
     private Date createdAt;
 }
