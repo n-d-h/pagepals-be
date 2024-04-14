@@ -86,6 +86,10 @@ public class Account implements UserDetails, Serializable {
     @JsonBackReference
     private Wallet wallet;
 
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Notification> notifications;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
