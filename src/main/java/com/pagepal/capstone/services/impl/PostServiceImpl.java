@@ -42,7 +42,7 @@ public class PostServiceImpl implements PostService {
                         .id(post.getId())
                         .title(post.getTitle())
                         .content(post.getContent())
-                        .readerId(post.getReader().getId())
+                        .reader(post.getReader())
                         .postImages(post.getPostImages().stream().map(PostImage::getImageUrl).toList())
                         .build()
         ));
@@ -59,7 +59,7 @@ public class PostServiceImpl implements PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .readerId(post.getReader().getId())
+                .reader(post.getReader())
                 .postImages(post.getPostImages().stream().map(PostImage::getImageUrl).toList())
                 .build();
     }
@@ -91,7 +91,7 @@ public class PostServiceImpl implements PostService {
                 .id(savedPost.getId())
                 .title(savedPost.getTitle())
                 .content(savedPost.getContent())
-                .readerId(savedPost.getReader().getId())
+                .reader(savedPost.getReader())
                 .postImages(postImages)
                 .build();
 
@@ -128,7 +128,7 @@ public class PostServiceImpl implements PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .readerId(post.getReader().getId())
+                .reader(post.getReader())
                 .postImages(post.getPostImages().stream().map(PostImage::getImageUrl).toList())
                 .build();
     }
@@ -147,7 +147,7 @@ public class PostServiceImpl implements PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .readerId(post.getReader().getId())
+                .reader(post.getReader())
                 .postImages(new ArrayList<>())
                 .build();
     }
@@ -203,7 +203,7 @@ public class PostServiceImpl implements PostService {
                     .id(post.getId())
                     .title(post.getTitle())
                     .content(post.getContent())
-                    .readerId(post.getReader().getId())
+                    .reader(post.getReader())
                     .postImages(post.getPostImages().stream().map(PostImage::getImageUrl).toList())
                     .createdAt(dateUtils.getCurrentVietnamDate())
                     .build()).toList());
