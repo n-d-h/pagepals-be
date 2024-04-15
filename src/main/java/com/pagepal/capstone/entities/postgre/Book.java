@@ -84,4 +84,8 @@ public class Book implements Serializable {
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Service> services;
+
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Seminar> seminars;
 }

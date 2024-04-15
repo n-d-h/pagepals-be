@@ -43,7 +43,7 @@ extend type Query {
 }
 
 extend type Mutation {
-    savePost(post: PostInput): Post
+    createPost(post: PostInput): Post
     updatePost(id: ID!, post: PostUpdateInput): Post
     deletePost(id: ID!): Post
 }
