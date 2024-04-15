@@ -43,8 +43,8 @@ public class PostController {
         return postService.getPostById(id);
     }
 
-    @MutationMapping(name = "savePost")
-    public PostDto savePost(@Argument(name = "post") PostCreateDto dto) {
+    @MutationMapping(name = "createPost")
+    public PostDto createPost(@Argument(name = "post") PostCreateDto dto) {
         return postService.savePost(dto);
     }
 

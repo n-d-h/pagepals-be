@@ -1,0 +1,58 @@
+type Seminar {
+    id: ID!
+    title: String
+    limitCustomer: Int
+    activeSlot: Int
+    description: String
+    imageUrl: String
+    duration: Float
+    price: Int
+    startTime: String
+    status: String
+    createdAt: String
+    updatedAt: String
+    reader: Reader
+    book: Book
+}
+
+type ListSeminar{
+    list: [Seminar]
+    pagination: Paging
+}
+
+input SeminarInput {
+    title: String
+    limitCustomer: Int
+    activeSlot: Int
+    description: String
+    imageUrl: String
+    duration: Float
+    price: Int
+    startTime: String
+    readerId: ID
+    bookId: ID
+}
+
+input SeminarUpdateInput {
+    title: String
+    limitCustomer: Int
+    activeSlot: Int
+    description: String
+    imageUrl: String
+    duration: Float
+    price: Int
+    startTime: String
+    bookId: ID
+}
+
+extend type Query {
+    getSeminarById(id: ID!): Seminar
+    getAllSeminars(sort: String, page: Int, pageSize: Int): ListSeminar
+    getAllSeminarsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
+}
+
+extend type Mutation {
+    createSeminar(seminar: SeminarInput): Seminar
+    updateSeminar(readerId: ID, id: ID!, seminar: SeminarUpdateInput): Seminar
+    deleteSeminar(id: ID!) : Seminar
+}
