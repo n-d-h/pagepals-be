@@ -54,19 +54,19 @@ class ReaderRepositoryTest {
             , "accent1", "link1", "des1", null,
             null, "vid1","avt", null, null, date1,
             null, null, Status.ACTIVE, null, null, null,null, null,
-            null, null, null, null, null);
+            null, null, null, null, null, null);
 
     Reader reader2 = new Reader(UUID.randomUUID(), "name2", 4, "genre2", "Vietnamese"
             , "accent2", "link2", "des2", null,
             null, "vid2","avt",  null, null, date2,
             null, null, Status.ACTIVE, null, null, null,null, null,
-            null, null, null, null, null);
+            null, null, null, null, null, null);
 
     Reader reader3 = new Reader(UUID.randomUUID(), "name3", 5, "genre3", "Vietnamese"
             , "accent3", "link3", "des3", null,
             null, "vid3","avt",  null, null, date3,
             null, null, Status.ACTIVE, null, null, null,null, null,
-            null, null, null, null, null);
+            null, null, null, null, null, null);
     private List<Reader> result;
 
 

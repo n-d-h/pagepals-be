@@ -74,6 +74,7 @@ public class BookingRepositoryTest {
             null,
             null,
             role1,
+            null,
             null
     );
 
@@ -100,6 +101,7 @@ public class BookingRepositoryTest {
             null, null,
             account1, null, null,
             null, null, null,
+            null,
             null,
             null
     );
@@ -136,6 +138,7 @@ public class BookingRepositoryTest {
             new Customer(),
             meeting,
             bookingState1,
+            null,
             null,
             null,
             null
