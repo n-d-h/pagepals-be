@@ -49,6 +49,11 @@ public class Meeting implements Serializable {
     @JsonManagedReference
     private Reader reader;
 
+    @OneToOne
+    @JoinColumn(name = "seminar_id", nullable = true)
+    @JsonManagedReference
+    private Seminar seminar;
+
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Booking> bookings;

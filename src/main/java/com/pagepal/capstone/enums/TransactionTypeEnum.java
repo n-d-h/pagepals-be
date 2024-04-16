@@ -6,4 +6,5 @@ public enum TransactionTypeEnum {
     BOOKING_PAYMENT,
     BOOKING_REFUND,
     BOOKING_DONE_RECEIVE,
+    BOOKING_SEMINAR_DONE,
 }

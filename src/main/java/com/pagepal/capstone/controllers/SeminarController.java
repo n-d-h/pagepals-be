@@ -1,9 +1,6 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.seminar.ListSeminarDto;
-import com.pagepal.capstone.dtos.seminar.SeminarCreateDto;
-import com.pagepal.capstone.dtos.seminar.SeminarDto;
-import com.pagepal.capstone.dtos.seminar.SeminarUpdateDto;
+import com.pagepal.capstone.dtos.seminar.*;
 import com.pagepal.capstone.services.SeminarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -61,5 +58,13 @@ public class SeminarController {
     @MutationMapping(name = "deleteSeminar")
     public SeminarDto deleteSeminar(@Argument(name = "id") UUID id) {
         return seminarService.deleteSeminar(id);
+    }
+
+    @MutationMapping(name = "joinSeminar")
+    public SeminarBookingDto joinSeminar(
+            @Argument(name = "seminarId") UUID seminarId,
+            @Argument(name = "customerId") UUID customerId
+    ) {
+        return seminarService.bookSeminar(seminarId, customerId);
     }
 }
