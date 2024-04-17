@@ -165,6 +165,13 @@ public class RequestServiceImpl implements RequestService {
         return null;
     }
 
+    @Override
+    public RequestDto getRequestByReaderId(UUID readerId) {
+        List<RequestStateEnum> listState = Arrays.asList(RequestStateEnum.INTERVIEW_PENDING, RequestStateEnum.ANSWER_CHECKING);
+        Request request = requestRepository.findByReaderIdAndStates(readerId,listState).orElse(null);
+        return request == null ? null : RequestMapper.INSTANCE.toDto(request);
+    }
+
     private static String generateRoomId() {
         Random random = new Random();
         StringBuilder sb = new StringBuilder(6);

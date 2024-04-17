@@ -371,11 +371,22 @@ public class ReaderServiceImpl implements ReaderService {
     }
 
     @Override
-    public RequestDto getRequestByReaderId(UUID readerId) {
+    public ReaderRequestInputDto getUpdateRequestByReaderId(UUID readerId) {
         var reader = readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        List<Request> requests = reader.getRequests();
-        var requestInterview = requests.stream().filter(request -> RequestStateEnum.INTERVIEW_PENDING.equals(request.getState())).findFirst();
-        return requestInterview.map(RequestMapper.INSTANCE::toDto).orElse(null);
+        var readerUpdate = readerRepository.findByReaderUpdateReferenceId(readerId).orElse(null);
+        if (readerUpdate != null) {
+            return ReaderRequestInputDto.builder()
+                    .nickname(readerUpdate.getNickname())
+                    .genres(List.of(readerUpdate.getGenre().split(",")))
+                    .languages(List.of(readerUpdate.getLanguage().split(",")))
+                    .countryAccent(readerUpdate.getCountryAccent())
+                    .description(readerUpdate.getDescription())
+                    .introductionVideoUrl(readerUpdate.getIntroductionVideoUrl())
+                    .audioDescriptionUrl(readerUpdate.getAudioDescriptionUrl())
+                    .avatarUrl(readerUpdate.getAvatarUrl())
+                    .build();
+        }
+        return null;
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {

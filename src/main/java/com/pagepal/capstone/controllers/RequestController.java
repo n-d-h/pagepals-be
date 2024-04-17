@@ -50,4 +50,9 @@ public class RequestController {
                                     @Argument("description") String description) {
         return requestService.acceptRequest(staffId, requestId,description);
     }
+
+    @QueryMapping
+    public RequestDto getRequestByReaderId(@Argument("readerId") UUID readerId) {
+        return requestService.getRequestByReaderId(readerId);
+    }
 }

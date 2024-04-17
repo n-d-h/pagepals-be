@@ -30,4 +30,6 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
 
 
     List<Reader> findTop10ByAccountInOrderByRatingDesc(List<Account> account);
+
+    Optional<Reader> findByReaderUpdateReferenceId(UUID id);
 }

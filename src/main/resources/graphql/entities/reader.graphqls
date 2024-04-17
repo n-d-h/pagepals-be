@@ -125,6 +125,17 @@ input ReaderRequestInput {
     avatarUrl: String
 }
 
+type ReaderRequestInputRead {
+    nickname: String
+    genres: [String]
+    languages: [String]
+    countryAccent: String
+    audioDescriptionUrl: String
+    description: String
+    introductionVideoUrl: String
+    avatarUrl: String
+}
+
 extend type Query {
     getReadersActive: [Reader]
     getReaderDetail(id: ID!): Reader
@@ -134,7 +145,7 @@ extend type Query {
     getReaderBooks(id: ID!, filter: ReaderBookFilter): ReaderBookList
     getListPopularReaders: [Reader]
     getReaderReviews(readerId: ID!, page: Int, pageSize: Int): ListReaderReview
-    getRequestByReaderId(readerId: ID!): Request
+    getUpdateRequestByReaderId(readerId: ID!): ReaderRequestInputRead
 }
 
 extend type Mutation {

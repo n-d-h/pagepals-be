@@ -82,7 +82,7 @@ public class ReaderController {
     }
 
     @QueryMapping
-    public RequestDto getRequestByReaderId(@Argument("readerId") UUID readerId) {
-        return readerService.getRequestByReaderId(readerId);
+    public ReaderRequestInputDto getUpdateRequestByReaderId(@Argument("readerId") UUID readerId) {
+        return readerService.getUpdateRequestByReaderId(readerId);
     }
 }

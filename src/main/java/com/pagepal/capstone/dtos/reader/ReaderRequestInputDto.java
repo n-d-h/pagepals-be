@@ -1,9 +1,6 @@
 package com.pagepal.capstone.dtos.reader;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,6 +8,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ReaderRequestInputDto {
     private String nickname;
     private List<String> genres;

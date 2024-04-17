@@ -16,4 +16,6 @@ public interface RequestService {
     RequestDto rejectRequest(UUID staffId, UUID requestId, String description);
 
     RequestDto acceptRequest(UUID staffId, UUID requestId, String description);
+
+    RequestDto getRequestByReaderId(UUID readerId);
 }
