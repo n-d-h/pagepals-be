@@ -54,6 +54,27 @@ public class AccountServiceImpl implements AccountService {
 
     private final DateUtils dateUtils;
 
+    String emailBody = """
+            Dear %s,
+                        
+            Thank you for using PagePals! To complete your account verification, please use the following OTP (One-Time Password):
+                        
+            Verification Code: %s
+                        
+            This OTP is valid for a single use only and should not be shared with anyone.
+                        
+            If you did not request this verification code, please ignore this email.
+                        
+            Please note: This email address is not monitored for replies.
+            For any assistance or queries, please contact us at %s.
+                        
+            Also, don't forget to visit %s to explore more services and features available on PagePals!
+            We're constantly updating our offerings to provide you with the best experience.
+                        
+            Best regards,
+            The PagePals Team
+            """;
+
     public static String encodeVerificationCode(String verificationCode) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "AES");
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -66,11 +87,14 @@ public class AccountServiceImpl implements AccountService {
 
         checkExits(request.getUsername(), request.getEmail());
 
+        String subject = "[PagePals]: OTP Verification Code";
+        String website = "https://pagepals-fe.vercel.app";
         String code = generateVerificationCode();
+        String body = emailBody.formatted(request.getUsername(), code, website, website);
         emailService.sendSimpleEmail(
                 request.getEmail(),
-                "Verification Code",
-                "Your verification code is: " + code);
+                subject,
+                body);
 
         return encodeVerificationCode(code);
     }
@@ -384,26 +408,7 @@ public class AccountServiceImpl implements AccountService {
         String subject = "[PagePals]: OTP Verification Code";
         String website = "https://pagepals-fe.vercel.app";
         String code = generateVerificationCode();
-        String body = """
-            Dear %s,
-                        
-            Thank you for using PagePals! To complete your account verification, please use the following OTP (One-Time Password):
-                        
-            Verification Code: %s
-                        
-            This OTP is valid for a single use only and should not be shared with anyone.
-                        
-            If you did not request this verification code, please ignore this email.
-                        
-            Please note: This email address is not monitored for replies.
-            For any assistance or queries, please contact us at %s.
-                        
-            Also, don't forget to visit %s to explore more services and features available on PagePals!
-            We're constantly updating our offerings to provide you with the best experience.
-                        
-            Best regards,
-            The PagePals Team
-            """.formatted(username, code, website, website);
+        String body = emailBody.formatted(username, code, website, website);
 
         emailService.sendSimpleEmail(
                 account.getEmail(),
@@ -412,7 +417,6 @@ public class AccountServiceImpl implements AccountService {
 
         return encodeVerificationCode(code);
     }
-
 
 
     private String generatePassword() {
