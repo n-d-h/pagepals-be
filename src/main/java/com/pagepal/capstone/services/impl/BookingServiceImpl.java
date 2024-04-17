@@ -169,7 +169,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElse(null);
         if (meeting == null) {
             meeting = new Meeting(null, roomId, dateUtils.getCurrentVietnamDate(), 2,
-                    MeetingEnum.AVAILABLE, wt.getReader(), null, null);
+                    MeetingEnum.AVAILABLE, wt.getReader(), null, null, null);
             meeting = meetingRepository.save(meeting);
         }
         int tokenLeft = customer.getAccount().getWallet().getTokenAmount() - bookingDto.getTotalPrice();

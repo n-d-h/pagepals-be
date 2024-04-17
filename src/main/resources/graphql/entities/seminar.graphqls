@@ -15,6 +15,11 @@ type Seminar {
     book: Book
 }
 
+type SeminarBooking {
+    seminar: Seminar
+    booking: Booking
+}
+
 type ListSeminar{
     list: [Seminar]
     pagination: Paging
@@ -55,4 +60,5 @@ extend type Mutation {
     createSeminar(seminar: SeminarInput): Seminar
     updateSeminar(readerId: ID, id: ID!, seminar: SeminarUpdateInput): Seminar
     deleteSeminar(id: ID!) : Seminar
+    joinSeminar(customerId: ID, seminarId: ID): SeminarBooking
 }

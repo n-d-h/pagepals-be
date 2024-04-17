@@ -1,9 +1,7 @@
 package com.pagepal.capstone.services;
 
-import com.pagepal.capstone.dtos.seminar.ListSeminarDto;
-import com.pagepal.capstone.dtos.seminar.SeminarCreateDto;
-import com.pagepal.capstone.dtos.seminar.SeminarDto;
-import com.pagepal.capstone.dtos.seminar.SeminarUpdateDto;
+import com.pagepal.capstone.dtos.booking.BookingDto;
+import com.pagepal.capstone.dtos.seminar.*;
 
 import java.util.UUID;
 
@@ -14,4 +12,5 @@ public interface SeminarService {
     ListSeminarDto getSeminarList(Integer page, Integer pageSize, String sort);
     ListSeminarDto getSeminarListByReaderId(UUID readerId, Integer page, Integer pageSize, String sort);
     SeminarDto deleteSeminar(UUID id);
+    SeminarBookingDto bookSeminar(UUID seminarId, UUID customerId);
 }

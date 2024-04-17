@@ -121,6 +121,7 @@ public class BookingRepositoryTest {
             MeetingEnum.AVAILABLE,
             reader1,
             null,
+            null,
             null
     );
 
@@ -138,7 +139,6 @@ public class BookingRepositoryTest {
             new Customer(),
             meeting,
             bookingState1,
-            null,
             null,
             null,
             null

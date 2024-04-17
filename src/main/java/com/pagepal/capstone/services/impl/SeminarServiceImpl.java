@@ -1,21 +1,15 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.dtos.seminar.ListSeminarDto;
-import com.pagepal.capstone.dtos.seminar.SeminarCreateDto;
-import com.pagepal.capstone.dtos.seminar.SeminarDto;
-import com.pagepal.capstone.dtos.seminar.SeminarUpdateDto;
-import com.pagepal.capstone.entities.postgre.Book;
-import com.pagepal.capstone.entities.postgre.Reader;
-import com.pagepal.capstone.entities.postgre.Seminar;
-import com.pagepal.capstone.entities.postgre.WorkingTime;
-import com.pagepal.capstone.enums.SeminarStatus;
-import com.pagepal.capstone.repositories.BookRepository;
-import com.pagepal.capstone.repositories.BookingRepository;
-import com.pagepal.capstone.repositories.ReaderRepository;
-import com.pagepal.capstone.repositories.SeminarRepository;
+import com.pagepal.capstone.dtos.seminar.*;
+import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.enums.*;
+import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.SeminarService;
 import com.pagepal.capstone.utils.DateUtils;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,13 +25,17 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SeminarServiceImpl implements SeminarService {
-
+    private final BookingStateRepository bookingStateRepository;
+    private final TransactionRepository transactionRepository;
+    private final CustomerRepository customerRepository;
     private final SeminarRepository seminarRepository;
     private final ReaderRepository readerRepository;
     private final BookRepository bookRepository;
     private final BookingRepository bookingRepository;
+    private final MeetingRepository meetingRepository;
     private final DateUtils dateUtils;
 
     @Secured({"READER"})
@@ -46,7 +44,7 @@ public class SeminarServiceImpl implements SeminarService {
         try {
             Reader reader = this.checkWorkingTime(seminarCreateDto.getReaderId(), seminarCreateDto, null);
             Book book = bookRepository.findById(seminarCreateDto.getBookId()).orElse(null);
-            if(book == null) {
+            if (book == null) {
                 throw new RuntimeException("Book not found");
             }
 
@@ -67,6 +65,18 @@ public class SeminarServiceImpl implements SeminarService {
                     .build();
 
             var data = seminarRepository.save(seminar);
+
+            if (data != null) {
+                Meeting meeting = new Meeting();
+                meeting.setMeetingCode(UUID.randomUUID().toString().substring(0, 6));
+                meeting.setCreateAt(dateUtils.getCurrentVietnamDate());
+                meeting.setLimitOfPerson(seminarCreateDto.getLimitCustomer());
+                meeting.setState(MeetingEnum.AVAILABLE);
+                meeting.setReader(reader);
+                meeting.setSeminar(data);
+                meetingRepository.save(meeting);
+            }
+
             return toSeminarDto(data);
         } catch (Exception e) {
             return null;
@@ -78,14 +88,22 @@ public class SeminarServiceImpl implements SeminarService {
     public SeminarDto updateSeminar(UUID readerId, UUID id, SeminarUpdateDto seminarUpdateDto) {
         try {
             Seminar seminar = seminarRepository.findById(id).orElse(null);
-            if(seminar == null) {
+            if (seminar == null) {
                 throw new RuntimeException("Seminar not found");
+            }
+
+            var meeting = meetingRepository.findBySeminarId(id).orElse(null);
+            if (meeting != null) {
+                List<Booking> bookings = meeting.getBookings();
+                if (bookings.size() > 0) {
+                    throw new ValidationException("Seminar is booked, Cannot update");
+                }
             }
 
             Reader reader = this.checkWorkingTime(readerId, null, seminarUpdateDto);
 
             Book book = bookRepository.findById(seminarUpdateDto.getBookId()).orElse(null);
-            if(book == null) {
+            if (book == null) {
                 throw new RuntimeException("Book not found");
             }
 
@@ -131,22 +149,98 @@ public class SeminarServiceImpl implements SeminarService {
     @Secured({"READER"})
     @Override
     public SeminarDto deleteSeminar(UUID id) {
-        var bookings = bookingRepository.findAllBySeminarId(id);
-        if(bookings.size() > 0) {
-            throw new RuntimeException("Seminar has bookings");
-        }
         var seminar = seminarRepository.findById(id).orElse(null);
-        if(seminar == null) {
-            throw new RuntimeException("Seminar not found");
+        if (seminar == null) {
+            throw new ValidationException("Seminar not found");
+        }
+        var meeting = meetingRepository.findBySeminarId(id).orElse(null);
+        if (meeting != null) {
+            List<Booking> bookings = meeting.getBookings();
+            if (bookings.size() > 0) {
+                throw new ValidationException("Seminar is booked, Cannot delete");
+            }
         }
         seminarRepository.delete(seminar);
         return toSeminarDto(seminar);
     }
 
+    @Override
+    public SeminarBookingDto bookSeminar(UUID seminarId, UUID customerId) {
+        var customer = customerRepository.findById(customerId).orElse(null);
+        var seminar = seminarRepository.findById(seminarId).orElse(null);
+
+        if (customer == null || seminar == null) {
+            throw new ValidationException("Customer or Seminar not found");
+        }
+
+        if (seminar.getActiveSlot() <= 0) {
+            throw new RuntimeException("Seminar is full");
+        }
+
+        var meeting = seminar.getMeeting();
+        List<Booking> bookings = meeting.getBookings();
+
+        if (bookings.size() >= 0) {
+            for (Booking booking : bookings) {
+                if (booking.getCustomer().getId().equals(customerId)) {
+                    throw new ValidationException("Customer already booked this seminar");
+                }
+            }
+        }
+
+        var account = customer.getAccount();
+        var wallet = account.getWallet().getTokenAmount();
+        int tokenLeft = wallet - seminar.getPrice();
+        if (tokenLeft < 0) {
+            throw new ValidationException("Not enough money");
+        }
+
+        Booking booking = new Booking();
+        booking.setTotalPrice(seminar.getPrice());
+        booking.setPromotionCode("");
+        booking.setDescription(seminar.getDescription());
+        booking.setRating(0);
+        booking.setCreateAt(dateUtils.getCurrentVietnamDate());
+        booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+        booking.setStartAt(seminar.getStartTime());
+        booking.setCustomer(customer);
+        booking.setMeeting(meeting);
+        booking.setState(
+                bookingStateRepository
+                        .findByName("PENDING")
+                        .orElseThrow(() -> new EntityNotFoundException("State not found"))
+        );
+        booking = bookingRepository.save(booking);
+
+        if (booking != null) {
+            seminar.setActiveSlot(seminar.getActiveSlot() - 1);
+            seminarRepository.save(seminar);
+
+            customer.getAccount().getWallet().setTokenAmount(tokenLeft);
+            customerRepository.save(customer);
+
+            Transaction transaction = new Transaction();
+            transaction.setStatus(TransactionStatusEnum.SUCCESS);
+            transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
+            transaction.setTransactionType(TransactionTypeEnum.BOOKING_SEMINAR_DONE);
+            transaction.setCurrency(CurrencyEnum.TOKEN);
+            transaction.setBooking(booking);
+            transaction.setAmount(Double.valueOf(seminar.getPrice()));
+            transaction.setWallet(customer.getAccount().getWallet());
+            transactionRepository.save(transaction);
+        }
+
+        SeminarBookingDto seminarBookingDto = new SeminarBookingDto();
+        seminarBookingDto.setBooking(booking);
+        seminarBookingDto.setSeminar(seminar);
+
+        return seminarBookingDto;
+    }
+
     private ListSeminarDto mapSeminarsToDto(Page<Seminar> seminars) {
         var listSeminarDto = new ListSeminarDto();
 
-        if(seminars == null) {
+        if (seminars == null) {
             listSeminarDto.setList(Collections.emptyList());
             listSeminarDto.setPagination(null);
             return listSeminarDto;

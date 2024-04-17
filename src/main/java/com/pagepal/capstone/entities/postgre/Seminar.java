@@ -76,7 +76,7 @@ public class Seminar {
     @JsonManagedReference
     private Book book;
 
-    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "seminar", fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Booking> bookings;
+    private Meeting meeting;
 }
