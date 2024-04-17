@@ -51,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
 
     private static final String SECRET_KEY = "jkHGs0lbxWwbirSG";
     private final WalletRepository walletRepository;
-    
+
     private final DateUtils dateUtils;
 
     public static String encodeVerificationCode(String verificationCode) throws Exception {
@@ -363,10 +363,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountReadDto updatePassword(UUID id, String password ){
+    public AccountReadDto updatePassword(UUID id, String password) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
-        if(passwordEncoder.encode(password).equals(account.getPassword())) {
+        if (passwordEncoder.encode(password).equals(account.getPassword())) {
             throw new RuntimeException("New password must be different from the old password");
         }
 
@@ -380,15 +380,40 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public String verifyCode(UUID id) throws Exception {
         Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
-
+        String username = account.getUsername();
+        String subject = "[PagePals]: OTP Verification Code";
+        String website = "https://pagepals-fe.vercel.app";
         String code = generateVerificationCode();
+        String body = """
+            Dear %s,
+                        
+            Thank you for using PagePals! To complete your account verification, please use the following OTP (One-Time Password):
+                        
+            Verification Code: %s
+                        
+            This OTP is valid for a single use only and should not be shared with anyone.
+                        
+            If you did not request this verification code, please ignore this email.
+                        
+            Please note: This email address is not monitored for replies.
+            For any assistance or queries, please contact us at %s.
+                        
+            Also, don't forget to visit %s to explore more services and features available on PagePals!
+            We're constantly updating our offerings to provide you with the best experience.
+                        
+            Best regards,
+            The PagePals Team
+            """.formatted(username, code, website, website);
+
         emailService.sendSimpleEmail(
                 account.getEmail(),
-                "Verification Code",
-                "Your verification code is: " + code);
+                subject,
+                body);
 
         return encodeVerificationCode(code);
     }
+
+
 
     private String generatePassword() {
         int leftLimit = 97; // letter 'a'
