@@ -116,7 +116,7 @@ public class ReaderServiceImpl implements ReaderService {
         } else {
             page = new PageImpl<>(page.stream()
                     .filter(reader -> reader.getAccount() != null
-                    && reader.getAccount().getAccountState().getName().equals(readerActive)
+                            && reader.getAccount().getAccountState().getName().equals(readerActive)
                     )
                     .collect(Collectors.toList()), pageable, page.getTotalElements());
             PagingDto pagingDto = new PagingDto();
@@ -372,13 +372,13 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Override
     public ReaderRequestInputDto getUpdateRequestByReaderId(UUID readerId) {
-        var reader = readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         var readerUpdate = readerRepository.findByReaderUpdateReferenceId(readerId).orElse(null);
         if (readerUpdate != null) {
             return ReaderRequestInputDto.builder()
                     .nickname(readerUpdate.getNickname())
-                    .genres(List.of(readerUpdate.getGenre().split(",")))
-                    .languages(List.of(readerUpdate.getLanguage().split(",")))
+                    .genres(Arrays.stream(readerUpdate.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
+                    .languages(Arrays.stream(readerUpdate.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
                     .countryAccent(readerUpdate.getCountryAccent())
                     .description(readerUpdate.getDescription())
                     .introductionVideoUrl(readerUpdate.getIntroductionVideoUrl())
