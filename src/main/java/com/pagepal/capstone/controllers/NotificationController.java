@@ -47,4 +47,11 @@ public class NotificationController {
     ) {
         return notificationService.createNotification(notificationCreateDto);
     }
+
+    @MutationMapping("updateNotification")
+    public NotificationDto updateNotification(
+            @Argument("id") UUID id
+    ) {
+        return notificationService.updateNotification(id);
+    }
 }
