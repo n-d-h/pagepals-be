@@ -2,13 +2,14 @@ type Notification {
     id: ID!
     content: String
     status: String
-    isRead: String
+    isRead: Boolean
     createdAt: String
     updatedAt: String
     account: Account
 }
 
 type ListNotification {
+    total: Int
     pagination: Paging
     list: [Notification]
 }
