@@ -69,6 +69,12 @@ public class Account implements UserDetails, Serializable {
     @JsonManagedReference
     private AccountState accountState;
 
+    @Column(name = "fcm_mobile_token")
+    private String fcmMobileToken;
+
+    @Column(name = "fcm_web_token")
+    private String fcmWebToken;
+
     @OneToOne(mappedBy = "account")
     @JsonBackReference
     private Customer customer;

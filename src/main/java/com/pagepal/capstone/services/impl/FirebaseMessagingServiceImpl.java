@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -51,5 +52,20 @@ public class FirebaseMessagingServiceImpl implements FirebaseMessagingService {
 
         BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
         return response.getSuccessCount() + " messages were sent successfully";
+    }
+
+    @Override
+    public String sendNotificationToDevice(String image, String title, String body, Map<String, String> data, String token) {
+        try {
+            FirebaseMessageData firebaseMessageData = new FirebaseMessageData();
+            firebaseMessageData.setImage(image);
+            firebaseMessageData.setSubject(title);
+            firebaseMessageData.setContent(body);
+            firebaseMessageData.setData(data);
+            return sendNotification(firebaseMessageData, token);
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 }

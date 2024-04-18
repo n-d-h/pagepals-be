@@ -88,4 +88,5 @@ extend type Mutation {
     updateAccountState(id: ID!, accountState: String): Account
     updatePassword(id: ID!, password: String!): AccountRead
     verifyCode(id: ID!): String
+    updateFcmToken(id: ID!, fcmToken: String!, isWebToken: Boolean): Account
 }

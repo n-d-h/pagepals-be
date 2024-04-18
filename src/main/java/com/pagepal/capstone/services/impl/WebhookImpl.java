@@ -137,16 +137,15 @@ public class WebhookImpl implements WebhookService {
             webhook.setAvatarUrl("https://via.placeholder.com/150");
             EmbedObject embedObject = new EmbedObject();
 
+            String username = account.getUsername();
             if (isReader == Boolean.TRUE) {
                 Reader reader = account.getReader();
-                String nickname = reader.getNickname();
                 String imageAvatar = reader.getAvatarUrl();
-                embedObject.setAuthor(nickname, null, imageAvatar);
+                embedObject.setAuthor(username, null, imageAvatar);
             } else {
                 Customer customer = account.getCustomer();
-                String fullName = customer.getFullName();
                 String imageAvatar = customer.getImageUrl();
-                embedObject.setAuthor(fullName, null, imageAvatar);
+                embedObject.setAuthor(username, null, imageAvatar);
             }
 
             for (Map.Entry<String, String> entry : content.entrySet()) {

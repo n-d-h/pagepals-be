@@ -104,4 +104,11 @@ public class AccountController {
         return accountService.updateAccountState(id, accountState);
     }
 
+    @MutationMapping(name = "updateFcmToken")
+    public AccountDto updateFcmToken(
+            @Argument(name = "id") UUID id,
+            @Argument(name = "fcmToken") String fcmToken,
+            @Argument(name = "isWebToken") Boolean isWebToken) {
+        return accountService.updateFcmToken(id, fcmToken, isWebToken);
+    }
 }

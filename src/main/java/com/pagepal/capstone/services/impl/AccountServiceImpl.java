@@ -418,6 +418,19 @@ public class AccountServiceImpl implements AccountService {
         return encodeVerificationCode(code);
     }
 
+    @Override
+    public AccountDto updateFcmToken(UUID id, String fcmToken, Boolean isWebToken) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
+        if (isWebToken == Boolean.TRUE) {
+            account.setFcmWebToken(fcmToken);
+        } else {
+            account.setFcmMobileToken(fcmToken);
+        }
+        account.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        account = accountRepository.save(account);
+        return AccountMapper.INSTANCE.toDto(account);
+    }
+
 
     private String generatePassword() {
         int leftLimit = 97; // letter 'a'
