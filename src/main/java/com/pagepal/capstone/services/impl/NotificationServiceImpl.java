@@ -61,7 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
     public ListNotificationDto getNotifications(Integer page, Integer pageSize, String sort) {
         Pageable pageable = createPageable(page, pageSize, sort);
         Page<Notification> notifications = notificationRepository.findAll(pageable);
-        return mapToNotificationDto(notifications);
+        return mapToNotificationDto(notifications, 0);
     }
 
     @Override
@@ -82,7 +82,8 @@ public class NotificationServiceImpl implements NotificationService {
     public ListNotificationDto getNotificationsByAccountId(UUID accountId, Integer page, Integer pageSize, String sort) {
         Pageable pageable = createPageable(page, pageSize, sort);
         Page<Notification> notifications = notificationRepository.findAllByAccountId(accountId, pageable);
-        return mapToNotificationDto(notifications);
+        Integer total = notificationRepository.countUnreadByAccountId(accountId);
+        return mapToNotificationDto(notifications, total);
     }
 
     @Override
@@ -119,11 +120,12 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private ListNotificationDto mapToNotificationDto(Page<Notification> notifications) {
+    private ListNotificationDto mapToNotificationDto(Page<Notification> notifications, Integer total) {
         var listNotificationDtos = new ListNotificationDto();
 
         if (notifications == null) {
             listNotificationDtos.setList(Collections.emptyList());
+            listNotificationDtos.setTotal(0);
             listNotificationDtos.setPagination(null);
             return listNotificationDtos;
         } else {
@@ -143,6 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .updatedAt(String.valueOf(notification.getUpdatedAt()))
                     .account(notification.getAccount())
                     .build()).toList());
+            listNotificationDtos.setTotal(total);
             listNotificationDtos.setPagination(pagingDto);
             return listNotificationDtos;
         }

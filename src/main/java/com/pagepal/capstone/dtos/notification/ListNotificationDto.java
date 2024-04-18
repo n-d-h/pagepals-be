@@ -12,5 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ListNotificationDto {
     private List<NotificationDto> list;
+    private Integer total;
     private PagingDto pagination;
 }
