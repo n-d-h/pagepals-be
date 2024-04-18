@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.booking.*;
+import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.CurrencyEnum;
@@ -10,6 +11,8 @@ import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookingService;
+import com.pagepal.capstone.services.NotificationService;
+import com.pagepal.capstone.services.WebhookService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -23,10 +26,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -51,6 +52,8 @@ public class BookingServiceImpl implements BookingService {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
     private final ReaderRepository readerRepository;
+    private final WebhookService webhookService;
+    private final NotificationService notificationService;
     private final DateUtils dateUtils;
 
 
@@ -173,7 +176,7 @@ public class BookingServiceImpl implements BookingService {
             meeting = meetingRepository.save(meeting);
         }
         int tokenLeft = customer.getAccount().getWallet().getTokenAmount() - bookingDto.getTotalPrice();
-        if(tokenLeft < 0) {
+        if (tokenLeft < 0) {
             throw new ValidationException("Not enough token");
         }
         Booking booking = new Booking();
@@ -194,7 +197,7 @@ public class BookingServiceImpl implements BookingService {
         );
 
         Booking res = bookingRepository.save(booking);
-        if(res != null){
+        if (res != null) {
             customer.getAccount().getWallet().setTokenAmount(tokenLeft);
             customerRepository.save(customer);
 
@@ -207,6 +210,31 @@ public class BookingServiceImpl implements BookingService {
             transaction.setAmount(Double.valueOf(bookingDto.getTotalPrice()));
             transaction.setWallet(customer.getAccount().getWallet());
             transactionRepository.save(transaction);
+
+            // Send webhook to discord
+            Map<String, String> content = new HashMap<>();
+            content.put("Booking-Id", res.getId().toString());
+            content.put("Content", "New booking from " + customer.getFullName());
+            content.put("Customer-Id", customer.getId().toString());
+            content.put("Reader", service.getReader().getNickname());
+            content.put("Reader-Id", service.getReader().getId().toString());
+            content.put("Service", service.getServiceType().getName() + " - " + service.getBook().getTitle());
+            content.put("Service-Id", service.getId().toString());
+            webhookService.sendWebhookWithData(customer.getAccount(), content, Boolean.TRUE, Boolean.FALSE);
+
+            // Send notification to reader
+            NotificationCreateDto readerNotification = new NotificationCreateDto();
+            readerNotification.setAccountId(wt.getReader().getAccount().getId());
+            readerNotification.setContent("Service" + " - " +
+                    service.getBook().getTitle() + " has new booking " + "by " + customer.getFullName());
+            notificationService.createNotification(readerNotification);
+
+            // Send notification decrease token to customer
+            NotificationCreateDto customerNotification = new NotificationCreateDto();
+            customerNotification.setAccountId(customer.getAccount().getId());
+            customerNotification.setContent("Token decrease " + bookingDto.getTotalPrice() + " - " +
+                    res.getService().getBook().getTitle());
+            notificationService.createNotification(customerNotification);
         }
         return BookingMapper.INSTANCE.toDto(res);
     }
@@ -217,7 +245,7 @@ public class BookingServiceImpl implements BookingService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
-        if(!booking.getState().getName().equals(bookingPending)){
+        if (!booking.getState().getName().equals(bookingPending)) {
             throw new ValidationException("Booking already canceled or completed!");
         }
 
@@ -226,7 +254,7 @@ public class BookingServiceImpl implements BookingService {
         customer.getAccount().getWallet().setTokenAmount(tokenLeft);
         customer = customerRepository.save(customer);
 
-        if(customer == null){
+        if (customer == null) {
             throw new ValidationException("Cannot refund token");
         }
 
@@ -238,7 +266,7 @@ public class BookingServiceImpl implements BookingService {
         transaction.setBooking(booking);
         transaction.setAmount(Double.valueOf(booking.getTotalPrice()));
         transaction.setWallet(customer.getAccount().getWallet());
-        transactionRepository.save(transaction);
+        var transact = transactionRepository.save(transaction);
 
         BookingState state = bookingStateRepository
                 .findByName(bookingCancel)
@@ -246,6 +274,34 @@ public class BookingServiceImpl implements BookingService {
         booking.setState(state);
         booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
         booking = bookingRepository.save(booking);
+
+        if (transact != null && booking != null) {
+            WorkingTime wt = booking.getWorkingTime();
+            var service = booking.getService();
+
+            // Send webhook to discord
+            Map<String, String> content = new HashMap<>();
+            content.put("Booking", booking.getId() + " has canceled");
+            content.put("Content", "Cancel Booking by " + customer.getFullName());
+            content.put("Customer-Id", customer.getId().toString());
+            content.put("Reader", service.getReader().getNickname());
+            content.put("Reader-Id", service.getReader().getId().toString());
+            content.put("Service", service.getServiceType().getName() + " - " + service.getBook().getTitle());
+            content.put("Service-Id", service.getId().toString());
+            webhookService.sendWebhookWithData(customer.getAccount(), content, Boolean.TRUE, Boolean.TRUE);
+
+            // Send notification to reader
+            NotificationCreateDto readerNotification = new NotificationCreateDto();
+            readerNotification.setAccountId(wt.getReader().getAccount().getId());
+            readerNotification.setContent("Service" + service.getBook().getTitle() + " has canceled " + "by " + customer.getFullName());
+            notificationService.createNotification(readerNotification);
+
+            // Send notification refund token to customer
+            NotificationCreateDto customerNotification = new NotificationCreateDto();
+            customerNotification.setAccountId(customer.getAccount().getId());
+            customerNotification.setContent("Token refund " + service.getBook().getTitle());
+            notificationService.createNotification(customerNotification);
+        }
         return BookingMapper.INSTANCE.toDto(booking);
     }
 
@@ -255,24 +311,24 @@ public class BookingServiceImpl implements BookingService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
-        if(!booking.getState().getName().equals(bookingPending)){
+        if (!booking.getState().getName().equals(bookingPending)) {
             throw new ValidationException("Booking already canceled or completed!");
         }
 
         Setting revenue = settingRepository.findByKey(revenueString).orElse(null);
         Setting tokenPrice = settingRepository.findByKey(tokenPriceString).orElse(null);
 
-        if(revenue == null || tokenPrice == null){
+        if (revenue == null || tokenPrice == null) {
             throw new EntityNotFoundException("Setting not found");
         }
 
         Float receiveCash = ((booking.getTotalPrice() * Float.parseFloat(tokenPrice.getValue()))
-                * (100 - Float.parseFloat(revenue.getValue())) ) / 100;
+                * (100 - Float.parseFloat(revenue.getValue()))) / 100;
         Wallet wallet = booking.getService().getReader().getAccount().getWallet();
         wallet.setCash(wallet.getCash() + receiveCash);
         wallet = walletRepository.save(wallet);
 
-        if(wallet != null){
+        if (wallet != null) {
 
             Transaction transaction = new Transaction();
             transaction.setStatus(TransactionStatusEnum.SUCCESS);
@@ -298,6 +354,31 @@ public class BookingServiceImpl implements BookingService {
             var reader = service.getReader();
             reader.setTotalOfBookings(reader.getTotalOfBookings() + 1);
             readerRepository.save(reader);
+
+            var customer = booking.getCustomer();
+
+            // Send webhook to discord
+            Map<String, String> content = new HashMap<>();
+            content.put("Booking", booking.getId() + " has completed");
+            content.put("Customer-Id", customer.getId().toString());
+            content.put("Reader", service.getReader().getNickname());
+            content.put("Reader-Id", service.getReader().getId().toString());
+            content.put("Service", service.getServiceType().getName() + " - " + service.getBook().getTitle());
+            content.put("Service-Id", service.getId().toString());
+            webhookService.sendWebhookWithData(customer.getAccount(), content, Boolean.TRUE, Boolean.FALSE);
+
+            // Send notification to reader
+            NotificationCreateDto readerNotification = new NotificationCreateDto();
+            readerNotification.setAccountId(reader.getAccount().getId());
+            readerNotification.setContent("Income from booking " + booking.getId() + " is " + receiveCash + " $");
+            notificationService.createNotification(readerNotification);
+
+            // Send notification refund token to customer
+            NotificationCreateDto customerNotification = new NotificationCreateDto();
+            customerNotification.setAccountId(customer.getAccount().getId());
+            customerNotification.setContent("Booking " + booking.getService().getServiceType() + " - " +
+                    booking.getService().getBook().getTitle() + " has completed");
+            notificationService.createNotification(customerNotification);
         }
 
         return BookingMapper.INSTANCE.toDto(booking);
@@ -306,13 +387,13 @@ public class BookingServiceImpl implements BookingService {
     //@Secured("CUSTOMER")
     @Override
     public BookingDto reviewBooking(UUID id, ReviewBooking review) {
-        if(review.getRating() < 1 || review.getRating() > 5){
+        if (review.getRating() < 1 || review.getRating() > 5) {
             throw new ValidationException("Rating must be between 1 and 5");
         }
         Booking booking = bookingRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-        if(!booking.getState().getName().equals(bookingComplete)){
+        if (!booking.getState().getName().equals(bookingComplete)) {
             throw new ValidationException("Booking not completed yet!");
         }
         booking.setReview(review.getReview());
