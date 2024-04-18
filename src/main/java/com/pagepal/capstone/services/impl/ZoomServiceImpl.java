@@ -115,7 +115,10 @@ public class ZoomServiceImpl implements ZoomService {
         requestBody.put("topic", topic);
 
         MeetingResponse response = webClientMeeting.post()
-                .uri(UriBuilder::build)
+                .uri(UriBuilder -> UriBuilder
+                        .path("/users/me/meetings")
+                        .build()
+                )
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .bodyValue(requestBody)
                 .retrieve()
