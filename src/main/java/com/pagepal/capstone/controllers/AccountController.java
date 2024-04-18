@@ -2,7 +2,9 @@ package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.*;
+import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.services.AccountService;
+import com.pagepal.capstone.services.ZoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -19,6 +21,7 @@ public class AccountController {
 
     private final HttpServletRequest request;
     private final AccountService accountService;
+    private final ZoomService zoomService;
     private final JwtService jwtService;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
@@ -99,5 +102,10 @@ public class AccountController {
     @MutationMapping(name = "updateAccountState")
     public AccountDto updateAccountState(@Argument(name = "id") UUID id, @Argument(name = "accountState") String accountState) {
         return accountService.updateAccountState(id, accountState);
+    }
+
+    @QueryMapping
+    public RecordingDto getRecording(){
+        return zoomService.getRecording("88446394964");
     }
 }

@@ -7,6 +7,7 @@ import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.NotificationService;
 import com.pagepal.capstone.services.WebhookService;
+import com.pagepal.capstone.services.ZoomService;
 import com.pagepal.capstone.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +48,8 @@ class BookingServiceImplTest {
     private TransactionRepository transactionRepository;
     @MockBean
     private ReaderRepository readerRepository;
+    @MockBean
+    private ZoomService zoomService;
     @MockBean
     private DateUtils dateUtils;
     @MockBean

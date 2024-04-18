@@ -11,4 +11,5 @@ public interface NotificationService {
     ListNotificationDto getNotifications(Integer page, Integer pageSize, String sort);
     NotificationDto getNotificationById(UUID id);
     ListNotificationDto getNotificationsByAccountId(UUID accountId, Integer page, Integer pageSize, String sort);
+    NotificationDto updateNotification(UUID id);
 }

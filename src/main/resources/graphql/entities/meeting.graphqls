@@ -1,6 +1,8 @@
 type Meeting {
     id: ID!
     meetingCode: String
+    password:String
+    startAt: String
     createAt: String
     limitOfPerson: Int
     state: MeetingEnum

@@ -26,4 +26,5 @@ extend type Query {
 
 extend type Mutation {
     createNotification(notification: NotificationInput): Notification
+    updateNotification(id: ID!): Notification
 }
