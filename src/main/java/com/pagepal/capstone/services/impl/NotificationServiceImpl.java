@@ -85,6 +85,26 @@ public class NotificationServiceImpl implements NotificationService {
         return mapToNotificationDto(notifications);
     }
 
+    @Override
+    public NotificationDto updateNotification(UUID id) {
+        Notification notification = notificationRepository.findById(id).orElse(null);
+        if (notification != null) {
+            notification.setIsRead(Boolean.TRUE);
+            notification.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+            Notification noti = notificationRepository.save(notification);
+            return NotificationDto.builder()
+                    .id(noti.getId())
+                    .content(noti.getContent())
+                    .status(String.valueOf(noti.getStatus()))
+                    .isRead(noti.getIsRead())
+                    .createdAt(String.valueOf(noti.getCreatedAt()))
+                    .updatedAt(String.valueOf(noti.getUpdatedAt()))
+                    .account(noti.getAccount())
+                    .build();
+        }
+        return null;
+    }
+
     private Pageable createPageable(Integer page, Integer pageSize, String sort) {
         if (page == null || page < 0)
             page = 0;
