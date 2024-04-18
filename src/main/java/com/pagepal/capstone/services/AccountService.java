@@ -23,4 +23,6 @@ public interface AccountService {
     AccountReadDto updatePassword(UUID id, String password);
 
     String verifyCode(UUID id) throws Exception;
+
+    AccountDto updateFcmToken(UUID id, String fcmToken, Boolean isWebToken);
 }

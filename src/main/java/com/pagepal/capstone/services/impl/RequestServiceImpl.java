@@ -7,6 +7,7 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.RequestMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.EmailService;
+import com.pagepal.capstone.services.FirebaseMessagingService;
 import com.pagepal.capstone.services.RequestService;
 import com.pagepal.capstone.services.ZoomService;
 import com.pagepal.capstone.utils.DateUtils;
@@ -41,6 +42,9 @@ public class RequestServiceImpl implements RequestService {
     private final DateUtils dateUtils;
     private final RoleRepository roleRepository;
     private final ZoomService zoomService;
+    private final FirebaseMessagingService firebaseMessagingService;
+
+    private final String pagePalLogoUrl = "https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2F1.png?alt=media&token=56384e72-69dc-4ab3-8ede-9401b6f2f121";
 
     @Secured("STAFF")
     @Override
@@ -91,6 +95,22 @@ public class RequestServiceImpl implements RequestService {
             String emailBody = getUpdateRequestInterviewEmailBody(reader, startDate, requestId);
             if (email != null && !email.isEmpty()) {
                 emailService.sendSimpleEmail(email, subject, emailBody);
+
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        "Interview schedule",
+                        "You have an interview schedule at: " + startDate + "; Please check your request on our website.",
+                        Map.of("requestId", request.getId().toString()),
+                        reader.getAccount().getFcmMobileToken()
+                );
+
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        "You have an interview schedule at: " + startDate + "; Please check your request on our website.",
+                        "You have an interview schedule at: " + startDate + "; Please check your request on our website.",
+                        Map.of("requestId", request.getId().toString()),
+                        reader.getAccount().getFcmWebToken()
+                );
             }
             return RequestMapper.INSTANCE.toDto(request);
         }
@@ -172,6 +192,22 @@ public class RequestServiceImpl implements RequestService {
                         """.formatted(reader.getAccount().getUsername(), requestId.toString(), description, website);
 
                 emailService.sendSimpleEmail(email, subject, body);
+
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        "Request rejected",
+                        "Your request has been rejected by our staff. Please check your request on our website.",
+                        Map.of("requestId", request.getId().toString()),
+                        reader.getAccount().getFcmMobileToken()
+                );
+
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        "Your request has been rejected by our staff. Please check your request on our website.",
+                        "Your request has been rejected by our staff. Please check your request on our website.",
+                        Map.of("requestId", request.getId().toString()),
+                        reader.getAccount().getFcmWebToken()
+                );
             }
             return RequestMapper.INSTANCE.toDto(request);
         }
@@ -231,6 +267,22 @@ public class RequestServiceImpl implements RequestService {
                             """.formatted(readerAccount.getUsername(), requestId.toString(), description, website);
 
                     emailService.sendSimpleEmail(email, subject, body);
+
+                    firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        "Request accepted",
+                        "Congratulations! Your request has been accepted by our staff. Please check your request on our website.",
+                        Map.of("requestId", request.getId().toString()),
+                        readerAccount.getFcmMobileToken()
+                    );
+
+                    firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        "Congratulations! Your request has been accepted by our staff. Please check your request on our website.",
+                        "Congratulations! Your request has been accepted by our staff. Please check your request on our website.",
+                        Map.of("requestId", request.getId().toString()),
+                        readerAccount.getFcmWebToken()
+                    );
                 }
                 return RequestMapper.INSTANCE.toDto(request);
             }
