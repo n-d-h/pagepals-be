@@ -125,7 +125,8 @@ input ReaderRequestInput {
     avatarUrl: String
 }
 
-type ReaderRequestInputRead {
+type ReaderRequestRead {
+    id: ID!
     nickname: String
     genres: [String]
     languages: [String]
@@ -137,7 +138,7 @@ type ReaderRequestInputRead {
 }
 
 type ListUpdateRequestedReader {
-    list: [ReaderRequestInputRead]
+    list: [ReaderRequestRead]
     pagination: Paging
 }
 
@@ -150,11 +151,13 @@ extend type Query {
     getReaderBooks(id: ID!, filter: ReaderBookFilter): ReaderBookList
     getListPopularReaders: [Reader]
     getReaderReviews(readerId: ID!, page: Int, pageSize: Int): ListReaderReview
-    getUpdateRequestByReaderId(readerId: ID!): ReaderRequestInputRead
+    getUpdateRequestByReaderId(readerId: ID!): ReaderRequestRead
     getAllUpdateRequestedReader(page: Int, pageSize: Int): ListUpdateRequestedReader
 }
 
 extend type Mutation {
     updateReader(id: ID!, data: ReaderRequestInput): String
     registerReader(accountId: ID, data: RequestInput): Reader
+    acceptUpdateRequestedReader(id: ID!): Reader
+    rejectUpdateRequestedReader(id: ID!): Reader
 }

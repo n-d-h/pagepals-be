@@ -91,4 +91,14 @@ public class ReaderController {
                                                                  @Argument(name = "pageSize") Integer pageSize) {
         return readerService.getAllUpdateRequestedReader(page, pageSize);
     }
+
+    @MutationMapping
+    public ReaderDto acceptUpdateRequestedReader(@Argument("id") UUID id) {
+        return readerService.acceptUpdateReader(id);
+    }
+
+    @MutationMapping
+    public ReaderDto rejectUpdateRequestedReader(@Argument("id") UUID id) {
+        return readerService.rejectUpdateReader(id);
+    }
 }

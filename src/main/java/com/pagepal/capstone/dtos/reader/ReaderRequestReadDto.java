@@ -3,15 +3,13 @@ package com.pagepal.capstone.dtos.reader;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReaderRequestInputDto {
-    private UUID id;
+public class ReaderRequestReadDto {
     private String nickname;
     private List<String> genres;
     private List<String> languages;

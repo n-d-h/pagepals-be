@@ -376,6 +376,7 @@ public class ReaderServiceImpl implements ReaderService {
         var readerUpdate = readerRepository.findByReaderUpdateReferenceId(readerId).orElse(null);
         if (readerUpdate != null) {
             return ReaderRequestInputDto.builder()
+                    .id(readerUpdate.getId())
                     .nickname(readerUpdate.getNickname())
                     .genres(Arrays.stream(readerUpdate.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
                     .languages(Arrays.stream(readerUpdate.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
@@ -401,6 +402,7 @@ public class ReaderServiceImpl implements ReaderService {
         for (var reader : readers.getContent()) {
             list.add(
                     ReaderRequestInputDto.builder()
+                            .id(reader.getId())
                             .nickname(reader.getNickname())
                             .genres(Arrays.stream(reader.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
                             .languages(Arrays.stream(reader.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
@@ -424,6 +426,49 @@ public class ReaderServiceImpl implements ReaderService {
                 )
         );
         return listReaderUpdateRequestDto;
+    }
+
+    @Override
+    public ReaderDto acceptUpdateReader(UUID id) {
+        Reader cloneReader = readerRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Update not found"));
+        Reader reader = readerRepository
+                .findByReaderUpdateReferenceId(cloneReader.getReaderUpdateReferenceId())
+                .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        reader.setNickname(cloneReader.getNickname());
+        reader.setGenre(cloneReader.getGenre());
+        reader.setLanguage(cloneReader.getLanguage());
+        reader.setCountryAccent(cloneReader.getCountryAccent());
+        reader.setDescription(cloneReader.getDescription());
+        reader.setIntroductionVideoUrl(cloneReader.getIntroductionVideoUrl());
+        reader.setAudioDescriptionUrl(cloneReader.getAudioDescriptionUrl());
+        reader.setAvatarUrl(cloneReader.getAvatarUrl());
+        reader.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        reader.setIsUpdating(false);
+        reader = readerRepository.save(reader);
+        if(reader != null) {
+            readerRepository.delete(cloneReader);
+            return ReaderMapper.INSTANCE.toDto(reader);
+        }
+        return null;
+    }
+
+    @Override
+    public ReaderDto rejectUpdateReader(UUID id) {
+        Reader cloneReader = readerRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Update not found"));
+        Reader reader = readerRepository
+                .findByReaderUpdateReferenceId(cloneReader.getReaderUpdateReferenceId())
+                .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        reader.setIsUpdating(false);
+        readerRepository.delete(cloneReader);
+        reader = readerRepository.save(reader);
+        if(reader != null) {
+            return ReaderMapper.INSTANCE.toDto(reader);
+        }
+        return null;
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {
@@ -470,4 +515,6 @@ public class ReaderServiceImpl implements ReaderService {
 
         return String.format("%02d:%02d:%02d", hour, minute, second); // Example start time
     }
+
+
 }
