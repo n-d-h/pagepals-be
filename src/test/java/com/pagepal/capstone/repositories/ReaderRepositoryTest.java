@@ -125,11 +125,11 @@ class ReaderRepositoryTest {
     }
 
     /**
-     * Method under test: {@link ReaderRepository#findTop10ByAccountInOrderByRatingDesc(List)}
+     * Method under test: {@link ReaderRepository#findTop8ByAccountInOrderByRatingDesc(List)}
      */
 
     @Test
-    void canFindTop10ByAccountInOrderByRatingDesc() {
+    void canFindTop8ByAccountInOrderByRatingDesc() {
         // Arrange
 
         /* Role */
@@ -171,7 +171,7 @@ class ReaderRepositoryTest {
 
         readerRepository.saveAll(Arrays.asList(reader1, reader2, reader3));
         // Act
-        List<Reader> result = readerRepository.findTop10ByAccountInOrderByRatingDesc(Arrays.asList(account1, account2, account3));
+        List<Reader> result = readerRepository.findTop8ByAccountInOrderByRatingDesc(Arrays.asList(account1, account2, account3));
         // Assert
         assertEquals(3, result.size());
         assertEquals(5, result.get(0).getRating());

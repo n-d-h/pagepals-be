@@ -136,6 +136,11 @@ type ReaderRequestInputRead {
     avatarUrl: String
 }
 
+type ListUpdateRequestedReader {
+    list: [ReaderRequestInputRead]
+    pagination: Paging
+}
+
 extend type Query {
     getReadersActive: [Reader]
     getReaderDetail(id: ID!): Reader
@@ -146,6 +151,7 @@ extend type Query {
     getListPopularReaders: [Reader]
     getReaderReviews(readerId: ID!, page: Int, pageSize: Int): ListReaderReview
     getUpdateRequestByReaderId(readerId: ID!): ReaderRequestInputRead
+    getAllUpdateRequestedReader(page: Int, pageSize: Int): ListUpdateRequestedReader
 }
 
 extend type Mutation {

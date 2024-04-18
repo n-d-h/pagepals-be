@@ -34,4 +34,6 @@ public interface ReaderService {
     ListReaderReviewDto getReaderReviewsByReaderId(UUID id, Integer page, Integer size);
 
     ReaderRequestInputDto getUpdateRequestByReaderId(UUID readerId);
+
+    ListReaderUpdateRequestDto getAllUpdateRequestedReader(Integer page, Integer pageSize);
 }

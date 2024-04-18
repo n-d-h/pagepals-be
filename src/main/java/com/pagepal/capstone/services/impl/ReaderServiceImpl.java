@@ -142,7 +142,7 @@ public class ReaderServiceImpl implements ReaderService {
                 .orElseThrow(() -> new EntityNotFoundException("Role not found"));
         List<Account> accounts = accountRepository.findByAccountStateAndRole(accountState, role);
 
-        List<Reader> readers = readerRepository.findTop10ByAccountInOrderByRatingDesc(accounts);
+        List<Reader> readers = readerRepository.findTop8ByAccountInOrderByRatingDesc(accounts);
         return readers.stream().map(ReaderMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
@@ -387,6 +387,43 @@ public class ReaderServiceImpl implements ReaderService {
                     .build();
         }
         return null;
+    }
+
+    @Override
+    public ListReaderUpdateRequestDto getAllUpdateRequestedReader(Integer page, Integer pageSize) {
+        if (page == null || page < 0)
+            page = 0;
+        if (pageSize == null || pageSize < 0)
+            pageSize = 10;
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Reader> readers = readerRepository.findByReaderUpdateReferenceIdIsNotNullAndAccountIsNull(pageable);
+        List<ReaderRequestInputDto> list = new ArrayList<>();
+        for (var reader : readers.getContent()) {
+            list.add(
+                    ReaderRequestInputDto.builder()
+                            .nickname(reader.getNickname())
+                            .genres(Arrays.stream(reader.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
+                            .languages(Arrays.stream(reader.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
+                            .countryAccent(reader.getCountryAccent())
+                            .description(reader.getDescription())
+                            .introductionVideoUrl(reader.getIntroductionVideoUrl())
+                            .audioDescriptionUrl(reader.getAudioDescriptionUrl())
+                            .avatarUrl(reader.getAvatarUrl())
+                            .build()
+            );
+        }
+        ListReaderUpdateRequestDto listReaderUpdateRequestDto = new ListReaderUpdateRequestDto();
+        listReaderUpdateRequestDto.setList(list);
+        listReaderUpdateRequestDto.setPagination(
+                new PagingDto(
+                        readers.getTotalPages(),
+                        readers.getTotalElements(),
+                        readers.getSort().toString(),
+                        readers.getNumber(),
+                        readers.getSize()
+                )
+        );
+        return listReaderUpdateRequestDto;
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {

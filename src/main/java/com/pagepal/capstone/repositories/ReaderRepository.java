@@ -31,5 +31,11 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
 
     List<Reader> findTop10ByAccountInOrderByRatingDesc(List<Account> account);
 
+    List<Reader> findTop8ByAccountInOrderByRatingDesc(List<Account> account);
+
     Optional<Reader> findByReaderUpdateReferenceId(UUID id);
+
+//    @Query("SELECT r FROM Reader r WHERE r.readerUpdateReferenceId IS NOT NULL AND r.account IS NULL")
+    Page<Reader> findByReaderUpdateReferenceIdIsNotNullAndAccountIsNull(Pageable pageable);
+
 }

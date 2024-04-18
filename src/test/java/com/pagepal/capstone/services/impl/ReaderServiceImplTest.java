@@ -272,13 +272,13 @@ class ReaderServiceImplTest {
         when(accountStateRepository.findByNameAndStatus("READER_ACTIVE", Status.ACTIVE)).thenReturn(Optional.of(accountState1));
         when(roleRepository.findByName("READER")).thenReturn(Optional.of(role1));
         when(accountRepository.findByAccountStateAndRole(accountState1, role1)).thenReturn(Collections.singletonList(account1));
-        when(readerRepository.findTop10ByAccountInOrderByRatingDesc(Collections.singletonList(account1))).thenReturn(Collections.singletonList(reader1));
+        when(readerRepository.findTop8ByAccountInOrderByRatingDesc(Collections.singletonList(account1))).thenReturn(Collections.singletonList(reader1));
 
         // Call the method under test
         List<ReaderDto> result = readerServiceImpl.getListPopularReaders();
 
         // Verify the interaction with the mock
-        verify(readerRepository).findTop10ByAccountInOrderByRatingDesc(Collections.singletonList(account1));
+        verify(readerRepository).findTop8ByAccountInOrderByRatingDesc(Collections.singletonList(account1));
 
         // Additional assertions if needed
         assertNotNull(result);
