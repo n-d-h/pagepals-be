@@ -34,6 +34,12 @@ public class Meeting implements Serializable {
     @Column(name = "meeting_code")
     private String meetingCode;
 
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "start_at")
+    private Date startAt;
+
     @Column(name = "create_at")
     private Date createAt;
 
