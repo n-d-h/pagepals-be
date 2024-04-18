@@ -104,8 +104,4 @@ public class AccountController {
         return accountService.updateAccountState(id, accountState);
     }
 
-    @QueryMapping
-    public RecordingDto getRecording(){
-        return zoomService.getRecording("88446394964");
-    }
 }

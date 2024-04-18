@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface MeetingRepository extends JpaRepository<Meeting, UUID> {
      Optional<Meeting> findByMeetingCodeAndState(String code, MeetingEnum state);
      Optional<Meeting> findBySeminarId(UUID seminarId);
+
+
 }
