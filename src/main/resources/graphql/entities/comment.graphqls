@@ -1,0 +1,29 @@
+type Comment {
+    id: ID
+    content: String
+    createdAt: String
+    updatedAt: String
+    post: Post
+    reader: Reader
+    customer: Customer
+    parentId: ID
+    children: [Comment]
+}
+
+input CommentInput {
+    content: String
+    postId: ID
+    readerId: ID
+    customerId: ID
+    parentPostCommentId: ID
+}
+
+extend type Query {
+    getCommentByPostId(postId: ID): [Comment]
+}
+
+extend type Mutation {
+    createComment(input: CommentInput): Comment
+    updateComment(id: ID, content: String): Comment
+    deleteComment(id: ID): Comment
+}

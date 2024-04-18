@@ -1,9 +1,50 @@
 type Meeting {
     id: ID!
     meetingCode: String
+    password:String
+    startAt: String
     createAt: String
     limitOfPerson: Int
     state: MeetingEnum
     reader: Reader
-    bookings: [Booking]
+}
+
+
+type RecordFile {
+    id: String
+    meeting_id: String
+    recording_start: String
+    recording_end: String
+    file_type: String
+    file_extension: String
+    file_size: Int
+    play_url: String
+    download_url: String
+    status: String
+    recording_type: String
+}
+
+
+type Recording {
+    uuid: String
+    id: String
+    account_id: String
+    host_id: String
+    topic: String
+    type: Int
+    start_time: String
+    timezone: String
+    host_email: String
+    duration: Int
+    total_size: Int
+    recording_count: Int
+    share_url: String
+    password: String
+    recording_play_passcode: String
+    recording_files: [RecordFile]
+}
+
+extend type Query {
+    getRecording(roomId: String): Recording
+    getMeetingById(roomId: String): Meeting
 }

@@ -35,6 +35,9 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationEnum status;
 
+    @Column(name = "is_read")
+    private Boolean isRead;
+
     @Column(name = "created_at")
     private Date createdAt;
 

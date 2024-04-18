@@ -3,6 +3,9 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.dtos.webhook.EmbedObject;
 import com.pagepal.capstone.dtos.webhook.JSONObject;
 import com.pagepal.capstone.dtos.webhook.Webhook;
+import com.pagepal.capstone.entities.postgre.Account;
+import com.pagepal.capstone.entities.postgre.Customer;
+import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.services.WebhookService;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +16,12 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WebhookImpl implements WebhookService {
     @Override
-    public void sendWebhook(Webhook webhook) throws IOException {
+    public void sendWebhook(Webhook webhook, Boolean isWarning) throws IOException {
         if (webhook.getContent() == null && webhook.getEmbeds().isEmpty()) {
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
         }
@@ -40,10 +44,13 @@ public class WebhookImpl implements WebhookService {
                 jsonEmbed.put("url", embed.getUrl());
 
                 if (embed.getColor() != null) {
-                    Color color = embed.getColor();
-                    int rgb = color.getRed();
-                    rgb = (rgb << 8) + color.getGreen();
-                    rgb = (rgb << 8) + color.getBlue();
+                    int rgb;
+
+                    if(isWarning == Boolean.TRUE) {
+                        rgb = 16711680;
+                    } else {
+                        rgb = 65280;
+                    }
 
                     jsonEmbed.put("color", rgb);
                 }
@@ -118,5 +125,38 @@ public class WebhookImpl implements WebhookService {
 
         connection.getInputStream().close();
         connection.disconnect();
+    }
+
+    @Override
+    public void sendWebhookWithData(Account account, Map<String, String> content, Boolean isReader, Boolean isWarning) {
+        try {
+            Webhook webhook = new Webhook();
+            webhook.setContent("PagePal Notification");
+            webhook.setWebhookUrl("https://discord.com/api/webhooks/1206078678518206504/6VsXDrAJgmzOVXXwFLbYa7ZO2iD5xQ4n0UsrFzeCBaj03UHJ8gUPvu-7DLVgMr3zHHDU");
+            webhook.setUsername("PagePal");
+            webhook.setAvatarUrl("https://via.placeholder.com/150");
+            EmbedObject embedObject = new EmbedObject();
+
+            if (isReader == Boolean.TRUE) {
+                Reader reader = account.getReader();
+                String nickname = reader.getNickname();
+                String imageAvatar = reader.getAvatarUrl();
+                embedObject.setAuthor(nickname, null, imageAvatar);
+            } else {
+                Customer customer = account.getCustomer();
+                String fullName = customer.getFullName();
+                String imageAvatar = customer.getImageUrl();
+                embedObject.setAuthor(fullName, null, imageAvatar);
+            }
+
+            for (Map.Entry<String, String> entry : content.entrySet()) {
+                embedObject.addField(entry.getKey(), entry.getValue(), false);
+            }
+
+            webhook.addEmbed(embedObject);
+            this.sendWebhook(webhook, isWarning);
+        } catch (Exception e) {
+            System.out.println("Webhooks fails");
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.dtos.webhook.Webhook;
+import com.pagepal.capstone.entities.postgre.Account;
 
 import java.io.IOException;
+import java.util.Map;
 
 public interface WebhookService {
     /**
@@ -29,5 +31,6 @@ public interface WebhookService {
      * }
      * </pre>
      */
-    void sendWebhook(Webhook webhook) throws IOException;
+    void sendWebhook(Webhook webhook, Boolean isWarning) throws IOException;
+    void sendWebhookWithData(Account account, Map<String, String> content, Boolean isReader, Boolean isWarning);
 }

@@ -8,6 +8,7 @@ import com.pagepal.capstone.mappers.RequestMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.EmailService;
 import com.pagepal.capstone.services.RequestService;
+import com.pagepal.capstone.services.ZoomService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -32,13 +33,14 @@ public class RequestServiceImpl implements RequestService {
     private final AccountStateRepository accountStateRepository;
 
     private final EmailService emailService;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final String READER_STATE_ACTIVE = "READER_ACTIVE";
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private final DateUtils dateUtils;
     private final RoleRepository roleRepository;
+    private final ZoomService zoomService;
 
     @Secured("STAFF")
     @Override
@@ -67,9 +69,12 @@ public class RequestServiceImpl implements RequestService {
 
         Date startDate = dateFormat.parse(interviewAt);
 
-        String roomId = generateRoomId();
-
-        request.setMeetingCode(roomId);
+        Meeting meeting = zoomService.createInterviewMeeting("Interview for " + request.getReader().getAccount().getEmail(),
+                120, "Interview become reader", startDate );
+        if(meeting == null) {
+            throw new RuntimeException("Failed to create meeting");
+        }
+        request.setMeetingCode(meeting.getMeetingCode());
         request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         request.setInterviewAt(startDate);
         request.setStaffId(account.getId());

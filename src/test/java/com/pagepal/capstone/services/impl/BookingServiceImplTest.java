@@ -5,6 +5,9 @@ import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.services.NotificationService;
+import com.pagepal.capstone.services.WebhookService;
+import com.pagepal.capstone.services.ZoomService;
 import com.pagepal.capstone.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +49,13 @@ class BookingServiceImplTest {
     @MockBean
     private ReaderRepository readerRepository;
     @MockBean
+    private ZoomService zoomService;
+    @MockBean
     private DateUtils dateUtils;
+    @MockBean
+    private WebhookService webhookService;
+    @MockBean
+    private NotificationService notificationService;
 
     /**
      * Method under test: {@link BookingServiceImpl#getListBookingByCustomer(UUID, QueryDto)}

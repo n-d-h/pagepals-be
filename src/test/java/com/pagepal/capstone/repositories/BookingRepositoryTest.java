@@ -116,6 +116,8 @@ public class BookingRepositoryTest {
     Meeting meeting = new Meeting(
             UUID.randomUUID(),
             "ABCD",
+            "123",
+            new Date(),
             new Date(),
             3,
             MeetingEnum.AVAILABLE,

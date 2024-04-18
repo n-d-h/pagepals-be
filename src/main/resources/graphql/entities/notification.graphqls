@@ -1,0 +1,32 @@
+type Notification {
+    id: ID!
+    content: String
+    status: String
+    isRead: Boolean
+    createdAt: String
+    updatedAt: String
+    account: Account
+}
+
+type ListNotification {
+    total: Int
+    pagination: Paging
+    list: [Notification]
+}
+
+input NotificationInput {
+    content: String
+    accountId: ID
+}
+
+extend type Query {
+    getNotificationById(id: ID!): Notification
+    getAllNotifications(page: Int, pageSize: Int, sort: String): ListNotification
+    getAllNotificationsByAccountId(accountId: ID, page: Int, pageSize: Int, sort: String): ListNotification
+}
+
+extend type Mutation {
+    createNotification(notification: NotificationInput): Notification
+    readNotification(id: ID!): Notification
+    readAllNotifications(accountId: ID): [Notification]
+}
