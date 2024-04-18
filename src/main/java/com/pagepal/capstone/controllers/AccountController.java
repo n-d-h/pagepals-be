@@ -2,6 +2,7 @@ package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.*;
+import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.services.AccountService;
 import com.pagepal.capstone.services.ZoomService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -101,5 +102,10 @@ public class AccountController {
     @MutationMapping(name = "updateAccountState")
     public AccountDto updateAccountState(@Argument(name = "id") UUID id, @Argument(name = "accountState") String accountState) {
         return accountService.updateAccountState(id, accountState);
+    }
+
+    @QueryMapping
+    public RecordingDto getRecording(){
+        return zoomService.getRecording("88446394964");
     }
 }

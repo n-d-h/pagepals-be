@@ -13,6 +13,7 @@ import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookingService;
 import com.pagepal.capstone.services.NotificationService;
 import com.pagepal.capstone.services.WebhookService;
+import com.pagepal.capstone.services.ZoomService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Transactional
@@ -54,6 +56,7 @@ public class BookingServiceImpl implements BookingService {
     private final ReaderRepository readerRepository;
     private final WebhookService webhookService;
     private final NotificationService notificationService;
+    private final ZoomService zoomService;
     private final DateUtils dateUtils;
 
 
@@ -164,17 +167,27 @@ public class BookingServiceImpl implements BookingService {
         WorkingTime wt = workingTimeRepository
                 .findById(bookingDto.getWorkingTimeId())
                 .orElseThrow(() -> new EntityNotFoundException("Working time not found"));
+//        String startTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(wt.getStartTime());
         var service = serviceRepository.findById(bookingDto.getServiceId())
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
-        String roomId = generateRoomId(6);
-        Meeting meeting = meetingRepository
-                .findByMeetingCodeAndState(roomId, MeetingEnum.AVAILABLE)
-                .orElse(null);
-        if (meeting == null) {
-            meeting = new Meeting(null, roomId, "123", dateUtils.getCurrentVietnamDate(), new Date(), 2,
-                    MeetingEnum.AVAILABLE, wt.getReader(), null, null, null);
-            meeting = meetingRepository.save(meeting);
+
+        if(customer.getAccount().getId() == service.getReader().getAccount().getId()) {
+            throw new ValidationException("Cannot book your own service");
         }
+
+        wt.getBookings().forEach(booking -> {
+            if (booking.getState().getName().equals(bookingPending)) {
+                throw new ValidationException("Working time is not available");
+            }
+        });
+
+        Meeting meeting = zoomService.createMeeting(service.getReader(), service.getBook().getTitle(),
+                60, service.getServiceType().getName(), wt.getStartTime());
+
+        if (meeting == null) {
+            throw new RuntimeException("Failed to create meeting");
+        }
+
         int tokenLeft = customer.getAccount().getWallet().getTokenAmount() - bookingDto.getTotalPrice();
         if (tokenLeft < 0) {
             throw new ValidationException("Not enough token");
