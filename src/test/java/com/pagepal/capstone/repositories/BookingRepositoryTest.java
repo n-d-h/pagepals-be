@@ -73,6 +73,8 @@ public class BookingRepositoryTest {
             accountState1,
             null,
             null,
+            null,
+            null,
             role1,
             null,
             null

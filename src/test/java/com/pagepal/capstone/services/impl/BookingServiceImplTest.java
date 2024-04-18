@@ -5,6 +5,7 @@ import com.pagepal.capstone.dtos.booking.QueryDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.services.FirebaseMessagingService;
 import com.pagepal.capstone.services.NotificationService;
 import com.pagepal.capstone.services.WebhookService;
 import com.pagepal.capstone.services.ZoomService;
@@ -56,6 +57,8 @@ class BookingServiceImplTest {
     private WebhookService webhookService;
     @MockBean
     private NotificationService notificationService;
+    @MockBean
+    private FirebaseMessagingService firebaseMessagingService;
 
     /**
      * Method under test: {@link BookingServiceImpl#getListBookingByCustomer(UUID, QueryDto)}
