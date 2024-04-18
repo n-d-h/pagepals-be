@@ -87,14 +87,48 @@ public class RequestServiceImpl implements RequestService {
         if (request != null) {
             Reader reader = request.getReader();
             String email = reader.getAccount().getEmail();
+            String subject = "[PagePals]: Interview schedule";
+            String emailBody = getUpdateRequestInterviewEmailBody(reader, startDate, requestId);
             if (email != null && !email.isEmpty()) {
-                emailService.sendSimpleEmail(email,
-                        "Interview schedule",
-                        "You have an interview schedule at: " + startDate + "; Please check your request on our website.");
+                emailService.sendSimpleEmail(email, subject, emailBody);
             }
             return RequestMapper.INSTANCE.toDto(request);
         }
         return null;
+    }
+
+    private static String getUpdateRequestInterviewEmailBody(Reader reader, Date startDate, UUID requestId) {
+        String date = new SimpleDateFormat("MMM dd, yyyy").format(startDate);
+        String time = new SimpleDateFormat("hh:mm:ss").format(startDate);
+        String location = "https://pagepals-fe.vercel.app/main/become-a-reader";
+        return """
+                Dear %s,
+                                    
+                Thank you for your interest in joining PagePals! We are excited to inform you that an interview has been scheduled for you as part of our application process.
+                                
+                Interview Details:
+                - Date: %s
+                - Time: %s
+                - Location: %s
+                - Request ID: %s
+                                    
+                During the interview, we will discuss your qualifications, skills, and experience relevant to the position, as well as the responsibilities and expectations associated with the role.
+                                    
+                Please make sure to join online meeting on time and bring any necessary documents or materials. If you have any questions or need further assistance, feel free to contact us.
+                                    
+                We look forward to meeting you and discussing how you can contribute to our team at PagePals.
+                                    
+                Best regards,
+                The PagePals Team
+                                    
+                """
+                .formatted(
+                        reader.getAccount().getUsername(),
+                        date,
+                        time,
+                        location,
+                        requestId.toString()
+                );
     }
 
     @Secured("STAFF")
@@ -117,10 +151,27 @@ public class RequestServiceImpl implements RequestService {
         if (request != null) {
             Reader reader = request.getReader();
             String email = reader.getAccount().getEmail();
+            String website = "https://pagepals-fe.vercel.app";
             if (email != null && !email.isEmpty()) {
-                emailService.sendSimpleEmail(email,
-                        "Request rejected",
-                        "Your request has been rejected by our staff. Please check your request on our website.");
+                String subject = "[PagePals]: Request rejected";
+                String body = """
+                        Dear %s,
+
+                        We regret to inform you that your recent request has been rejected by our staff. Please find the details below:
+
+                        Request ID: %s
+                        Description: %s
+
+                        If you have any questions or need further clarification regarding this decision, please feel free to reach out to us. We're here to assist you.
+                        Our website: %s
+
+                        Thank you for your understanding.
+
+                        Best regards,
+                        The PagePals Team
+                        """.formatted(reader.getAccount().getUsername(), requestId.toString(), description, website);
+
+                emailService.sendSimpleEmail(email, subject, body);
             }
             return RequestMapper.INSTANCE.toDto(request);
         }
@@ -158,10 +209,28 @@ public class RequestServiceImpl implements RequestService {
             readerAccount = accountRepository.save(readerAccount);
             if (readerAccount != null) {
                 String email = readerAccount.getEmail();
+                String website = "https://pagepals-fe.vercel.app";
                 if (email != null && !email.isEmpty()) {
-                    emailService.sendSimpleEmail(email,
-                            "Request accepted",
-                            "Congratulations! Your request has been accepted by our staff. Please check your request on our website.");
+                    String subject = "[PagePals]: Request Approved";
+                    String body = """
+                            Dear %s,
+
+                            We're delighted to inform you that your recent request has been approved by our staff. Please find the details below:
+
+                            Request ID: %s
+                            Description: %s
+
+                            Your request has been successfully processed. You can now view the updated status on our website: %s.
+
+                            If you have any further questions or need assistance, please don't hesitate to reach out to us. We're here to help.
+
+                            Thank you for choosing us.
+
+                            Best regards,
+                            The PagePals Team
+                            """.formatted(readerAccount.getUsername(), requestId.toString(), description, website);
+
+                    emailService.sendSimpleEmail(email, subject, body);
                 }
                 return RequestMapper.INSTANCE.toDto(request);
             }
@@ -173,7 +242,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public RequestDto getRequestByReaderId(UUID readerId) {
         List<RequestStateEnum> listState = Arrays.asList(RequestStateEnum.INTERVIEW_PENDING, RequestStateEnum.ANSWER_CHECKING);
-        Request request = requestRepository.findByReaderIdAndStates(readerId,listState).orElse(null);
+        Request request = requestRepository.findByReaderIdAndStates(readerId, listState).orElse(null);
         return request == null ? null : RequestMapper.INSTANCE.toDto(request);
     }
 

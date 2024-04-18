@@ -85,4 +85,10 @@ public class ReaderController {
     public ReaderRequestInputDto getUpdateRequestByReaderId(@Argument("readerId") UUID readerId) {
         return readerService.getUpdateRequestByReaderId(readerId);
     }
+
+    @QueryMapping
+    public ListReaderUpdateRequestDto getAllUpdateRequestedReader(@Argument(name = "page") Integer page,
+                                                                 @Argument(name = "pageSize") Integer pageSize) {
+        return readerService.getAllUpdateRequestedReader(page, pageSize);
+    }
 }
