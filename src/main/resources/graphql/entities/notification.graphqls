@@ -27,5 +27,6 @@ extend type Query {
 
 extend type Mutation {
     createNotification(notification: NotificationInput): Notification
-    updateNotification(id: ID!): Notification
+    readNotification(id: ID!): Notification
+    readAllNotifications(accountId: ID): [Notification]
 }

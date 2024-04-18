@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -102,6 +103,28 @@ public class NotificationServiceImpl implements NotificationService {
                     .updatedAt(String.valueOf(noti.getUpdatedAt()))
                     .account(noti.getAccount())
                     .build();
+        }
+        return null;
+    }
+
+    @Override
+    public List<NotificationDto> readAllNotification(UUID accountId) {
+        List<Notification> notifications = notificationRepository.findAllByAccountId(accountId);
+        if (notifications != null) {
+            notifications.forEach(notification -> {
+                notification.setIsRead(Boolean.TRUE);
+                notification.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+            });
+            notificationRepository.saveAll(notifications);
+            return notifications.stream().map(notification -> NotificationDto.builder()
+                    .id(notification.getId())
+                    .content(notification.getContent())
+                    .status(String.valueOf(notification.getStatus()))
+                    .isRead(notification.getIsRead())
+                    .createdAt(String.valueOf(notification.getCreatedAt()))
+                    .updatedAt(String.valueOf(notification.getUpdatedAt()))
+                    .account(notification.getAccount())
+                    .build()).toList();
         }
         return null;
     }

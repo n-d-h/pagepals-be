@@ -10,6 +10,7 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -48,10 +49,17 @@ public class NotificationController {
         return notificationService.createNotification(notificationCreateDto);
     }
 
-    @MutationMapping("updateNotification")
+    @MutationMapping("readNotification")
     public NotificationDto updateNotification(
             @Argument("id") UUID id
     ) {
         return notificationService.updateNotification(id);
+    }
+
+    @MutationMapping("readAllNotifications")
+    public List<NotificationDto> readAllNotification(
+            @Argument("accountId") UUID accountId
+    ) {
+        return notificationService.readAllNotification(accountId);
     }
 }
