@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.momo.Response;
+import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.CurrencyEnum;
 import com.pagepal.capstone.enums.Status;
@@ -8,6 +9,8 @@ import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.MomoService;
+import com.pagepal.capstone.services.NotificationService;
+import com.pagepal.capstone.services.WebhookService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -69,6 +72,8 @@ public class MomoServiceImpl implements MomoService {
     private final TransactionRepository transactionRepository;
     private final WalletRepository walletRepository;
     private final DateUtils dateUtils;
+    private final WebhookService webhookService;
+    private final NotificationService notificationService;
 
 
     /**
@@ -348,6 +353,23 @@ public class MomoServiceImpl implements MomoService {
         transaction.setStatus(TransactionStatusEnum.SUCCESS);
 
         transactionRepository.save(transaction);
+
+        Account account = wallet.getAccount();
+        Customer customer = account.getCustomer();
+
+        // Send webhook to discord
+        Map<String, String> content = new HashMap<>();
+        content.put("Customer recharge money to PagePal", "");
+        content.put("Customer", customer.getFullName());
+        content.put("Customer-Id", customer.getId().toString());
+        content.put("Amount", amount);
+        webhookService.sendWebhookWithData(customer.getAccount(), content, Boolean.TRUE, Boolean.TRUE);
+
+        // Send notification refund token to customer
+        NotificationCreateDto customerNotification = new NotificationCreateDto();
+        customerNotification.setAccountId(customer.getAccount().getId());
+        customerNotification.setContent("Token received: " + tokenReceived);
+        notificationService.createNotification(customerNotification);
 
         return Response.builder()
                 .message(message)
