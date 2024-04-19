@@ -94,7 +94,7 @@ public class AccountServiceImplTest {
             new Date(), new Date(), new Date(), null,null, null, account1, null, null, null, null,
             null, null, null, null);
     Customer customer1 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "customer name 1", GenderEnum.MALE, new Date(), "url",
-            new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null, new ArrayList<>());
+            new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null, new ArrayList<>(), null);
 
     /**
      * Method under test: {@link AccountServiceImpl#updateAccount(UUID, AccountUpdateDto)}

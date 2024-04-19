@@ -80,4 +80,8 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<PostComment> postComments;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Report> reports;
 }

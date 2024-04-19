@@ -16,4 +16,6 @@ public interface BookingService {
     BookingDto completeBooking(UUID id);
 
     BookingDto reviewBooking(UUID id, ReviewBooking review);
+
+    BookingDto getBookingById(UUID id);
 }

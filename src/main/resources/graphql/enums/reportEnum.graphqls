@@ -1,0 +1,11 @@
+enum ReportTypeEnum {
+    BOOKING
+    POST
+    READER
+}
+
+enum ReportStateEnum {
+    PENDING
+    PROCESSED
+    REJECTED
+}

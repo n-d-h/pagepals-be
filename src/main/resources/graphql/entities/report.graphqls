@@ -1,0 +1,39 @@
+type Report {
+    id: ID!
+    reportedId: ID
+    createdAt: String
+    updatedAt: String
+    reason: String
+    type: ReportTypeEnum
+    state: ReportStateEnum
+    customer: Customer
+}
+
+type ListReportDto{
+    list: [Report]
+    paging: Paging
+}
+
+input ReportQuery{
+    page: Int
+    pageSize: Int
+    type: String
+    state: String
+}
+
+input ReportCreateInput{
+    reportedId: ID
+    reason: String
+    type: ReportTypeEnum
+    customerId: ID
+}
+
+extend type Query {
+    getReportById(id: ID!): Report
+    listReport(query: ReportQuery): ListReportDto
+}
+
+extend type Mutation {
+    createReport(input: ReportCreateInput): Report
+}
+

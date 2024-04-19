@@ -526,6 +526,12 @@ public class BookingServiceImpl implements BookingService {
         return booking != null ? BookingMapper.INSTANCE.toDto(booking) : null;
     }
 
+    @Override
+    public BookingDto getBookingById(UUID id) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+        return BookingMapper.INSTANCE.toDto(booking);
+    }
+
     private static String generateRoomId(int length) {
         Random random = new Random();
         StringBuilder sb = new StringBuilder(length);

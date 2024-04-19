@@ -49,4 +49,10 @@ public class BookingController {
                                     @Argument(name = "review") ReviewBooking review) {
         return bookingService.reviewBooking(id, review);
     }
+
+    @QueryMapping
+    public BookingDto getBookingById(@Argument(name = "bookingId") UUID id) {
+        return bookingService.getBookingById(id);
+    }
+
 }
