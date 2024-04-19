@@ -21,6 +21,9 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -64,7 +67,7 @@ public class SeminarServiceImpl implements SeminarService {
                             startTime
                     );
 
-            if(meeting == null) throw new RuntimeException("Cannot create meeting");
+            if (meeting == null) throw new RuntimeException("Cannot create meeting");
 
             Seminar seminar = Seminar.builder()
                     .title(seminarCreateDto.getTitle())
@@ -85,11 +88,11 @@ public class SeminarServiceImpl implements SeminarService {
 
             seminar = seminarRepository.save(seminar);
 
-            if(seminar == null) throw new RuntimeException("Cannot create seminar");
+            if (seminar == null) throw new RuntimeException("Cannot create seminar");
 
             return toSeminarDto(seminar);
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException("Cannot create booking:" + e.getMessage());
         }
     }
 
@@ -129,7 +132,7 @@ public class SeminarServiceImpl implements SeminarService {
                             startTime
                     );
 
-            if(meeting == null) throw new RuntimeException("Cannot create meeting");
+            if (meeting == null) throw new RuntimeException("Cannot create meeting");
 
             seminar.setTitle(seminarUpdateDto.getTitle());
             seminar.setLimitCustomer(seminarUpdateDto.getLimitCustomer());
@@ -299,26 +302,45 @@ public class SeminarServiceImpl implements SeminarService {
     }
 
     private Reader checkWorkingTime(UUID readerId, SeminarCreateDto seminarCreateDto, SeminarUpdateDto seminarUpdateDto) throws Exception {
-        Reader reader = readerRepository.findById(readerId).orElseThrow();
+        Reader reader = readerRepository.findById(readerId).orElseThrow(EntityNotFoundException::new);
         List<WorkingTime> workingTimes = reader.getWorkingTimes();
+        List<Seminar> seminars = reader.getSeminars();
 
-        Date startTime = seminarCreateDto != null
-                ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(seminarCreateDto.getStartTime())
-                : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(seminarUpdateDto.getStartTime());
-        Integer duration = seminarCreateDto != null ? seminarCreateDto.getDuration() : seminarUpdateDto.getDuration();
+        LocalDateTime startTime;
+        if (seminarCreateDto != null) {
+            startTime = LocalDateTime.parse(seminarCreateDto.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } else {
+            startTime = LocalDateTime.parse(seminarUpdateDto.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+        int duration = (seminarCreateDto != null) ? seminarCreateDto.getDuration() : seminarUpdateDto.getDuration();
 
-        Date endTime = new Date(startTime.getTime() + (long) (duration * 60 * 60 * 1000));
+        LocalDateTime endTime = startTime.plusMinutes(duration);
 
         workingTimes.forEach(workingTime -> {
-            if (startTime.after(workingTime.getStartTime()) && startTime.before(workingTime.getEndTime())) {
-                throw new RuntimeException("Seminar start time is in working time");
+            LocalDateTime workingStartTime = LocalDateTime.ofInstant(workingTime.getStartTime().toInstant(), ZoneId.of("Asia/Ho_Chi_Minh"));
+            LocalDateTime workingEndTime = LocalDateTime.ofInstant(workingTime.getEndTime().toInstant(), ZoneId.of("Asia/Ho_Chi_Minh"));
+
+            if ((startTime.isAfter(workingStartTime) || startTime.isEqual(workingStartTime)) && startTime.isBefore(workingEndTime)) {
+                throw new RuntimeException("Seminar start time is during working time");
             }
 
-            if (endTime.after(workingTime.getStartTime()) && endTime.before(workingTime.getEndTime())) {
-                throw new RuntimeException("Seminar end time is in working time");
+            if ((endTime.isAfter(workingStartTime) || endTime.isEqual(workingStartTime)) && endTime.isBefore(workingEndTime)) {
+                throw new RuntimeException("Seminar end time is during working time");
             }
         });
 
+        seminars.forEach(seminar -> {
+            LocalDateTime seminarStartTime = LocalDateTime.ofInstant(seminar.getStartTime().toInstant(), ZoneId.of("Asia/Ho_Chi_Minh"));
+            LocalDateTime seminarEndTime = seminarStartTime.plusMinutes(seminar.getDuration());
+
+            if ((startTime.isAfter(seminarStartTime) || startTime.isEqual(seminarStartTime)) && startTime.isBefore(seminarEndTime)) {
+                throw new RuntimeException("Seminar start time conflicts with an existing seminar");
+            }
+
+            if ((endTime.isAfter(seminarStartTime) || endTime.isEqual(seminarStartTime)) && endTime.isBefore(seminarEndTime)) {
+                throw new RuntimeException("Seminar end time conflicts with an existing seminar");
+            }
+        });
         return reader;
     }
 
