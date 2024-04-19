@@ -371,12 +371,16 @@ public class ReaderServiceImpl implements ReaderService {
     }
 
     @Override
-    public ReaderRequestInputDto getUpdateRequestByReaderId(UUID readerId) {
-        readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        var readerUpdate = readerRepository.findByReaderUpdateReferenceId(readerId).orElse(null);
+    public ReaderRequestReadDto getUpdateRequestByReaderId(UUID readerId) {
+        var readerUpdate = readerRepository.findById(readerId).orElse(null);
+        Reader oldReader = null;
         if (readerUpdate != null) {
-            return ReaderRequestInputDto.builder()
+            oldReader = readerRepository.findById(readerUpdate.getReaderUpdateReferenceId()).orElse(null);
+        }
+        if (readerUpdate != null) {
+            return ReaderRequestReadDto.builder()
                     .id(readerUpdate.getId())
+                    .preference(ReaderMapper.INSTANCE.toDto(oldReader))
                     .nickname(readerUpdate.getNickname())
                     .genres(Arrays.stream(readerUpdate.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
                     .languages(Arrays.stream(readerUpdate.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
@@ -398,11 +402,13 @@ public class ReaderServiceImpl implements ReaderService {
             pageSize = 10;
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Reader> readers = readerRepository.findByReaderUpdateReferenceIdIsNotNullAndAccountIsNull(pageable);
-        List<ReaderRequestInputDto> list = new ArrayList<>();
+        List<ReaderRequestReadDto> list = new ArrayList<>();
         for (var reader : readers.getContent()) {
+            var oldReader = readerRepository.findById(reader.getReaderUpdateReferenceId()).orElse(null);
             list.add(
-                    ReaderRequestInputDto.builder()
+                    ReaderRequestReadDto.builder()
                             .id(reader.getId())
+                            .preference(ReaderMapper.INSTANCE.toDto(oldReader))
                             .nickname(reader.getNickname())
                             .genres(Arrays.stream(reader.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
                             .languages(Arrays.stream(reader.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
@@ -434,7 +440,7 @@ public class ReaderServiceImpl implements ReaderService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Update not found"));
         Reader reader = readerRepository
-                .findByReaderUpdateReferenceId(cloneReader.getReaderUpdateReferenceId())
+                .findById(cloneReader.getReaderUpdateReferenceId())
                 .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         reader.setNickname(cloneReader.getNickname());
         reader.setGenre(cloneReader.getGenre());
@@ -447,7 +453,7 @@ public class ReaderServiceImpl implements ReaderService {
         reader.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         reader.setIsUpdating(false);
         reader = readerRepository.save(reader);
-        if(reader != null) {
+        if (reader != null) {
             readerRepository.delete(cloneReader);
             return ReaderMapper.INSTANCE.toDto(reader);
         }
@@ -460,12 +466,12 @@ public class ReaderServiceImpl implements ReaderService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Update not found"));
         Reader reader = readerRepository
-                .findByReaderUpdateReferenceId(cloneReader.getReaderUpdateReferenceId())
+                .findById(cloneReader.getReaderUpdateReferenceId())
                 .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         reader.setIsUpdating(false);
         readerRepository.delete(cloneReader);
         reader = readerRepository.save(reader);
-        if(reader != null) {
+        if (reader != null) {
             return ReaderMapper.INSTANCE.toDto(reader);
         }
         return null;

@@ -11,7 +11,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ReaderRequestInputDto {
-    private UUID id;
     private String nickname;
     private List<String> genres;
     private List<String> languages;
