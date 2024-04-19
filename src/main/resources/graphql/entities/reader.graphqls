@@ -127,6 +127,7 @@ input ReaderRequestInput {
 
 type ReaderRequestRead {
     id: ID!
+    preference: Reader
     nickname: String
     genres: [String]
     languages: [String]

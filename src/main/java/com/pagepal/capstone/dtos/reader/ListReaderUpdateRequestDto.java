@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ListReaderUpdateRequestDto {
-    List<ReaderRequestInputDto> list;
+    List<ReaderRequestReadDto> list;
     PagingDto pagination;
 }
