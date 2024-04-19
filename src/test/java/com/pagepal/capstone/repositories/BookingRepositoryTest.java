@@ -145,6 +145,7 @@ public class BookingRepositoryTest {
             bookingState1,
             null,
             null,
+            null,
             null
     );
 

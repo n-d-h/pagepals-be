@@ -137,11 +137,26 @@ public class ReportServiceImpl implements ReportService {
         List<Report> reports = reportRepository.findByTypeAndState(ReportTypeEnum.BOOKING, ReportStateEnum.PENDING);
         List<ReportBookingDto> list = new ArrayList<>();
 
+
         for (Report report : reports) {
-            ReportBookingDto reportBooking = new ReportBookingDto();
-            reportBooking.setListReport(Collections.singletonList(ReportMapper.INSTANCE.toDto(report)));
-            Booking booking = bookingRepository.findById(report.getReportedId()).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-            reportBooking.setBooking(BookingMapper.INSTANCE.toDto(booking));
+            boolean bookFound = false;
+            for (ReportBookingDto booking : list) {
+                if (booking.getBooking().getId().equals(report.getReportedId())) {
+                    List<ReportReadDto> listReport = new ArrayList<>(booking.getListReport());
+                    listReport.add(ReportMapper.INSTANCE.toDto(report));
+                    booking.setListReport(listReport);
+                    bookFound = true;
+                    break;
+                }
+            }
+            if (!bookFound) {
+                ReportBookingDto reportReader = new ReportBookingDto();
+                Booking findBooking = bookingRepository.findById(report.getReportedId())
+                        .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                reportReader.setBooking(BookingMapper.INSTANCE.toDto(findBooking));
+                reportReader.setListReport(Collections.singletonList(ReportMapper.INSTANCE.toDto(report)));
+                list.add(reportReader);
+            }
         }
         return list;
     }
@@ -155,7 +170,9 @@ public class ReportServiceImpl implements ReportService {
             boolean readerFound = false;
             for (ReportReaderDto reader : list) {
                 if (reader.getReader().getId().equals(report.getReportedId())) {
-                    reader.getListReport().add(ReportMapper.INSTANCE.toDto(report));
+                    List<ReportReadDto> listReport = new ArrayList<>(reader.getListReport());
+                    listReport.add(ReportMapper.INSTANCE.toDto(report));
+                    reader.setListReport(listReport);
                     readerFound = true;
                     break;
                 }
@@ -181,7 +198,9 @@ public class ReportServiceImpl implements ReportService {
             boolean postFound = false;
             for (ReportPostDto post : list) {
                 if (post.getPost().getId().equals(report.getReportedId())) {
-                    post.getListReport().add(ReportMapper.INSTANCE.toDto(report));
+                    List<ReportReadDto> listReport = new ArrayList<>(post.getListReport());
+                    listReport.add(ReportMapper.INSTANCE.toDto(report));
+                    post.setListReport(listReport);
                     postFound = true;
                     break;
                 }

@@ -92,7 +92,7 @@ public class SeminarServiceImpl implements SeminarService {
 
             return toSeminarDto(seminar);
         } catch (Exception e) {
-            throw new RuntimeException("Cannot create booking:" + e.getMessage());
+            throw new RuntimeException("Cannot create seminar:" + e.getMessage());
         }
     }
 
