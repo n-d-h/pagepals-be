@@ -28,9 +28,27 @@ input ReportCreateInput{
     customerId: ID
 }
 
+type ReportBooking{
+    booking: Booking
+    listReport: [Report]
+}
+
+type ReportReader{
+    reader: Reader
+    listReport: [Report]
+}
+
+type ReportPost{
+    post: Post
+    listReport: [Report]
+}
+
 extend type Query {
     getReportById(id: ID!): Report
     listReport(query: ReportQuery): ListReportDto
+    listReportBooking: [ReportBooking]
+    listReportReader: [ReportReader]
+    listReportPost: [ReportPost]
 }
 
 extend type Mutation {

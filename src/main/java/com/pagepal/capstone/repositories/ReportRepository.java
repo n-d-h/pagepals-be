@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,4 +22,6 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     Page<Report> findByStateAndType(ReportStateEnum state, ReportTypeEnum type, Pageable pageable);
 
     Optional<Report> findByReportedIdAndTypeAndCustomer(UUID reportedId, ReportTypeEnum type, Customer customer);
+
+    List<Report> findByTypeAndState(ReportTypeEnum type, ReportStateEnum state);
 }

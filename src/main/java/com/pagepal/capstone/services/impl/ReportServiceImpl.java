@@ -5,13 +5,13 @@ import com.pagepal.capstone.dtos.report.ListReportDto;
 import com.pagepal.capstone.dtos.report.ReportCreateDto;
 import com.pagepal.capstone.dtos.report.ReportQueryDto;
 import com.pagepal.capstone.dtos.report.ReportReadDto;
-import com.pagepal.capstone.dtos.transaction.ListTransactionDto;
-import com.pagepal.capstone.entities.postgre.Customer;
-import com.pagepal.capstone.entities.postgre.Report;
+import com.pagepal.capstone.dtos.seminar.ReportBookingDto;
+import com.pagepal.capstone.dtos.seminar.ReportPostDto;
+import com.pagepal.capstone.dtos.seminar.ReportReaderDto;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.ReportStateEnum;
 import com.pagepal.capstone.enums.ReportTypeEnum;
-import com.pagepal.capstone.mappers.ReportMapper;
-import com.pagepal.capstone.mappers.TransactionMapper;
+import com.pagepal.capstone.mappers.*;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.ReportService;
 import com.pagepal.capstone.utils.DateUtils;
@@ -24,9 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -131,6 +129,72 @@ public class ReportServiceImpl implements ReportService {
             list.setPaging(pagingDto);
         }
 
+        return list;
+    }
+
+    @Override
+    public List<ReportBookingDto> listReportBooking() {
+        List<Report> reports = reportRepository.findByTypeAndState(ReportTypeEnum.BOOKING, ReportStateEnum.PENDING);
+        List<ReportBookingDto> list = new ArrayList<>();
+
+        for (Report report : reports) {
+            ReportBookingDto reportBooking = new ReportBookingDto();
+            reportBooking.setListReport(Collections.singletonList(ReportMapper.INSTANCE.toDto(report)));
+            Booking booking = bookingRepository.findById(report.getReportedId()).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+            reportBooking.setBooking(BookingMapper.INSTANCE.toDto(booking));
+        }
+        return list;
+    }
+
+    @Override
+    public List<ReportReaderDto> listReportReader() {
+        List<Report> reports = reportRepository.findByTypeAndState(ReportTypeEnum.READER, ReportStateEnum.PENDING);
+        List<ReportReaderDto> list = new ArrayList<>();
+
+        for (Report report : reports) {
+            boolean readerFound = false;
+            for (ReportReaderDto reader : list) {
+                if (reader.getReader().getId().equals(report.getReportedId())) {
+                    reader.getListReport().add(ReportMapper.INSTANCE.toDto(report));
+                    readerFound = true;
+                    break;
+                }
+            }
+            if (!readerFound) {
+                ReportReaderDto reportReader = new ReportReaderDto();
+                Reader findReader = readerRepository.findById(report.getReportedId())
+                        .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+                reportReader.setReader(ReaderMapper.INSTANCE.toDto(findReader));
+                reportReader.setListReport(Collections.singletonList(ReportMapper.INSTANCE.toDto(report)));
+                list.add(reportReader);
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<ReportPostDto> listReportPost() {
+        List<Report> reports = reportRepository.findByTypeAndState(ReportTypeEnum.POST, ReportStateEnum.PENDING);
+        List<ReportPostDto> list = new ArrayList<>();
+
+        for (Report report : reports) {
+            boolean postFound = false;
+            for (ReportPostDto post : list) {
+                if (post.getPost().getId().equals(report.getReportedId())) {
+                    post.getListReport().add(ReportMapper.INSTANCE.toDto(report));
+                    postFound = true;
+                    break;
+                }
+            }
+            if (!postFound) {
+                ReportPostDto reportReader = new ReportPostDto();
+                Post findPost = postRepository.findById(report.getReportedId())
+                        .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+                reportReader.setPost(PostMapper.INSTANCE.toDto(findPost));
+                reportReader.setListReport(Collections.singletonList(ReportMapper.INSTANCE.toDto(report)));
+                list.add(reportReader);
+            }
+        }
         return list;
     }
 }

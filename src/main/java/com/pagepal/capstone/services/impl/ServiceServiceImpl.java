@@ -9,6 +9,7 @@ import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.services.BookService;
 import com.pagepal.capstone.services.ServiceService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,6 +37,7 @@ public class ServiceServiceImpl implements ServiceService {
     private final CategoryRepository categoryRepository;
 
     private final AuthorRepository authorRepository;
+    private final BookService bookService;
     private final DateUtils dateUtils;
 
     @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
@@ -82,7 +84,7 @@ public class ServiceServiceImpl implements ServiceService {
         Book book = bookRepository.findByExternalId(writeServiceDto.getBook().getId()).orElse(null);
 
         if (book == null) {
-            book = createNewBook(writeServiceDto.getBook());
+            book = bookService.createNewBook(writeServiceDto.getBook());
         }
         var service = new com.pagepal.capstone.entities.postgre.Service();
         service.setPrice(writeServiceDto.getPrice());
@@ -108,42 +110,4 @@ public class ServiceServiceImpl implements ServiceService {
                 .stream().map(ServiceMapper.INSTANCE::toDto).toList();
     }
 
-    private Book createNewBook(GoogleBook book) {
-        Book newBook = new Book();
-        List<Category> categories = new ArrayList<>();
-        List<Author> authors = new ArrayList<>();
-        for (String category : book.getVolumeInfo().getCategories()) {
-            Category newCategory = categoryRepository.findByName(category).orElse(null);
-            if (newCategory == null) {
-                newCategory = new Category();
-                newCategory.setName(category);
-                newCategory.setStatus(Status.ACTIVE);
-                newCategory = categoryRepository.save(newCategory);
-            }
-            categories.add(newCategory);
-        }
-        for (String author : book.getVolumeInfo().getAuthors()) {
-            Author newAuthor = authorRepository.findByName(author).orElse(null);
-            if (newAuthor == null) {
-                newAuthor = new Author();
-                newAuthor.setName(author);
-                newAuthor.setStatus(Status.ACTIVE);
-                newAuthor = authorRepository.save(newAuthor);
-            }
-            authors.add(newAuthor);
-        }
-        newBook.setAuthors(authors);
-        newBook.setCategories(categories);
-        newBook.setExternalId(book.getId());
-        newBook.setTitle(book.getVolumeInfo().getTitle());
-        newBook.setPublisher(book.getVolumeInfo().getPublisher());
-        newBook.setPublishedDate(book.getVolumeInfo().getPublishedDate());
-        newBook.setDescription(book.getVolumeInfo().getDescription());
-        newBook.setPageCount(book.getVolumeInfo().getPageCount());
-        newBook.setThumbnailUrl(book.getVolumeInfo().getImageLinks().getThumbnail());
-        newBook.setLanguage(book.getVolumeInfo().getLanguage());
-        newBook.setSmallThumbnailUrl(book.getVolumeInfo().getImageLinks().getSmallThumbnail());
-        newBook.setStatus(Status.ACTIVE);
-        return bookRepository.save(newBook);
-    }
 }

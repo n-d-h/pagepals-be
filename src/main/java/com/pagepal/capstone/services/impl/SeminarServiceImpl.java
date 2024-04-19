@@ -1,10 +1,12 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.googlebook.GoogleBook;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.seminar.*;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.services.BookService;
 import com.pagepal.capstone.services.SeminarService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,10 +21,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -36,17 +35,36 @@ public class SeminarServiceImpl implements SeminarService {
     private final BookRepository bookRepository;
     private final BookingRepository bookingRepository;
     private final MeetingRepository meetingRepository;
+    private final ZoomServiceImpl zoomService;
     private final DateUtils dateUtils;
+    private final BookService bookService;
+
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Secured({"READER"})
     @Override
     public SeminarDto createSeminar(SeminarCreateDto seminarCreateDto) {
         try {
             Reader reader = this.checkWorkingTime(seminarCreateDto.getReaderId(), seminarCreateDto, null);
-            Book book = bookRepository.findById(seminarCreateDto.getBookId()).orElse(null);
+
+            Book book = bookRepository.findByExternalId(seminarCreateDto.getBook().getId()).orElse(null);
+
             if (book == null) {
-                throw new RuntimeException("Book not found");
+                book = bookService.createNewBook(seminarCreateDto.getBook());
             }
+
+            Date startTime = dateFormat.parse(seminarCreateDto.getStartTime());
+
+            Meeting meeting = zoomService
+                    .createMeeting(
+                            reader,
+                            seminarCreateDto.getDescription(),
+                            seminarCreateDto.getDuration(),
+                            seminarCreateDto.getTitle(),
+                            startTime
+                    );
+
+            if(meeting == null) throw new RuntimeException("Cannot create meeting");
 
             Seminar seminar = Seminar.builder()
                     .title(seminarCreateDto.getTitle())
@@ -59,25 +77,17 @@ public class SeminarServiceImpl implements SeminarService {
                     .status(SeminarStatus.ACTIVE)
                     .createdAt(dateUtils.getCurrentVietnamDate())
                     .updatedAt(dateUtils.getCurrentVietnamDate())
-                    .startTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(seminarCreateDto.getStartTime()))
+                    .startTime(startTime)
                     .reader(reader)
                     .book(book)
+                    .meeting(meeting)
                     .build();
 
-            var data = seminarRepository.save(seminar);
+            seminar = seminarRepository.save(seminar);
 
-            if (data != null) {
-                Meeting meeting = new Meeting();
-                meeting.setMeetingCode(UUID.randomUUID().toString().substring(0, 6));
-                meeting.setCreateAt(dateUtils.getCurrentVietnamDate());
-                meeting.setLimitOfPerson(seminarCreateDto.getLimitCustomer());
-                meeting.setState(MeetingEnum.AVAILABLE);
-                meeting.setReader(reader);
-                meeting.setSeminar(data);
-                meetingRepository.save(meeting);
-            }
+            if(seminar == null) throw new RuntimeException("Cannot create seminar");
 
-            return toSeminarDto(data);
+            return toSeminarDto(seminar);
         } catch (Exception e) {
             return null;
         }
@@ -102,10 +112,24 @@ public class SeminarServiceImpl implements SeminarService {
 
             Reader reader = this.checkWorkingTime(readerId, null, seminarUpdateDto);
 
-            Book book = bookRepository.findById(seminarUpdateDto.getBookId()).orElse(null);
+            Book book = bookRepository.findByExternalId(seminarUpdateDto.getBook().getId()).orElse(null);
+
             if (book == null) {
-                throw new RuntimeException("Book not found");
+                book = bookService.createNewBook(seminarUpdateDto.getBook());
             }
+
+            Date startTime = dateFormat.parse(seminarUpdateDto.getStartTime());
+
+            meeting = zoomService
+                    .createMeeting(
+                            reader,
+                            seminarUpdateDto.getDescription(),
+                            seminarUpdateDto.getDuration(),
+                            seminarUpdateDto.getTitle(),
+                            startTime
+                    );
+
+            if(meeting == null) throw new RuntimeException("Cannot create meeting");
 
             seminar.setTitle(seminarUpdateDto.getTitle());
             seminar.setLimitCustomer(seminarUpdateDto.getLimitCustomer());
@@ -118,6 +142,7 @@ public class SeminarServiceImpl implements SeminarService {
             seminar.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(seminarUpdateDto.getStartTime()));
             seminar.setReader(reader);
             seminar.setBook(book);
+            seminar.setMeeting(meeting);
 
             var data = seminarRepository.save(seminar);
             return toSeminarDto(data);
@@ -280,7 +305,7 @@ public class SeminarServiceImpl implements SeminarService {
         Date startTime = seminarCreateDto != null
                 ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(seminarCreateDto.getStartTime())
                 : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(seminarUpdateDto.getStartTime());
-        Double duration = seminarCreateDto != null ? seminarCreateDto.getDuration() : seminarUpdateDto.getDuration();
+        Integer duration = seminarCreateDto != null ? seminarCreateDto.getDuration() : seminarUpdateDto.getDuration();
 
         Date endTime = new Date(startTime.getTime() + (long) (duration * 60 * 60 * 1000));
 
@@ -307,10 +332,10 @@ public class SeminarServiceImpl implements SeminarService {
                 .imageUrl(seminar.getImageUrl())
                 .duration(seminar.getDuration())
                 .price(seminar.getPrice())
-                .startTime(seminar.getStartTime())
+                .startTime(dateFormat.format(seminar.getStartTime()))
                 .status(seminar.getStatus().name())
-                .createdAt(seminar.getCreatedAt())
-                .updatedAt(seminar.getUpdatedAt())
+                .createdAt(dateFormat.format(seminar.getCreatedAt()))
+                .updatedAt(dateFormat.format(seminar.getUpdatedAt()))
                 .reader(seminar.getReader())
                 .book(seminar.getBook())
                 .build();

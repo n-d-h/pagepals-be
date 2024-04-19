@@ -1,5 +1,6 @@
 package com.pagepal.capstone.dtos.seminar;
 
+import com.pagepal.capstone.dtos.googlebook.GoogleBook;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +19,8 @@ public class SeminarUpdateDto {
     private Integer activeSlot;
     private String description;
     private String imageUrl;
-    private Double duration;
+    private Integer duration;
     private Integer price;
     private String startTime;
-    private UUID bookId;
+    private GoogleBook book;
 }

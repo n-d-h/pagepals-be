@@ -5,7 +5,7 @@ type Seminar {
     activeSlot: Int
     description: String
     imageUrl: String
-    duration: Float
+    duration: Int
     price: Int
     startTime: String
     status: String
@@ -31,11 +31,11 @@ input SeminarInput {
     activeSlot: Int
     description: String
     imageUrl: String
-    duration: Float
+    duration: Int
     price: Int
     startTime: String
     readerId: ID
-    bookId: ID
+    book: GoogleBookInput
 }
 
 input SeminarUpdateInput {
@@ -44,10 +44,10 @@ input SeminarUpdateInput {
     activeSlot: Int
     description: String
     imageUrl: String
-    duration: Float
+    duration: Int
     price: Int
     startTime: String
-    bookId: ID
+    book: GoogleBookInput
 }
 
 extend type Query {

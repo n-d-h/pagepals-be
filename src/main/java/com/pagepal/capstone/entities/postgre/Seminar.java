@@ -48,7 +48,7 @@ public class Seminar {
     private String imageUrl;
 
     @Column(name = "duration")
-    private Double duration;
+    private Integer duration;
 
     @Column(name = "price")
     private Integer price;

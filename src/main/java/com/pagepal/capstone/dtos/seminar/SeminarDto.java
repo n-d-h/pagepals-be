@@ -21,12 +21,12 @@ public class SeminarDto {
     private Integer activeSlot;
     private String description;
     private String imageUrl;
-    private Double duration;
+    private Integer duration;
     private Integer price;
-    private Date startTime;
+    private String startTime;
     private String status;
-    private Date createdAt;
-    private Date updatedAt;
+    private String createdAt;
+    private String updatedAt;
     private Reader reader;
     private Book book;
 }
