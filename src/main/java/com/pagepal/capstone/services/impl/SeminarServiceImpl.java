@@ -113,12 +113,6 @@ public class SeminarServiceImpl implements SeminarService {
 
             Reader reader = this.checkWorkingTime(readerId, null, id, seminarUpdateDto);
 
-            Book book = bookRepository.findByExternalId(seminarUpdateDto.getBook().getId()).orElse(null);
-
-            if (book == null) {
-                book = bookService.createNewBook(seminarUpdateDto.getBook());
-            }
-
             Date startTime = dateFormat.parse(seminarUpdateDto.getStartTime());
 
             Meeting meeting = zoomService
@@ -142,7 +136,6 @@ public class SeminarServiceImpl implements SeminarService {
             seminar.setUpdatedAt(dateUtils.getCurrentVietnamDate());
             seminar.setStartTime(startTime);
             seminar.setReader(reader);
-            seminar.setBook(book);
             seminar.setMeeting(meeting);
 
             var data = seminarRepository.save(seminar);

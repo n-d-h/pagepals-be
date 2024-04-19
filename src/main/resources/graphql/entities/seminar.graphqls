@@ -47,7 +47,6 @@ input SeminarUpdateInput {
     duration: Int
     price: Int
     startTime: String
-    book: GoogleBookInput
 }
 
 extend type Query {

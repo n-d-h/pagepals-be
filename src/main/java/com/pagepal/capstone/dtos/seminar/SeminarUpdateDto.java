@@ -22,5 +22,4 @@ public class SeminarUpdateDto {
     private Integer duration;
     private Integer price;
     private String startTime;
-    private GoogleBook book;
 }

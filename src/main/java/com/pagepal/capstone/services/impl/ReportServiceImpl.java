@@ -158,6 +158,10 @@ public class ReportServiceImpl implements ReportService {
                 list.add(reportReader);
             }
         }
+
+        for(ReportBookingDto booking : list) {
+            booking.getListReport().sort(Comparator.comparing(ReportReadDto::getCreatedAt).reversed());
+        }
         return list;
     }
 
@@ -186,6 +190,10 @@ public class ReportServiceImpl implements ReportService {
                 list.add(reportReader);
             }
         }
+
+        for(ReportReaderDto reader : list) {
+            reader.getListReport().sort(Comparator.comparing(ReportReadDto::getCreatedAt).reversed());
+        }
         return list;
     }
 
@@ -213,6 +221,9 @@ public class ReportServiceImpl implements ReportService {
                 reportReader.setListReport(Collections.singletonList(ReportMapper.INSTANCE.toDto(report)));
                 list.add(reportReader);
             }
+        }
+        for(ReportPostDto booking : list) {
+            booking.getListReport().sort(Comparator.comparing(ReportReadDto::getCreatedAt).reversed());
         }
         return list;
     }
