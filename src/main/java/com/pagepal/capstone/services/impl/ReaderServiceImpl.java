@@ -298,6 +298,8 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public String updateReaderProfile(UUID id, ReaderRequestInputDto readerUpdateDto) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        Reader isReaderUpdate = readerRepository.findByReaderUpdateReferenceId(id).orElse(null);
+        if(isReaderUpdate != null) throw new RuntimeException("Reader is updating");
         reader.setIsUpdating(true);
 
         Reader readerUpdate = new Reader();
@@ -372,23 +374,23 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Override
     public ReaderRequestReadDto getUpdateRequestByReaderId(UUID readerId) {
-        var readerUpdate = readerRepository.findById(readerId).orElse(null);
-        Reader oldReader = null;
-        if (readerUpdate != null) {
-            oldReader = readerRepository.findById(readerUpdate.getReaderUpdateReferenceId()).orElse(null);
-        }
-        if (readerUpdate != null) {
+
+        var reader = readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
+        Reader clone = readerRepository.findByReaderUpdateReferenceId(readerId).orElse(null);
+
+        if (clone != null) {
             return ReaderRequestReadDto.builder()
-                    .id(readerUpdate.getId())
-                    .preference(ReaderMapper.INSTANCE.toDto(oldReader))
-                    .nickname(readerUpdate.getNickname())
-                    .genres(Arrays.stream(readerUpdate.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
-                    .languages(Arrays.stream(readerUpdate.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
-                    .countryAccent(readerUpdate.getCountryAccent())
-                    .description(readerUpdate.getDescription())
-                    .introductionVideoUrl(readerUpdate.getIntroductionVideoUrl())
-                    .audioDescriptionUrl(readerUpdate.getAudioDescriptionUrl())
-                    .avatarUrl(readerUpdate.getAvatarUrl())
+                    .id(clone.getId())
+                    .preference(ReaderMapper.INSTANCE.toDto(reader))
+                    .nickname(clone.getNickname())
+                    .genres(Arrays.stream(clone.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
+                    .languages(Arrays.stream(clone.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
+                    .countryAccent(clone.getCountryAccent())
+                    .description(clone.getDescription())
+                    .introductionVideoUrl(clone.getIntroductionVideoUrl())
+                    .audioDescriptionUrl(clone.getAudioDescriptionUrl())
+                    .avatarUrl(clone.getAvatarUrl())
                     .build();
         }
         return null;

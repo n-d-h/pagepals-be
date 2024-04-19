@@ -1,4 +1,4 @@
-package com.pagepal.capstone.dtos.seminar;
+package com.pagepal.capstone.dtos.report;
 
 import com.pagepal.capstone.dtos.post.PostDto;
 import com.pagepal.capstone.dtos.report.ReportReadDto;

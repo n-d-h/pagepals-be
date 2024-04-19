@@ -1,6 +1,6 @@
-package com.pagepal.capstone.dtos.seminar;
+package com.pagepal.capstone.dtos.report;
 
-import com.pagepal.capstone.dtos.booking.BookingDto;
+import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.report.ReportReadDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReportBookingDto {
-    private BookingDto booking;
+public class ReportReaderDto {
+    private ReaderDto reader;
     private List<ReportReadDto> listReport;
 }

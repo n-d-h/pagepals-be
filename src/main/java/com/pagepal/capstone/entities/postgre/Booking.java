@@ -82,6 +82,11 @@ public class Booking implements Serializable {
     @JsonManagedReference
     private Service service;
 
+    @ManyToOne
+    @JoinColumn(name = "seminar_id")
+    @JsonManagedReference
+    private Seminar seminar;
+
     @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Transaction> transactions;

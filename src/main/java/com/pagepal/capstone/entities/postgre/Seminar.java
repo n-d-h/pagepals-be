@@ -79,4 +79,8 @@ public class Seminar {
     @OneToOne(mappedBy = "seminar", fetch = FetchType.LAZY)
     @JsonBackReference
     private Meeting meeting;
+
+    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Booking> bookings;
 }

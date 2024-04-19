@@ -29,4 +29,5 @@ public class SeminarDto {
     private String updatedAt;
     private Reader reader;
     private Book book;
+
 }

@@ -13,6 +13,7 @@ type Booking {
     state: BookingState
     workingTime: WorkingTime
     service: Service
+    seminar: Seminar
     transactions: [Transaction]
 }
 

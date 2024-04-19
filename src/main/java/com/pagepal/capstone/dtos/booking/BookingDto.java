@@ -30,5 +30,6 @@ public class BookingDto {
     private BookingState state;
     private WorkingTime workingTime;
     private Service service;
+    private Seminar seminar;
     private List<Transaction> transactions;
 }

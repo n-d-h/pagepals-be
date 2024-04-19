@@ -48,7 +48,7 @@ public class SeminarServiceImpl implements SeminarService {
     @Override
     public SeminarDto createSeminar(SeminarCreateDto seminarCreateDto) {
         try {
-            Reader reader = this.checkWorkingTime(seminarCreateDto.getReaderId(), seminarCreateDto, null);
+            Reader reader = this.checkWorkingTime(seminarCreateDto.getReaderId(), seminarCreateDto, null, null);
 
             Book book = bookRepository.findByExternalId(seminarCreateDto.getBook().getId()).orElse(null);
 
@@ -105,15 +105,13 @@ public class SeminarServiceImpl implements SeminarService {
                 throw new RuntimeException("Seminar not found");
             }
 
-            var meeting = meetingRepository.findBySeminarId(id).orElse(null);
-            if (meeting != null) {
-                List<Booking> bookings = meeting.getBookings();
-                if (bookings.size() > 0) {
-                    throw new ValidationException("Seminar is booked, Cannot update");
-                }
+
+            List<Booking> bookings = seminar.getBookings();
+            if (bookings.size() > 0) {
+                throw new ValidationException("Seminar is booked, Cannot update");
             }
 
-            Reader reader = this.checkWorkingTime(readerId, null, seminarUpdateDto);
+            Reader reader = this.checkWorkingTime(readerId, null, id, seminarUpdateDto);
 
             Book book = bookRepository.findByExternalId(seminarUpdateDto.getBook().getId()).orElse(null);
 
@@ -123,7 +121,7 @@ public class SeminarServiceImpl implements SeminarService {
 
             Date startTime = dateFormat.parse(seminarUpdateDto.getStartTime());
 
-            meeting = zoomService
+            Meeting meeting = zoomService
                     .createMeeting(
                             reader,
                             seminarUpdateDto.getDescription(),
@@ -142,7 +140,7 @@ public class SeminarServiceImpl implements SeminarService {
             seminar.setDuration(seminarUpdateDto.getDuration());
             seminar.setPrice(seminarUpdateDto.getPrice());
             seminar.setUpdatedAt(dateUtils.getCurrentVietnamDate());
-            seminar.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(seminarUpdateDto.getStartTime()));
+            seminar.setStartTime(startTime);
             seminar.setReader(reader);
             seminar.setBook(book);
             seminar.setMeeting(meeting);
@@ -150,7 +148,7 @@ public class SeminarServiceImpl implements SeminarService {
             var data = seminarRepository.save(seminar);
             return toSeminarDto(data);
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -301,7 +299,7 @@ public class SeminarServiceImpl implements SeminarService {
         }
     }
 
-    private Reader checkWorkingTime(UUID readerId, SeminarCreateDto seminarCreateDto, SeminarUpdateDto seminarUpdateDto) throws Exception {
+    private Reader checkWorkingTime(UUID readerId, SeminarCreateDto seminarCreateDto, UUID seminarId, SeminarUpdateDto seminarUpdateDto) throws Exception {
         Reader reader = readerRepository.findById(readerId).orElseThrow(EntityNotFoundException::new);
         List<WorkingTime> workingTimes = reader.getWorkingTimes();
         List<Seminar> seminars = reader.getSeminars();
@@ -330,6 +328,7 @@ public class SeminarServiceImpl implements SeminarService {
         });
 
         seminars.forEach(seminar -> {
+            if (seminarId != null && seminar.getId().equals(seminarId)) return;
             LocalDateTime seminarStartTime = LocalDateTime.ofInstant(seminar.getStartTime().toInstant(), ZoneId.of("Asia/Ho_Chi_Minh"));
             LocalDateTime seminarEndTime = seminarStartTime.plusMinutes(seminar.getDuration());
 
