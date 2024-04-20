@@ -24,4 +24,6 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     Optional<Report> findByReportedIdAndTypeAndCustomer(UUID reportedId, ReportTypeEnum type, Customer customer);
 
     List<Report> findByTypeAndState(ReportTypeEnum type, ReportStateEnum state);
+
+    List<Report> findByReportedIdAndType(UUID reportedId, ReportTypeEnum type);
 }

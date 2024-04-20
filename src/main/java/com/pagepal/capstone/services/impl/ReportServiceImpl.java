@@ -1,13 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.dtos.report.ListReportDto;
-import com.pagepal.capstone.dtos.report.ReportCreateDto;
-import com.pagepal.capstone.dtos.report.ReportQueryDto;
-import com.pagepal.capstone.dtos.report.ReportReadDto;
-import com.pagepal.capstone.dtos.report.ReportBookingDto;
-import com.pagepal.capstone.dtos.report.ReportPostDto;
-import com.pagepal.capstone.dtos.report.ReportReaderDto;
+import com.pagepal.capstone.dtos.report.*;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.ReportStateEnum;
 import com.pagepal.capstone.enums.ReportTypeEnum;
@@ -226,5 +220,41 @@ public class ReportServiceImpl implements ReportService {
             booking.getListReport().sort(Comparator.comparing(ReportReadDto::getCreatedAt).reversed());
         }
         return list;
+    }
+
+    @Override
+    public ReportGenericDto getReportGenericByReportedIdAndType(UUID id, String reportType) {
+
+        ReportGenericDto reportGenericDto = new ReportGenericDto();
+        ReportTypeEnum type = ReportTypeEnum.valueOf(reportType);
+
+        switch (type) {
+            case BOOKING -> {
+                Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                reportGenericDto.setBooking(BookingMapper.INSTANCE.toDto(booking));
+                List<ReportReadDto> reports = reportRepository
+                        .findByReportedIdAndType(id, type)
+                        .stream().map(ReportMapper.INSTANCE::toDto).toList();
+                reportGenericDto.setListReport(reports);
+            }
+            case READER -> {
+                Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+                reportGenericDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
+                List<ReportReadDto> reports = reportRepository
+                        .findByReportedIdAndType(id, type)
+                        .stream().map(ReportMapper.INSTANCE::toDto).toList();
+                reportGenericDto.setListReport(reports);
+            }
+            case POST -> {
+                Post post = postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Post not found"));
+                reportGenericDto.setPost(PostMapper.INSTANCE.toDto(post));
+                List<ReportReadDto> reports = reportRepository
+                        .findByReportedIdAndType(id, type)
+                        .stream().map(ReportMapper.INSTANCE::toDto).toList();
+                reportGenericDto.setListReport(reports);
+            }
+        }
+
+        return reportGenericDto;
     }
 }

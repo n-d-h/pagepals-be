@@ -1,12 +1,6 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.report.ListReportDto;
-import com.pagepal.capstone.dtos.report.ReportCreateDto;
-import com.pagepal.capstone.dtos.report.ReportQueryDto;
-import com.pagepal.capstone.dtos.report.ReportReadDto;
-import com.pagepal.capstone.dtos.report.ReportBookingDto;
-import com.pagepal.capstone.dtos.report.ReportPostDto;
-import com.pagepal.capstone.dtos.report.ReportReaderDto;
+import com.pagepal.capstone.dtos.report.*;
 import com.pagepal.capstone.services.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -50,5 +44,10 @@ public class ReportController {
     @QueryMapping
     public List<ReportPostDto> listReportPost(){
         return reportService.listReportPost();
+    }
+
+    @QueryMapping
+    public ReportGenericDto getReportGenericByIdAndType(@Argument("id") UUID id, @Argument("type") String reportType){
+        return reportService.getReportGenericByReportedIdAndType(id, reportType);
     }
 }
