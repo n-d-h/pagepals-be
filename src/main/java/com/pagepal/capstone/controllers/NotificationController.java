@@ -3,6 +3,7 @@ package com.pagepal.capstone.controllers;
 import com.pagepal.capstone.dtos.notification.ListNotificationDto;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.notification.NotificationDto;
+import com.pagepal.capstone.enums.NotificationRoleEnum;
 import com.pagepal.capstone.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -37,9 +38,10 @@ public class NotificationController {
             @Argument("accountId") UUID accountId,
             @Argument("page") Integer page,
             @Argument("pageSize") Integer pageSize,
-            @Argument("sort") String sort
+            @Argument("sort") String sort,
+            @Argument("notificationRole") NotificationRoleEnum notificationRole
     ) {
-        return notificationService.getNotificationsByAccountId(accountId, page, pageSize, sort);
+        return notificationService.getNotificationsByAccountId(accountId, page, pageSize, sort, notificationRole);
     }
 
     @MutationMapping("createNotification")

@@ -2,6 +2,7 @@ package com.pagepal.capstone.entities.postgre;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.NotificationEnum;
+import com.pagepal.capstone.enums.NotificationRoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,9 +32,16 @@ public class Notification {
     @Column(name = "content")
     private String content;
 
+    @Column(name= "title")
+    private String title;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private NotificationEnum status;
+
+    @Column(name = "notification_role")
+    @Enumerated(EnumType.STRING)
+    private NotificationRoleEnum notificationRole;
 
     @Column(name = "is_read")
     private Boolean isRead;

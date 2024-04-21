@@ -14,8 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class NotificationDto {
     private UUID id;
+    private String title;
     private String content;
     private String status;
+    private String notificationRole;
     private Boolean isRead;
     private String createdAt;
     private String updatedAt;

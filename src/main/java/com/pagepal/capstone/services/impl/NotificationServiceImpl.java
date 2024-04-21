@@ -8,6 +8,7 @@ import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.Notification;
 import com.pagepal.capstone.enums.NotificationEnum;
+import com.pagepal.capstone.enums.NotificationRoleEnum;
 import com.pagepal.capstone.repositories.AccountRepository;
 import com.pagepal.capstone.repositories.NotificationRepository;
 import com.pagepal.capstone.services.NotificationService;
@@ -42,6 +43,8 @@ public class NotificationServiceImpl implements NotificationService {
             notification.setContent(notificationCreateDto.getContent());
             notification.setStatus(NotificationEnum.ACTIVE);
             notification.setIsRead(Boolean.FALSE);
+            notification.setTitle(notificationCreateDto.getTitle());
+            notification.setNotificationRole(notificationCreateDto.getNotificationRole());
             notification.setAccount(account);
             notification.setCreatedAt(dateUtils.getCurrentVietnamDate());
             notification.setUpdatedAt(dateUtils.getCurrentVietnamDate());
@@ -50,6 +53,8 @@ public class NotificationServiceImpl implements NotificationService {
                     .id(noti.getId())
                     .content(noti.getContent())
                     .status(String.valueOf(noti.getStatus()))
+                    .title(noti.getTitle())
+                    .notificationRole(String.valueOf(noti.getNotificationRole()))
                     .isRead(noti.getIsRead())
                     .createdAt(String.valueOf(noti.getCreatedAt()))
                     .updatedAt(String.valueOf(noti.getUpdatedAt()))
@@ -73,6 +78,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .id(notification.getId())
                 .content(notification.getContent())
                 .status(String.valueOf(notification.getStatus()))
+                .title(notification.getTitle())
+                .notificationRole(String.valueOf(notification.getNotificationRole()))
                 .isRead(notification.getIsRead())
                 .createdAt(String.valueOf(notification.getCreatedAt()))
                 .updatedAt(String.valueOf(notification.getUpdatedAt()))
@@ -81,9 +88,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public ListNotificationDto getNotificationsByAccountId(UUID accountId, Integer page, Integer pageSize, String sort) {
+    public ListNotificationDto getNotificationsByAccountId(
+            UUID accountId, Integer page, Integer pageSize, String sort, NotificationRoleEnum notificationRole
+    ) {
         Pageable pageable = createPageable(page, pageSize, sort);
-        Page<Notification> notifications = notificationRepository.findAllByAccountId(accountId, pageable);
+        Page<Notification> notifications = notificationRepository.findAllByAccountIdAndNotificationRole(accountId, pageable, notificationRole);
         Integer total = notificationRepository.countUnreadByAccountId(accountId);
         return mapToNotificationDto(notifications, total);
     }
@@ -99,6 +108,8 @@ public class NotificationServiceImpl implements NotificationService {
                     .id(noti.getId())
                     .content(noti.getContent())
                     .status(String.valueOf(noti.getStatus()))
+                    .title(noti.getTitle())
+                    .notificationRole(String.valueOf(noti.getNotificationRole()))
                     .isRead(noti.getIsRead())
                     .createdAt(String.valueOf(noti.getCreatedAt()))
                     .updatedAt(String.valueOf(noti.getUpdatedAt()))
@@ -120,6 +131,8 @@ public class NotificationServiceImpl implements NotificationService {
             return notifications.stream().map(notification -> NotificationDto.builder()
                     .id(notification.getId())
                     .content(notification.getContent())
+                    .title(notification.getTitle())
+                    .notificationRole(String.valueOf(notification.getNotificationRole()))
                     .status(String.valueOf(notification.getStatus()))
                     .isRead(notification.getIsRead())
                     .createdAt(String.valueOf(notification.getCreatedAt()))
@@ -163,6 +176,8 @@ public class NotificationServiceImpl implements NotificationService {
             listNotificationDtos.setList(notifications.map(notification -> NotificationDto.builder()
                     .id(notification.getId())
                     .content(notification.getContent())
+                    .title(notification.getTitle())
+                    .notificationRole(String.valueOf(notification.getNotificationRole()))
                     .status(String.valueOf(notification.getStatus()))
                     .isRead(notification.getIsRead())
                     .createdAt(String.valueOf(notification.getCreatedAt()))

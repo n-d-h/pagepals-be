@@ -1,15 +1,14 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.request.RequestDto;
 import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.enums.NotificationRoleEnum;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.RequestMapper;
 import com.pagepal.capstone.repositories.*;
-import com.pagepal.capstone.services.EmailService;
-import com.pagepal.capstone.services.FirebaseMessagingService;
-import com.pagepal.capstone.services.RequestService;
-import com.pagepal.capstone.services.ZoomService;
+import com.pagepal.capstone.services.*;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -43,6 +42,7 @@ public class RequestServiceImpl implements RequestService {
     private final RoleRepository roleRepository;
     private final ZoomService zoomService;
     private final FirebaseMessagingService firebaseMessagingService;
+    private final NotificationService notificationService;
 
     private final String pagePalLogoUrl = "https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2F1.png?alt=media&token=56384e72-69dc-4ab3-8ede-9401b6f2f121";
 
@@ -74,8 +74,8 @@ public class RequestServiceImpl implements RequestService {
         Date startDate = dateFormat.parse(interviewAt);
 
         Meeting meeting = zoomService.createInterviewMeeting("Interview for " + request.getReader().getAccount().getEmail(),
-                120, "Interview become reader", startDate );
-        if(meeting == null) {
+                120, "Interview become reader", startDate);
+        if (meeting == null) {
             throw new RuntimeException("Failed to create meeting");
         }
         request.setMeetingCode(meeting.getMeetingCode());
@@ -97,21 +97,37 @@ public class RequestServiceImpl implements RequestService {
             if (email != null && !email.isEmpty()) {
                 emailService.sendSimpleEmail(email, subject, emailBody);
 
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        "Interview schedule",
-                        "You have an interview schedule at: " + startDate + "; Please check your request on our website.",
-                        Map.of("requestId", request.getId().toString()),
-                        reader.getAccount().getFcmMobileToken()
-                );
+                NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
+                        .accountId(reader.getAccount().getId())
+                        .content("You have an interview schedule at: " + startDate + "; Please check your request on our website.")
+                        .title("Interview schedule")
+                        .notificationRole(NotificationRoleEnum.CUSTOMER)
+                        .build();
 
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        "You have an interview schedule at: " + startDate + "; Please check your request on our website.",
-                        "You have an interview schedule at: " + startDate + "; Please check your request on our website.",
-                        Map.of("requestId", request.getId().toString()),
-                        reader.getAccount().getFcmWebToken()
-                );
+                notificationService.createNotification(notificationCreateDto);
+
+                String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
+                String readerFcmWebToken = reader.getAccount().getFcmWebToken();
+
+                if (readerFcmMobileToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            "Interview schedule",
+                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
+                            Map.of("requestId", request.getId().toString()),
+                            readerFcmMobileToken
+                    );
+                }
+
+                if (readerFcmWebToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
+                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
+                            Map.of("requestId", request.getId().toString()),
+                            readerFcmWebToken
+                    );
+                }
             }
             return RequestMapper.INSTANCE.toDto(request);
         }
@@ -194,21 +210,37 @@ public class RequestServiceImpl implements RequestService {
 
                 emailService.sendSimpleEmail(email, subject, body);
 
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        "Request rejected",
-                        "Your request has been rejected by our staff. Please check your request on our website.",
-                        Map.of("requestId", request.getId().toString()),
-                        reader.getAccount().getFcmMobileToken()
-                );
+                NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
+                        .accountId(reader.getAccount().getId())
+                        .content("Your request has been rejected by our staff. Please check your request on our website.")
+                        .title("Request rejected")
+                        .notificationRole(NotificationRoleEnum.CUSTOMER)
+                        .build();
 
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        "Your request has been rejected by our staff. Please check your request on our website.",
-                        "Your request has been rejected by our staff. Please check your request on our website.",
-                        Map.of("requestId", request.getId().toString()),
-                        reader.getAccount().getFcmWebToken()
-                );
+                notificationService.createNotification(notificationCreateDto);
+
+                String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
+                String readerFcmWebToken = reader.getAccount().getFcmWebToken();
+
+                if (readerFcmMobileToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            "Request rejected",
+                            "Your request to be reader has been rejected by our staff.",
+                            Map.of("requestId", request.getId().toString()),
+                            readerFcmMobileToken
+                    );
+                }
+
+                if (readerFcmWebToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            "Your request to be reader has been rejected by our staff.",
+                            "Your request to be reader has been rejected by our staff.",
+                            Map.of("requestId", request.getId().toString()),
+                            readerFcmWebToken
+                    );
+                }
             }
             return RequestMapper.INSTANCE.toDto(request);
         }
@@ -269,21 +301,37 @@ public class RequestServiceImpl implements RequestService {
 
                     emailService.sendSimpleEmail(email, subject, body);
 
-                    firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        "Request accepted",
-                        "Congratulations! Your request has been accepted by our staff. Please check your request on our website.",
-                        Map.of("requestId", request.getId().toString()),
-                        readerAccount.getFcmMobileToken()
-                    );
+                    NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
+                            .accountId(readerAccount.getId())
+                            .content("Congratulations! Your request has been accepted by our staff.")
+                            .title("Request accepted")
+                            .notificationRole(NotificationRoleEnum.CUSTOMER)
+                            .build();
 
-                    firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        "Congratulations! Your request has been accepted by our staff. Please check your request on our website.",
-                        "Congratulations! Your request has been accepted by our staff. Please check your request on our website.",
-                        Map.of("requestId", request.getId().toString()),
-                        readerAccount.getFcmWebToken()
-                    );
+                    notificationService.createNotification(notificationCreateDto);
+
+                    String readerFcmMobileToken = readerAccount.getFcmMobileToken();
+                    String readerFcmWebToken = readerAccount.getFcmWebToken();
+
+                    if (readerFcmMobileToken != null) {
+                        firebaseMessagingService.sendNotificationToDevice(
+                                pagePalLogoUrl,
+                                "Request accepted",
+                                "Congratulations! Your request has been accepted by our staff.",
+                                Map.of("requestId", request.getId().toString()),
+                                readerFcmMobileToken
+                        );
+                    }
+
+                    if (readerFcmWebToken != null) {
+                        firebaseMessagingService.sendNotificationToDevice(
+                                pagePalLogoUrl,
+                                "Congratulations! Your request has been accepted by our staff.",
+                                "Congratulations! Your request has been accepted by our staff.",
+                                Map.of("requestId", request.getId().toString()),
+                                readerFcmWebToken
+                        );
+                    }
                 }
                 return RequestMapper.INSTANCE.toDto(request);
             }
