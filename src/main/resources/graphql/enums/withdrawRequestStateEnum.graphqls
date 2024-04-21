@@ -1,0 +1,5 @@
+enum WithdrawRequestStateEnum {
+    PENDING
+    ACCEPTED
+    REJECTED
+}

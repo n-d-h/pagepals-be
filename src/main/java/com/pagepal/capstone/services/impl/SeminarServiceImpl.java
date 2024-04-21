@@ -224,6 +224,7 @@ public class SeminarServiceImpl implements SeminarService {
         booking.setStartAt(seminar.getStartTime());
         booking.setCustomer(customer);
         booking.setMeeting(meeting);
+        booking.setSeminar(seminar);
         booking.setState(
                 bookingStateRepository
                         .findByName("PENDING")

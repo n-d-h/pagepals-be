@@ -1,0 +1,47 @@
+type WithdrawRequest {
+    id: ID!
+    amount: Float
+    createdAt: String
+    updatedAt: String
+    bankName: String
+    bankAccountNumber: String
+    bankAccountName: String
+    transactionImage: String
+    rejectReason: String
+    staffId: ID
+    staffName: String
+    state: WithdrawRequestStateEnum
+    reader: Reader
+}
+
+input WithdrawRequestCreateInput {
+    amount: Float
+    bankName: String
+    bankAccountNumber: String
+    bankAccountName: String
+}
+
+type ListWithdrawRequest{
+    list: [WithdrawRequest]
+    paging: Paging
+}
+
+input WithdrawQuery{
+    page: Int
+    pageSize: Int
+    sort: String
+}
+
+
+extend type Query {
+    withdrawRequestById(id: ID!): WithdrawRequest
+    withdrawRequests: [WithdrawRequest]
+    withdrawRequestsByReaderId(readerId:ID, query: WithdrawQuery): ListWithdrawRequest
+}
+
+extend type Mutation {
+    createWithdrawRequest(readerId: ID, input: WithdrawRequestCreateInput): WithdrawRequest
+    acceptWithdrawRequest(id: ID!, imgUrl:String, staffId: ID): WithdrawRequest
+    rejectWithdrawRequest(id: ID!, rejectReason: String, staffId: ID): WithdrawRequest
+}
+
