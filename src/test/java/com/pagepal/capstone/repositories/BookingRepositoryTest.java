@@ -135,6 +135,7 @@ public class BookingRepositoryTest {
             "ABCD",
             "description",
             "",
+            "",
             4,
             new Date(),
             new Date(),
