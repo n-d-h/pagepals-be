@@ -1,6 +1,13 @@
+enum NotificationRole {
+    READER
+    CUSTOMER
+}
+
 type Notification {
     id: ID!
     content: String
+    title: String
+    notificationRole: String
     status: String
     isRead: Boolean
     createdAt: String
@@ -16,13 +23,15 @@ type ListNotification {
 
 input NotificationInput {
     content: String
+    title: String
     accountId: ID
+    notificationRole: NotificationRole
 }
 
 extend type Query {
     getNotificationById(id: ID!): Notification
     getAllNotifications(page: Int, pageSize: Int, sort: String): ListNotification
-    getAllNotificationsByAccountId(accountId: ID, page: Int, pageSize: Int, sort: String): ListNotification
+    getAllNotificationsByAccountId(accountId: ID, page: Int, pageSize: Int, sort: String, notificationRole: NotificationRole): ListNotification
 }
 
 extend type Mutation {

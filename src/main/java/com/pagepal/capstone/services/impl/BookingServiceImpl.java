@@ -6,6 +6,7 @@ import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.CurrencyEnum;
+import com.pagepal.capstone.enums.NotificationRoleEnum;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.mappers.BookingMapper;
@@ -236,51 +237,73 @@ public class BookingServiceImpl implements BookingService {
             content.put("Service-Id", service.getId().toString());
             webhookService.sendWebhookWithData(customer.getAccount(), content, Boolean.TRUE, Boolean.FALSE);
 
-            // Send notification to reader
+            String title = "New Booking";
+            String readerContent = "Service" + " - " + service.getBook().getTitle() + " has booked " + "by " + customer.getFullName();
+            String customerContent = "Service" + " - " + service.getBook().getTitle() + " has booked successfully. (- " + bookingDto.getTotalPrice() + " pals)";
+
+            // Save notification to reader
             NotificationCreateDto readerNotification = new NotificationCreateDto();
             readerNotification.setAccountId(wt.getReader().getAccount().getId());
-            readerNotification.setContent("Service" + " - " +
-                    service.getBook().getTitle() + " has new booking " + "by " + customer.getFullName());
+            readerNotification.setTitle(title);
+            readerNotification.setContent(readerContent);
+            readerNotification.setNotificationRole(NotificationRoleEnum.READER);
             notificationService.createNotification(readerNotification);
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "New Booking",
-                    "You have a new booking from " + customer.getFullName(),
-                    Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
-                    wt.getReader().getAccount().getFcmMobileToken()
-            );
-
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "You have a new booking from " + customer.getFullName(),
-                    "You have a new booking from " + customer.getFullName(),
-                    Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
-                    wt.getReader().getAccount().getFcmWebToken()
-            );
-
-            // Send notification decrease token to customer
+            // Save notification to customer
             NotificationCreateDto customerNotification = new NotificationCreateDto();
             customerNotification.setAccountId(customer.getAccount().getId());
-            customerNotification.setContent("Token decrease " + bookingDto.getTotalPrice() + " - " +
-                    res.getService().getBook().getTitle());
+            customerNotification.setTitle(title);
+            customerNotification.setContent(customerContent);
+            customerNotification.setNotificationRole(NotificationRoleEnum.CUSTOMER);
             notificationService.createNotification(customerNotification);
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Token decrease",
-                    "Token decrease " + bookingDto.getTotalPrice() + " - " + res.getService().getBook().getTitle(),
-                    Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
-                    customer.getAccount().getFcmMobileToken()
-            );
+            // Send notification to web (reader/customer)
+            String readerFcmWebToken = wt.getReader().getAccount().getFcmWebToken();
+            String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Token decrease " + bookingDto.getTotalPrice() + " - " + res.getService().getBook().getTitle(),
-                    "Token decrease " + bookingDto.getTotalPrice() + " - " + res.getService().getBook().getTitle(),
-                    Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
-                    customer.getAccount().getFcmWebToken()
-            );
+            if(readerFcmWebToken != null && customerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        readerContent,
+                        readerContent,
+                        Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                        readerFcmWebToken
+                );
+            }
+
+            if(customerFcmWebToken != null) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        title,
+                        customerContent,
+                        Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                        customerFcmWebToken
+                );
+            }
+
+            // Send notification to mobile (reader/customer)
+            String readerFcmMobileToken = wt.getReader().getAccount().getFcmMobileToken();
+            String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
+
+            if(readerFcmMobileToken != null && customerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        readerContent,
+                        readerContent,
+                        Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                        readerFcmMobileToken
+                );
+            }
+
+            if(customerFcmMobileToken != null) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        title,
+                        customerContent,
+                        Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                        customerFcmMobileToken
+                );
+            }
         }
         return BookingMapper.INSTANCE.toDto(res);
     }
@@ -342,49 +365,73 @@ public class BookingServiceImpl implements BookingService {
             content.put("Service-Id", service.getId().toString());
             webhookService.sendWebhookWithData(customer.getAccount(), content, Boolean.TRUE, Boolean.TRUE);
 
+            String title = "Booking Canceled";
+            String readerContent = "Service" + service.getBook().getTitle() + " has canceled " + "by " + customer.getFullName();
+            String customerContent = "Service" + service.getBook().getTitle() + " has canceled successfully " + "( + " + booking.getTotalPrice() + " pals)";
+
             // Send notification to reader
             NotificationCreateDto readerNotification = new NotificationCreateDto();
+            readerNotification.setTitle(title);
             readerNotification.setAccountId(wt.getReader().getAccount().getId());
-            readerNotification.setContent("Service" + service.getBook().getTitle() + " has canceled " + "by " + customer.getFullName());
+            readerNotification.setContent(readerContent);
+            readerNotification.setNotificationRole(NotificationRoleEnum.READER);
             notificationService.createNotification(readerNotification);
-
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Booking Canceled",
-                    "Booking Canceled by " + customer.getFullName(),
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    wt.getReader().getAccount().getFcmMobileToken()
-            );
-
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Booking Canceled by " + customer.getFullName(),
-                    "Booking Canceled by " + customer.getFullName(),
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    wt.getReader().getAccount().getFcmWebToken()
-            );
 
             // Send notification refund token to customer
             NotificationCreateDto customerNotification = new NotificationCreateDto();
+            customerNotification.setTitle(title);
             customerNotification.setAccountId(customer.getAccount().getId());
-            customerNotification.setContent("Token refund " + service.getBook().getTitle());
+            customerNotification.setContent(customerContent);
+            customerNotification.setNotificationRole(NotificationRoleEnum.CUSTOMER);
             notificationService.createNotification(customerNotification);
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Token refund",
-                    "Token refund " + service.getBook().getTitle(),
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    customer.getAccount().getFcmMobileToken()
-            );
+            // Send notification to web (reader/customer)
+            String readerFcmWebToken = wt.getReader().getAccount().getFcmWebToken();
+            String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Token refund " + service.getBook().getTitle(),
-                    "Token refund " + service.getBook().getTitle(),
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    customer.getAccount().getFcmWebToken()
-            );
+            if(readerFcmWebToken != null && customerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        readerContent,
+                        readerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        readerFcmWebToken
+                );
+            }
+
+            if(customerFcmWebToken != null) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        title,
+                        customerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        customerFcmWebToken
+                );
+            }
+
+            // Send notification to mobile (reader/customer)
+            String readerFcmMobileToken = wt.getReader().getAccount().getFcmMobileToken();
+            String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
+
+            if(readerFcmMobileToken != null && customerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        readerContent,
+                        readerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        readerFcmMobileToken
+                );
+            }
+
+            if(customerFcmMobileToken != null) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        title,
+                        customerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        customerFcmMobileToken
+                );
+            }
         }
         return BookingMapper.INSTANCE.toDto(booking);
     }
@@ -464,53 +511,71 @@ public class BookingServiceImpl implements BookingService {
             content.put("Service-Id", service.getId().toString());
             webhookService.sendWebhookWithData(customer.getAccount(), content, Boolean.TRUE, Boolean.FALSE);
 
-            // Send notification to reader
+            String title = "Booking Completed";
+            String readerContent = "Service" + service.getBook().getTitle() + " has completed success " + "(+ " + receiveCash + " pals)";
+            String customerContent = "Service" + service.getBook().getTitle() + " has completed by " + reader.getNickname() + ". Please review this service";
+
             NotificationCreateDto readerNotification = new NotificationCreateDto();
+            readerNotification.setTitle(title);
             readerNotification.setAccountId(reader.getAccount().getId());
-            readerNotification.setContent("Income from booking " + booking.getId() + " is " + receiveCash + " $");
+            readerNotification.setContent(readerContent);
+            readerNotification.setNotificationRole(NotificationRoleEnum.READER);
             notificationService.createNotification(readerNotification);
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Income from booking",
-                    "Income from booking " + booking.getId() + " is " + receiveCash + " $",
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    reader.getAccount().getFcmMobileToken()
-            );
-
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Income from booking " + booking.getId(),
-                    "Income from booking " + booking.getId() + " is " + receiveCash + " $",
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    reader.getAccount().getFcmWebToken()
-            );
-
-            // Send notification refund token to customer
             NotificationCreateDto customerNotification = new NotificationCreateDto();
+            customerNotification.setTitle(title);
             customerNotification.setAccountId(customer.getAccount().getId());
-            customerNotification.setContent("Booking " + booking.getService().getServiceType() + " - " +
-                    booking.getService().getBook().getTitle() + " has completed");
+            customerNotification.setContent(customerContent);
+            customerNotification.setNotificationRole(NotificationRoleEnum.CUSTOMER);
             notificationService.createNotification(customerNotification);
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Booking completed",
-                    "Booking " + booking.getService().getServiceType() + " - " +
-                            booking.getService().getBook().getTitle() + " has completed",
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    customer.getAccount().getFcmMobileToken()
-            );
+            // Send notification to web (reader/customer)
+            String readerFcmWebToken = reader.getAccount().getFcmWebToken();
+            String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
-            firebaseMessagingService.sendNotificationToDevice(
-                    pagePalLogoUrl,
-                    "Booking " + booking.getService().getServiceType() + " - " +
-                            booking.getService().getBook().getTitle() + " has completed",
-                    "Booking " + booking.getService().getServiceType() + " - " +
-                            booking.getService().getBook().getTitle() + " has completed",
-                    Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                    customer.getAccount().getFcmWebToken()
-            );
+            if(readerFcmWebToken != null && customerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        readerContent,
+                        readerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        readerFcmWebToken
+                );
+            }
+
+            if(customerFcmWebToken != null) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        title,
+                        customerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        customerFcmWebToken
+                );
+            }
+            
+            // Send notification to mobile (reader/customer)
+            String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
+            String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
+
+            if(readerFcmMobileToken != null && customerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        readerContent,
+                        readerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        readerFcmMobileToken
+                );
+            }
+
+            if(customerFcmMobileToken != null) {
+                firebaseMessagingService.sendNotificationToDevice(
+                        pagePalLogoUrl,
+                        title,
+                        customerContent,
+                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                        customerFcmMobileToken
+                );
+            }
         }
 
         return BookingMapper.INSTANCE.toDto(booking);
