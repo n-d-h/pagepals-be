@@ -3,6 +3,7 @@ type Booking {
     totalPrice: Int
     promotionCode: String
     description: String
+    cancelReason: String
     review: String
     rating: Int
     createAt: String
@@ -50,7 +51,7 @@ extend type Query {
 
 extend type Mutation {
     createBooking(customerId: ID, booking: BookingCreate): Booking
-    cancelBooking(bookingId: ID): Booking
+    cancelBooking(bookingId: ID, reason: String): Booking
     completeBooking(bookingId: ID): Booking
     reviewBooking(bookingId: ID, review: ReviewBooking): Booking
 }

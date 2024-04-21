@@ -39,6 +39,9 @@ public class Booking implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "cancelReason")
+    private String cancelReason;
+
     @Column(name = "review")
     private String review;
 

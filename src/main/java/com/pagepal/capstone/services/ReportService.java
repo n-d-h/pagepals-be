@@ -18,4 +18,6 @@ public interface ReportService {
 
     ReportGenericDto getReportGenericByReportedIdAndType(UUID id, String reportType);
 
+    ReportReadDto refundBookingForReport(UUID id);
+
 }

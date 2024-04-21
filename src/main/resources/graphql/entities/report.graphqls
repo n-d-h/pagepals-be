@@ -61,5 +61,6 @@ extend type Query {
 
 extend type Mutation {
     createReport(input: ReportCreateInput): Report
+    refundBookingForReport(id: ID!): Report
 }
 

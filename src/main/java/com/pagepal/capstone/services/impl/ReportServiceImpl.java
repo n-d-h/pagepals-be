@@ -3,8 +3,7 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.report.*;
 import com.pagepal.capstone.entities.postgre.*;
-import com.pagepal.capstone.enums.ReportStateEnum;
-import com.pagepal.capstone.enums.ReportTypeEnum;
+import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.*;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.ReportService;
@@ -31,6 +30,9 @@ public class ReportServiceImpl implements ReportService {
     private final BookingRepository bookingRepository;
     private final ReaderRepository readerRepository;
     private final PostRepository postRepository;
+    private final BookingStateRepository bookingStateRepository;
+    private final WalletRepository walletRepository;
+    private final TransactionRepository transactionRepository;
 
     @Override
     public ReportReadDto getReportById(UUID id) {
@@ -256,5 +258,49 @@ public class ReportServiceImpl implements ReportService {
         }
 
         return reportGenericDto;
+    }
+
+    @Override
+    public ReportReadDto refundBookingForReport(UUID id) {
+        Report report = reportRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Report not found"));
+        if (report.getState() != ReportStateEnum.PENDING) throw new RuntimeException("Report has been processed");
+
+        Booking booking = bookingRepository
+                .findById(report.getReportedId())
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+        BookingState state = bookingStateRepository
+                .findByName("CANCEL")
+                .orElseThrow(() -> new EntityNotFoundException("Booking state not found"));
+
+        if(booking.getState().getId().equals(state.getId())) throw new RuntimeException("Booking has been cancelled");
+
+        booking.setState(state);
+        booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+        booking = bookingRepository.save(booking);
+
+        if(booking != null) {
+            Wallet cusWallet = booking.getCustomer().getAccount().getWallet();
+            cusWallet.setTokenAmount(cusWallet.getTokenAmount() + booking.getTotalPrice());
+            cusWallet.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+            cusWallet = walletRepository.save(cusWallet);
+
+            if(cusWallet == null) throw new RuntimeException("Cannot refund to customer");
+
+            Transaction transaction = new Transaction();
+            transaction.setStatus(TransactionStatusEnum.SUCCESS);
+            transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
+            transaction.setTransactionType(TransactionTypeEnum.BOOKING_REFUND);
+            transaction.setCurrency(CurrencyEnum.TOKEN);
+            transaction.setBooking(booking);
+            transaction.setAmount(Double.valueOf(booking.getTotalPrice()));
+            transaction.setWallet(cusWallet);
+            transaction = transactionRepository.save(transaction);
+        }
+
+        report.setState(ReportStateEnum.PROCESSED);
+        report.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        report = reportRepository.save(report);
+        return ReportMapper.INSTANCE.toDto(report);
     }
 }

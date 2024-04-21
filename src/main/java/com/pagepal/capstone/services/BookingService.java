@@ -11,7 +11,7 @@ public interface BookingService {
 
     BookingDto createBooking(UUID cusId, BookingCreateDto bookingDto);
 
-    BookingDto cancelBooking(UUID id);
+    BookingDto cancelBooking(UUID id , String reason);
 
     BookingDto completeBooking(UUID id);
 

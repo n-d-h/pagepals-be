@@ -44,7 +44,15 @@ type Recording {
     recording_files: [RecordFile]
 }
 
+type AuthZoom{
+    access_token:String
+    token_type: String
+    expires_in: Int
+    scope: String
+}
+
 extend type Query {
     getRecording(roomId: String): Recording
     getMeetingById(roomId: String): Meeting
+    getAuthZoom: AuthZoom
 }

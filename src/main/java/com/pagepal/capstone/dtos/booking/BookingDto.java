@@ -19,6 +19,7 @@ public class BookingDto {
     private Integer totalPrice;
     private String promotionCode;
     private String description;
+    private String cancelReason;
     private String review;
     private Integer rating;
     private String createAt;

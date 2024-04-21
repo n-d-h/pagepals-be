@@ -50,4 +50,9 @@ public class ReportController {
     public ReportGenericDto getReportGenericByIdAndType(@Argument("id") UUID id, @Argument("type") String reportType){
         return reportService.getReportGenericByReportedIdAndType(id, reportType);
     }
+
+    @MutationMapping
+    public ReportReadDto refundBookingForReport(@Argument("id") UUID id){
+        return reportService.refundBookingForReport(id);
+    }
 }

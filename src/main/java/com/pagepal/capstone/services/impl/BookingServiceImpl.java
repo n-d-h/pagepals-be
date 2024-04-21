@@ -3,6 +3,7 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.dtos.booking.*;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.CurrencyEnum;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
@@ -22,7 +23,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Transactional
 @Service
@@ -37,14 +42,6 @@ public class BookingServiceImpl implements BookingService {
     private final MeetingRepository meetingRepository;
     private final SettingRepository settingRepository;
 
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-    private final String bookingCancel = "CANCEL";
-    private final String bookingPending = "PENDING";
-    private final String bookingComplete = "COMPLETE";
-    private final String revenueString = "REVENUE_SHARE";
-    private final String tokenPriceString = "TOKEN_PRICE";
-    private final String dollarExchangeString = "DOLLAR_EXCHANGE_RATE";
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
     private final ReaderRepository readerRepository;
@@ -53,8 +50,15 @@ public class BookingServiceImpl implements BookingService {
     private final ZoomService zoomService;
     private final DateUtils dateUtils;
     private final FirebaseMessagingService firebaseMessagingService;
-
     private final String pagePalLogoUrl = "https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2F1.png?alt=media&token=56384e72-69dc-4ab3-8ede-9401b6f2f121";
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    private final String bookingCancel = "CANCEL";
+    private final String bookingPending = "PENDING";
+    private final String bookingComplete = "COMPLETE";
+    private final String revenueString = "REVENUE_SHARE";
+    private final String tokenPriceString = "TOKEN_PRICE";
+    private final String dollarExchangeString = "DOLLAR_EXCHANGE_RATE";
 
 
     @Secured("READER")
@@ -282,13 +286,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto cancelBooking(UUID id) {
+    public BookingDto cancelBooking(UUID id, String reason) {
         Booking booking = bookingRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
         if (!booking.getState().getName().equals(bookingPending)) {
             throw new ValidationException("Booking already canceled or completed!");
+        }
+        int durationInMinutes = getDurationInMinutes(dateUtils.getCurrentVietnamDate(), booking.getStartAt());
+
+        if (durationInMinutes < 60) {
+            throw new ValidationException("Cannot cancel booking less than 60 minutes before start time");
         }
 
         Customer customer = booking.getCustomer();
@@ -314,6 +323,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByName(bookingCancel)
                 .orElseThrow(() -> new EntityNotFoundException("State not found"));
         booking.setState(state);
+        booking.setCancelReason(reason);
         booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
         booking = bookingRepository.save(booking);
 
@@ -387,6 +397,19 @@ public class BookingServiceImpl implements BookingService {
 
         if (!booking.getState().getName().equals(bookingPending)) {
             throw new ValidationException("Booking already canceled or completed!");
+        }
+
+        RecordingDto recording = zoomService.getRecording(booking.getMeeting().getMeetingCode());
+
+        if (recording == null) {
+            throw new RuntimeException("Cannot complete booking, recording not found");
+        }
+
+        int durationInMinutes = getDurationInMinutes(recording.getRecording_files().get(0).getRecording_start(),
+                recording.getRecording_files().get(0).getRecording_end());
+
+        if (durationInMinutes < 40) {
+            throw new ValidationException("Cannot complete booking, recording duration less than 40 minutes");
         }
 
         Setting revenue = settingRepository.findByKey(revenueString).orElse(null);
@@ -491,6 +514,15 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return BookingMapper.INSTANCE.toDto(booking);
+    }
+
+    private static int getDurationInMinutes(Date start, Date end) {
+        long durationInMillis = end.getTime() - start.getTime();
+
+        // Convert the duration to minutes
+        long durationInSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMillis);
+
+        return (int) (durationInSeconds / 60);
     }
 
     //@Secured("CUSTOMER")

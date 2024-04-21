@@ -2,6 +2,7 @@ package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
+import com.pagepal.capstone.dtos.zoom.AuthZoomResponseDto;
 import com.pagepal.capstone.repositories.MeetingRepository;
 import com.pagepal.capstone.services.MeetingService;
 import com.pagepal.capstone.services.ZoomService;
@@ -24,7 +25,13 @@ public class MeetingController {
         return zoomService.getRecording(id);
     }
 
+    @QueryMapping
     public MeetingDto getMeetingById(@Argument("roomId") String id){
         return meetingService.getMeetingById(id);
+    }
+
+    @QueryMapping
+    public AuthZoomResponseDto getAuthZoom(){
+        return zoomService.getZoomToken();
     }
 }

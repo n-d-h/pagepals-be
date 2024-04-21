@@ -35,8 +35,9 @@ public class BookingController {
     }
 
     @MutationMapping
-    public BookingDto cancelBooking(@Argument(name = "bookingId") UUID id) {
-        return bookingService.cancelBooking(id);
+    public BookingDto cancelBooking(@Argument(name = "bookingId") UUID id,
+                                    @Argument(name = "reason") String reason) {
+        return bookingService.cancelBooking(id, reason);
     }
 
     @MutationMapping
