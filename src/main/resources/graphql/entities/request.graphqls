@@ -8,6 +8,7 @@ type Request {
     staffId: ID
     staffName: String
     meetingCode: String
+    meetingPassword: String
     answers: [Answer]
     reader: ReaderRead
 }

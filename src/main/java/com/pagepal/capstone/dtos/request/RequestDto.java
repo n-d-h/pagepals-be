@@ -26,6 +26,7 @@ public class RequestDto {
     private UUID staffId;
     private String staffName;
     private String meetingCode;
+    private String meetingPassword;
     private List<AnswerDto> answers;
     private ReaderDto reader;
 }

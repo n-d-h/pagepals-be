@@ -131,4 +131,8 @@ public class Reader implements Serializable {
     @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Seminar> seminars;
+
+    @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<WithdrawRequest> withdrawRequests;
 }

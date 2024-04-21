@@ -1,8 +1,7 @@
 package com.pagepal.capstone.entities.postgre;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pagepal.capstone.enums.RequestStateEnum;
+import com.pagepal.capstone.enums.WithdrawRequestStateEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -20,8 +17,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "REQUEST")
-public class Request implements Serializable {
+@Table(name = "WITHDRAW_REQUEST")
+public class WithdrawRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
@@ -31,23 +28,31 @@ public class Request implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "amount")
+    private Float amount;
 
-    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Column(name = "interview_at")
-    private Date interviewAt;
+    @Column(name = "bank_name")
+    private String bankName;
 
-    @Column(name = "meeting_code")
-    private String meetingCode;
+    @Column(name = "bank_account_number")
+    private String bankAccountNumber;
 
-    @Column(name = "meeting_password")
-    private String meetingPassword;
+    @Column(name = "bank_account_name")
+    private String bankAccountName;
+
+    @Column(name = "transaction_image")
+    private String transactionImage;
+
+    @Column(name = "reject_reason")
+    private String rejectReason;
 
     @Column(name = "staff_id")
     private UUID staffId;
@@ -57,14 +62,11 @@ public class Request implements Serializable {
 
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
-    private RequestStateEnum state;
-
-    @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Answer> answers;
+    private WithdrawRequestStateEnum state;
 
     @ManyToOne
     @JoinColumn(name = "reader_id")
     @JsonManagedReference
     private Reader reader;
+
 }

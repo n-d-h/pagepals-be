@@ -37,7 +37,7 @@ public class WorkingTimeServiceTest {
             null, null,
             account1, level,
             null, null, null, null,
-            null, null, null
+            null, null, null,null
     );
 
     WorkingTime workingTime = new WorkingTime(UUID.randomUUID(), new Date(), new Date(), new Date(), reader, null);

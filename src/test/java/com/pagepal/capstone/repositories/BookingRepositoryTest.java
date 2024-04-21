@@ -105,6 +105,7 @@ public class BookingRepositoryTest {
             null, null, null,
             null,
             null,
+            null,
             null
     );
 

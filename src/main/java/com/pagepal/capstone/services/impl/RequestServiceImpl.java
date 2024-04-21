@@ -79,6 +79,7 @@ public class RequestServiceImpl implements RequestService {
             throw new RuntimeException("Failed to create meeting");
         }
         request.setMeetingCode(meeting.getMeetingCode());
+        request.setMeetingPassword(meeting.getPassword());
         request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         request.setInterviewAt(startDate);
         request.setStaffId(account.getId());

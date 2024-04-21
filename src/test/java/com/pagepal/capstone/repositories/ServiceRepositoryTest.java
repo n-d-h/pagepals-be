@@ -49,7 +49,7 @@ public class ServiceRepositoryTest {
             "US", "US", "", "description", 0, 0,
             "","avt",  2.5, "", new Date(), new Date(), null, Status.ACTIVE,null, null, account1, level,
             null, null, null, null,
-            null, null, null
+            null, null, null,null
     );
 
     Category category = new Category(UUID.randomUUID(), "name", "description",
