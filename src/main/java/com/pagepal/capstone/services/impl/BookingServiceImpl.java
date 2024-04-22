@@ -261,16 +261,6 @@ public class BookingServiceImpl implements BookingService {
             String readerFcmWebToken = wt.getReader().getAccount().getFcmWebToken();
             String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
-            if(readerFcmWebToken != null && customerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        readerContent,
-                        readerContent,
-                        Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
-                        readerFcmWebToken
-                );
-            }
-
             if(customerFcmWebToken != null) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
@@ -279,21 +269,31 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
                         customerFcmWebToken
                 );
+
+                if(readerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmWebToken
+                    );
+                }
+            }else{
+                if(readerFcmWebToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmWebToken
+                    );
+                }
             }
 
             // Send notification to mobile (reader/customer)
             String readerFcmMobileToken = wt.getReader().getAccount().getFcmMobileToken();
             String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
-
-            if(readerFcmMobileToken != null && customerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        readerContent,
-                        readerContent,
-                        Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
-                        readerFcmMobileToken
-                );
-            }
 
             if(customerFcmMobileToken != null) {
                 firebaseMessagingService.sendNotificationToDevice(
@@ -303,6 +303,26 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
                         customerFcmMobileToken
                 );
+
+                if(readerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmMobileToken
+                    );
+                }
+            }else{
+                if(readerFcmMobileToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", res.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmMobileToken
+                    );
+                }
             }
         }
         return BookingMapper.INSTANCE.toDto(res);
@@ -389,15 +409,6 @@ public class BookingServiceImpl implements BookingService {
             String readerFcmWebToken = wt.getReader().getAccount().getFcmWebToken();
             String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
-            if(readerFcmWebToken != null && customerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        readerContent,
-                        readerContent,
-                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                        readerFcmWebToken
-                );
-            }
 
             if(customerFcmWebToken != null) {
                 firebaseMessagingService.sendNotificationToDevice(
@@ -407,21 +418,31 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
                         customerFcmWebToken
                 );
+
+                if(readerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmWebToken
+                    );
+                }
+            }else{
+                if(readerFcmWebToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmWebToken
+                    );
+                }
             }
 
             // Send notification to mobile (reader/customer)
             String readerFcmMobileToken = wt.getReader().getAccount().getFcmMobileToken();
             String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
-
-            if(readerFcmMobileToken != null && customerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        readerContent,
-                        readerContent,
-                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                        readerFcmMobileToken
-                );
-            }
 
             if(customerFcmMobileToken != null) {
                 firebaseMessagingService.sendNotificationToDevice(
@@ -431,6 +452,26 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
                         customerFcmMobileToken
                 );
+
+                if(readerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmMobileToken
+                    );
+                }
+            }else{
+                if(readerFcmMobileToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            readerContent,
+                            readerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            readerFcmMobileToken
+                    );
+                }
             }
         }
         return BookingMapper.INSTANCE.toDto(booking);
@@ -533,7 +574,8 @@ public class BookingServiceImpl implements BookingService {
             String readerFcmWebToken = reader.getAccount().getFcmWebToken();
             String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
-            if(readerFcmWebToken != null && customerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
+
+            if(readerFcmWebToken != null) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         readerContent,
@@ -541,23 +583,32 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
                         readerFcmWebToken
                 );
+                if(customerFcmWebToken != null && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            title,
+                            customerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            customerFcmWebToken
+                    );
+                }
+            }else {
+                if(customerFcmWebToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            title,
+                            customerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            customerFcmWebToken
+                    );
+                }
             }
 
-            if(customerFcmWebToken != null) {
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        title,
-                        customerContent,
-                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                        customerFcmWebToken
-                );
-            }
-            
             // Send notification to mobile (reader/customer)
             String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
             String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
 
-            if(readerFcmMobileToken != null && customerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+            if(readerFcmMobileToken != null) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         readerContent,
@@ -565,16 +616,25 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
                         readerFcmMobileToken
                 );
-            }
-
-            if(customerFcmMobileToken != null) {
-                firebaseMessagingService.sendNotificationToDevice(
-                        pagePalLogoUrl,
-                        title,
-                        customerContent,
-                        Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
-                        customerFcmMobileToken
-                );
+                if(customerFcmMobileToken != null && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            title,
+                            customerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            customerFcmMobileToken
+                    );
+                }
+            }else {
+                if(customerFcmMobileToken != null) {
+                    firebaseMessagingService.sendNotificationToDevice(
+                            pagePalLogoUrl,
+                            title,
+                            customerContent,
+                            Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
+                            customerFcmMobileToken
+                    );
+                }
             }
         }
 

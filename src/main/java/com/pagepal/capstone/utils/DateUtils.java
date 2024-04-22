@@ -8,7 +8,7 @@ import java.util.TimeZone;
 
 @Component
 public class DateUtils {
-    private static final TimeZone VIETNAM_TIME_ZONE = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+    private static final TimeZone VIETNAM_TIME_ZONE = TimeZone.getTimeZone("GMT+7");
 
     public Date getCurrentVietnamDate() {
         Calendar calendar = Calendar.getInstance(VIETNAM_TIME_ZONE);

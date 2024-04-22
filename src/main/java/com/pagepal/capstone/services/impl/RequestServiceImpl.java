@@ -36,6 +36,7 @@ public class RequestServiceImpl implements RequestService {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final String READER_STATE_ACTIVE = "READER_ACTIVE";
+    private final String CUSTOMER_STATE_ACTIVE = "ACTIVE";
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private final DateUtils dateUtils;
@@ -186,6 +187,12 @@ public class RequestServiceImpl implements RequestService {
         request = requestRepository.save(request);
 
         if (request != null) {
+            Account readerAccount = request.getReader().getAccount();
+            readerAccount.setAccountState(accountStateRepository
+                    .findByNameAndStatus(CUSTOMER_STATE_ACTIVE, Status.ACTIVE)
+                    .orElseThrow(() -> new EntityNotFoundException("Account state not found")));
+            accountRepository.save(readerAccount);
+
             Reader reader = request.getReader();
             String email = reader.getAccount().getEmail();
             String website = "https://pagepals-fe.vercel.app";

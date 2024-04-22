@@ -248,7 +248,10 @@ public class ReaderServiceImpl implements ReaderService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
-        Reader reader = new Reader();
+        Reader reader = account.getReader();
+        if (reader == null) {
+            reader = new Reader();
+        }
         reader.setNickname(requestInputDto.getInformation().getNickname());
         reader.setGenre(requestInputDto.getInformation().getGenres().toString().replaceAll("\\[|\\]", ""));
         reader.setLanguage(requestInputDto.getInformation().getLanguages().toString().replaceAll("\\[|\\]", ""));

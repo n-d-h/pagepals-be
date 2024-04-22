@@ -17,6 +17,6 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     Page<Notification> findAllByAccountIdAndNotificationRole(UUID accountId, Pageable pageable, NotificationRoleEnum notificationRole);
     List<Notification> findAllByAccountId(UUID accountId);
 
-    @Query("SELECT COUNT(n) FROM Notification n WHERE n.account.id = :accountId AND n.isRead = false")
-    Integer countUnreadByAccountId(UUID accountId);
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.account.id = :accountId AND n.isRead = false AND n.notificationRole = :notificationRole")
+    Integer countUnreadByAccountId(UUID accountId, NotificationRoleEnum notificationRole);
 }

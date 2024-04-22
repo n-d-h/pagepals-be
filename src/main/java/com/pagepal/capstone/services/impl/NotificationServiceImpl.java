@@ -93,7 +93,7 @@ public class NotificationServiceImpl implements NotificationService {
     ) {
         Pageable pageable = createPageable(page, pageSize, sort);
         Page<Notification> notifications = notificationRepository.findAllByAccountIdAndNotificationRole(accountId, pageable, notificationRole);
-        Integer total = notificationRepository.countUnreadByAccountId(accountId);
+        Integer total = notificationRepository.countUnreadByAccountId(accountId, notificationRole);
         return mapToNotificationDto(notifications, total);
     }
 
