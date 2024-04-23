@@ -1,7 +1,6 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.dtos.reader.ListReaderDto;
 import com.pagepal.capstone.dtos.withdrawRequest.ListWithdrawRequestDto;
 import com.pagepal.capstone.dtos.withdrawRequest.WithdrawQuery;
 import com.pagepal.capstone.dtos.withdrawRequest.WithdrawRequestCreateDto;
@@ -11,7 +10,6 @@ import com.pagepal.capstone.enums.CurrencyEnum;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.enums.WithdrawRequestStateEnum;
-import com.pagepal.capstone.mappers.ReaderMapper;
 import com.pagepal.capstone.mappers.WithdrawRequestMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.WithdrawRequestService;
@@ -20,13 +18,15 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service

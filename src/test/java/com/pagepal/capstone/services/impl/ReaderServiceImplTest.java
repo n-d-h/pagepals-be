@@ -3,7 +3,6 @@ package com.pagepal.capstone.services.impl;
 import com.pagepal.capstone.dtos.reader.ListReaderDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.reader.ReaderQueryDto;
-import com.pagepal.capstone.dtos.reader.ReaderUpdateDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
@@ -79,12 +78,12 @@ class ReaderServiceImplTest {
             new Date(), new Date(), new Date(), accountState2,null,null, null, null, role2, null, null);
     //Reader
     Reader reader1 = new Reader(UUID.fromString("f86cff31-9e16-4e11-8948-90c0c6fec172"), "name1", 5, "genre1", "Vietnamese", "accent1",
-            "url", "des1", 0, 0, "url","avt",  123.2, "tag",
-            new Date(), new Date(), new Date(), null,null, null, account1, null, null, null, null,
+            "url", "des1", 0, 0, "url","avt",
+            new Date(), new Date(), new Date(), Status.ACTIVE, null, null, account1, null,
             null, null, null, null,null);
     Reader reader2 = new Reader(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"), "name2", 5, "genre1", "Vietnamese", "accent1",
-            "url", "des1", 0, 0, "url","avt",  123.2, "tag",
-            new Date(), new Date(), new Date(), null,null, null, account2, null, null, null, null,
+            "url", "des1", 0, 0, "url","avt",
+            new Date(), new Date(), new Date(), Status.ACTIVE, null, null, account2,  null,
             null, null, null, null,null);
 
     /**
@@ -235,16 +234,13 @@ class ReaderServiceImplTest {
         Date updatedAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
         Date deletedAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
         Account account = new Account();
-        Level level = new Level();
         ArrayList<WorkingTime> workingTimes = new ArrayList<>();
         ArrayList<Service> services = new ArrayList<>();
-        ArrayList<Follow> follows = new ArrayList<>();
-        ArrayList<Promotion> promotions = new ArrayList<>();
         ArrayList<Request> requests = new ArrayList<>();
         when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
                 "GB", "https://example.org/example", "The characteristics of someone or something", 0,
-                0, "https://example.org/example","avt",  10.0d, "Tags", createdAt, updatedAt, deletedAt,
-                Status.ACTIVE,null, null, account, level, workingTimes, services, follows, promotions, requests, new ArrayList<>(), null,null)));
+                0, "https://example.org/example","avt", createdAt, updatedAt, deletedAt,
+                Status.ACTIVE,null, null, account, workingTimes, services, requests, new ArrayList<>(), null,null)));
         assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
         verify(readerRepository).findById(any());
     }

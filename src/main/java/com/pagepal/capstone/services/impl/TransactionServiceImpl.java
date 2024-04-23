@@ -1,16 +1,13 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.booking.ListBookingDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.transaction.ListTransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionFilterDto;
-import com.pagepal.capstone.entities.postgre.Booking;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Transaction;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
-import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.mappers.TransactionMapper;
 import com.pagepal.capstone.repositories.CustomerRepository;
 import com.pagepal.capstone.repositories.ReaderRepository;
@@ -27,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 @Transactional

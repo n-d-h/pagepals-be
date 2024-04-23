@@ -38,15 +38,9 @@ type ReportReader{
     listReport: [Report]
 }
 
-type ReportPost{
-    post: Post
-    listReport: [Report]
-}
-
 type ReportGeneric{
     booking: Booking
     reader: Reader
-    post: Post
     listReport: [Report]
 }
 
@@ -55,7 +49,6 @@ extend type Query {
     listReport(query: ReportQuery): ListReportDto
     listReportBooking: [ReportBooking]
     listReportReader: [ReportReader]
-    listReportPost: [ReportPost]
     getReportGenericByIdAndType(id: ID!, type: String): ReportGeneric
 }
 

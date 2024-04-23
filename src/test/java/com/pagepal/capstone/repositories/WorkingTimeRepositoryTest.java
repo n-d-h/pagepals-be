@@ -3,8 +3,6 @@ package com.pagepal.capstone.repositories;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.ReaderRepository;
-import com.pagepal.capstone.repositories.WorkingTimeRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +26,11 @@ public class WorkingTimeRepositoryTest {
     Role role1 = new Role(UUID.randomUUID(), "READER", Status.ACTIVE, null);
     Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(), new Date(), accountState1,null,null, null, null, role1, null, null);
-    Level level = new Level(UUID.randomUUID(), "name", 259.0,
-            "description", Status.ACTIVE, null
-    );
-    Reader reader = new Reader(UUID.randomUUID(), "nickname", 3, "Fiction",
-            "US", "US", "", "description", 0, 0,
-            "","avt",  2.5, "", new Date(), new Date(), null, Status.ACTIVE, null, null, account1, level,
-            null, null, null, null,
-            null, null, null,null
-    );
+    Reader reader = new Reader(UUID.randomUUID(), "name1", 4, "genre1", "Vietnamese"
+            , "accent1", "link1", "des1", null,
+            null, "vid1","avt",
+            new Date(), new Date(), new Date(), Status.ACTIVE, null, null,null, null,
+            null, null, null, null,null);
 
     @Autowired
     private WorkingTimeRepository workingTimeRepository;

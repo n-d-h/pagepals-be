@@ -63,15 +63,16 @@ class CustomerServiceImplTest {
     Account account3 = new Account(UUID.randomUUID(), "username3", "password3", "email3","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(),new Date(), accountState1,null,null, null, null, role2, null, null);
     //Reader
-    Reader reader1 = new Reader(UUID.randomUUID(), "name1", 5, "genre1", "Vietnamese", "accent1" ,
-            "url" ,"des1", 0, 0, "url","avt",  123.2, "tag",
-            new Date(), new Date(), new Date(), null,null, null, account1, null, null, null, null,
+    Reader reader1 = new Reader(UUID.randomUUID(), "name1", 4, "genre1", "Vietnamese"
+            , "accent1", "link1", "des1", null,
+            null, "vid1","avt",
+            new Date(), new Date(), new Date(), Status.ACTIVE, null, null,null, null,
             null, null, null, null,null);
     Customer customer1 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"),"customer name 1", GenderEnum.MALE, new Date(), "url",
-            new Date(), new Date(), new Date(), Status.ACTIVE, account2, null, null, new ArrayList<>(), null);
+            new Date(), new Date(), new Date(), Status.ACTIVE, account2, new ArrayList<>(), null);
 
     Customer customer2 = new Customer(UUID.fromString("6ff8f184-e668-4d51-ab18-89ec7d2ba014"),"customer name 1", GenderEnum.MALE, new Date(), "url",
-            new Date(), new Date(), new Date(), Status.ACTIVE, account1, null, null, new ArrayList<>(), null);
+            new Date(), new Date(), new Date(), Status.ACTIVE, account1, new ArrayList<>(), null);
 
     /**
      * Method under test: {@link ReaderServiceImpl#getReadersActive()}

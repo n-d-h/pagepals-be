@@ -9,7 +9,6 @@ type Customer {
     deletedAt: String
     status: Status
     account: Account
-    follows: [Follow]
     bookings: [Booking]
 }
 
@@ -20,7 +19,6 @@ type Profile {
     imageUrl: String
     createdAt: String!
     account: Account
-    follows: [Follow]
     bookings: [Booking]
 }
 

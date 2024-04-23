@@ -5,10 +5,6 @@ import com.pagepal.capstone.entities.postgre.AccountState;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Role;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.AccountRepository;
-import com.pagepal.capstone.repositories.AccountStateRepository;
-import com.pagepal.capstone.repositories.ReaderRepository;
-import com.pagepal.capstone.repositories.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -50,23 +46,24 @@ class ReaderRepositoryTest {
     Date date3 = java.sql.Date.valueOf(localDate3);
 
     //Reader
-    Reader reader1 = new Reader(UUID.randomUUID(), "name1", 5, "genre1", "Vietnamese"
+    Reader reader1 = new Reader(UUID.randomUUID(), "name1", 4, "genre1", "Vietnamese"
             , "accent1", "link1", "des1", null,
-            null, "vid1","avt", null, null, date1,
-            null, null, Status.ACTIVE, null, null, null,null, null,
-            null, null, null, null, null, null, null);
+            null, "vid1","avt",
+            date2, date2, date2, Status.ACTIVE, null, null,null, null,
+            null, null, null, null,null);
 
     Reader reader2 = new Reader(UUID.randomUUID(), "name2", 4, "genre2", "Vietnamese"
             , "accent2", "link2", "des2", null,
-            null, "vid2","avt",  null, null, date2,
-            null, null, Status.ACTIVE, null, null, null,null, null,
-            null, null, null, null, null, null,null);
+            null, "vid2","avt",
+            date2, date2, date2, Status.ACTIVE, null, null,null, null,
+            null, null, null, null,null);
 
-    Reader reader3 = new Reader(UUID.randomUUID(), "name3", 5, "genre3", "Vietnamese"
+    Reader reader3 = new Reader(UUID.randomUUID(), "name3", 4, "genre3", "Vietnamese"
             , "accent3", "link3", "des3", null,
-            null, "vid3","avt",  null, null, date3,
-            null, null, Status.ACTIVE, null, null, null,null, null,
-            null, null, null, null, null, null,null);
+            null, "vid3","avt",
+            date2, date2, date2, Status.ACTIVE, null, null,null, null,
+            null, null, null, null,null);
+
     private List<Reader> result;
 
 

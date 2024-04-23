@@ -1,6 +1,5 @@
 enum ReportTypeEnum {
     BOOKING
-    POST
     READER
 }
 

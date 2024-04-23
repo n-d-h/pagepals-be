@@ -66,12 +66,6 @@ public class Reader implements Serializable {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Column(name = "experience")
-    private Double experience;
-
-    @Column(name = "tags")
-    private String tags;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt = new Date();
@@ -99,11 +93,6 @@ public class Reader implements Serializable {
     @JsonManagedReference
     private Account account;
 
-    @ManyToOne
-    @JoinColumn(name = "level_id")
-    @JsonManagedReference
-    private Level level;
-
     @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<WorkingTime> workingTimes;
@@ -111,14 +100,6 @@ public class Reader implements Serializable {
     @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Service> services;
-
-    @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<Follow> follows;
-
-    @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<Promotion> promotions;
 
     @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
     @JsonBackReference

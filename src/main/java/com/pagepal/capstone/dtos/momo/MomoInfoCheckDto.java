@@ -2,8 +2,6 @@ package com.pagepal.capstone.dtos.momo;
 
 import lombok.*;
 
-import java.util.Optional;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter

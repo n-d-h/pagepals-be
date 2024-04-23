@@ -1,10 +1,12 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.googlebook.GoogleBook;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.seminar.*;
 import com.pagepal.capstone.entities.postgre.*;
-import com.pagepal.capstone.enums.*;
+import com.pagepal.capstone.enums.CurrencyEnum;
+import com.pagepal.capstone.enums.SeminarStatus;
+import com.pagepal.capstone.enums.TransactionStatusEnum;
+import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookService;
 import com.pagepal.capstone.services.SeminarService;
@@ -24,7 +26,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional

@@ -1,7 +1,6 @@
 package com.pagepal.capstone.repositories;
 
 import com.pagepal.capstone.entities.postgre.Booking;
-import com.pagepal.capstone.entities.postgre.BookingState;
 import com.pagepal.capstone.entities.postgre.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

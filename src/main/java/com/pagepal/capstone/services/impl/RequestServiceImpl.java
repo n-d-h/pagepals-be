@@ -110,7 +110,7 @@ public class RequestServiceImpl implements RequestService {
                 String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
                 String readerFcmWebToken = reader.getAccount().getFcmWebToken();
 
-                if (readerFcmMobileToken != null) {
+                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             "Interview schedule",
@@ -120,7 +120,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
 
-                if (readerFcmWebToken != null) {
+                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
@@ -229,7 +229,7 @@ public class RequestServiceImpl implements RequestService {
                 String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
                 String readerFcmWebToken = reader.getAccount().getFcmWebToken();
 
-                if (readerFcmMobileToken != null) {
+                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             "Request rejected",
@@ -239,7 +239,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
 
-                if (readerFcmWebToken != null) {
+                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             "Your request to be reader has been rejected by our staff.",
@@ -320,7 +320,7 @@ public class RequestServiceImpl implements RequestService {
                     String readerFcmMobileToken = readerAccount.getFcmMobileToken();
                     String readerFcmWebToken = readerAccount.getFcmWebToken();
 
-                    if (readerFcmMobileToken != null) {
+                    if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
                         firebaseMessagingService.sendNotificationToDevice(
                                 pagePalLogoUrl,
                                 "Request accepted",
@@ -330,7 +330,7 @@ public class RequestServiceImpl implements RequestService {
                         );
                     }
 
-                    if (readerFcmWebToken != null) {
+                    if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
                         firebaseMessagingService.sendNotificationToDevice(
                                 pagePalLogoUrl,
                                 "Congratulations! Your request has been accepted by our staff.",

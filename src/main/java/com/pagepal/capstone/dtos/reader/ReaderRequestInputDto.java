@@ -3,7 +3,6 @@ package com.pagepal.capstone.dtos.reader;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Setter
 @Getter

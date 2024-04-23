@@ -4,7 +4,6 @@ import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import com.pagepal.capstone.enums.MeetingEnum;
 import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -96,15 +95,11 @@ public class BookingRepositoryTest {
             null,
             "vid1",
             "avt1",
-            null,
-            null,
             date1,
             null, null, Status.ACTIVE,
-            null, null,
-            account1, null, null,
+            null, true,
+            account1, null,
             null, null, null,
-            null,
-            null,
             null,
             null
     );

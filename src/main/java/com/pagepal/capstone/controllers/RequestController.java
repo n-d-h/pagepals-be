@@ -1,7 +1,6 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.request.RequestDto;
-import com.pagepal.capstone.services.ReaderService;
 import com.pagepal.capstone.services.RequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;

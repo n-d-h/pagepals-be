@@ -42,11 +42,6 @@ public class ReportController {
     }
 
     @QueryMapping
-    public List<ReportPostDto> listReportPost(){
-        return reportService.listReportPost();
-    }
-
-    @QueryMapping
     public ReportGenericDto getReportGenericByIdAndType(@Argument("id") UUID id, @Argument("type") String reportType){
         return reportService.getReportGenericByReportedIdAndType(id, reportType);
     }

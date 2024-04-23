@@ -1,6 +1,5 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.firebase.FirebaseMessageData;
 import com.pagepal.capstone.dtos.notification.ListNotificationDto;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.notification.NotificationDto;

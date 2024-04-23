@@ -1,14 +1,12 @@
 package com.pagepal.capstone.dtos.request;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
-import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 

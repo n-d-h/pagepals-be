@@ -1,6 +1,7 @@
 package com.pagepal.capstone.dtos.reader;
 
-import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.entities.postgre.Account;
+import com.pagepal.capstone.entities.postgre.Service;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,11 +43,7 @@ public class ReaderDto {
 
     private String introductionVideoUrl;
 
-    private Double experience;
-
-    private String tags;
-
-    private String createdAt ;
+    private String createdAt;
 
     private String updatedAt ;
 
@@ -58,12 +54,6 @@ public class ReaderDto {
 
     private Account account;
 
-    private Level level;
-
     private List<Service> services;
-
-    private List<Follow> follows;
-
-    private List<Promotion> promotions;
 
 }

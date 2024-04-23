@@ -14,8 +14,6 @@ public interface ReportService {
     ListReportDto getAllReports(ReportQueryDto reportQueryDto);
     List<ReportBookingDto> listReportBooking();
     List<ReportReaderDto> listReportReader();
-    List<ReportPostDto> listReportPost();
-
     ReportGenericDto getReportGenericByReportedIdAndType(UUID id, String reportType);
 
     ReportReadDto refundBookingForReport(UUID id);

@@ -6,8 +6,6 @@ import com.pagepal.capstone.services.MomoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
@@ -17,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 
 @Controller
 @RequiredArgsConstructor
-public class MomoController {
+public class PaymentController {
     private final MomoService momoService;
 
     @MutationMapping

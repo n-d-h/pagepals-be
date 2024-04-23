@@ -1,6 +1,5 @@
 package com.pagepal.capstone.services;
 
-import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.dtos.seminar.*;
 
 import java.util.UUID;

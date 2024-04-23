@@ -1,11 +1,12 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.googlebook.GoogleBook;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.service.ServiceUpdate;
 import com.pagepal.capstone.dtos.service.WriteServiceDto;
 import com.pagepal.capstone.dtos.servicetype.ServiceTypeDto;
-import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.entities.postgre.Book;
+import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.ServiceType;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.*;
@@ -18,8 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 

@@ -11,18 +11,13 @@ type Reader {
     totalOfBookings: Int
     introductionVideoUrl: String
     avatarUrl: String
-    experience: Float
-    tags: String
     createdAt: String
     updatedAt: String
     deletedAt: String
     status: Status
-    level: Level
     account: Account
     workingTimes: [WorkingTime]
     services: [Service]
-    follows: [Follow]
-    promotions: [Promotion]
     requests: [Request]
     meetings: [Meeting]
 }
@@ -40,16 +35,12 @@ type ReaderRead{
     totalOfBookings: Int
     introductionVideoUrl: String
     avatarUrl: String
-    experience: Float
-    tags: String
     createdAt: String
     updatedAt: String
     deletedAt: String
     status: Status
-    level: Level
     account: AccountRead
     services: [Service]
-    follows: [Follow]
 }
 
 type ReaderProfile{
@@ -100,7 +91,6 @@ input ReaderUpdate{
     description: String
     introductionVideoUrl: String
     avatarUrl: String
-    tags: String
 }
 
 input searchReaderInput {

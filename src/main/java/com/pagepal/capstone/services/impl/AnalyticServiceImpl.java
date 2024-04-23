@@ -1,7 +1,10 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.analytic.*;
-import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.entities.postgre.Account;
+import com.pagepal.capstone.entities.postgre.Booking;
+import com.pagepal.capstone.entities.postgre.Setting;
+import com.pagepal.capstone.entities.postgre.Transaction;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;

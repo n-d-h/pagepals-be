@@ -19,6 +19,5 @@ public class ReaderUpdateDto {
     private String description;
     private String introductionVideoUrl;
     private String avatarUrl;
-    private String tags;
 
 }

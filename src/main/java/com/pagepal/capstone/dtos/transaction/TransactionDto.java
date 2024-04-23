@@ -1,19 +1,16 @@
 package com.pagepal.capstone.dtos.transaction;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.entities.postgre.Booking;
 import com.pagepal.capstone.entities.postgre.PaymentMethod;
 import com.pagepal.capstone.entities.postgre.Wallet;
 import com.pagepal.capstone.enums.CurrencyEnum;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Setter

@@ -1,6 +1,5 @@
 package com.pagepal.capstone.dtos.transaction;
 
-import com.pagepal.capstone.enums.TransactionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

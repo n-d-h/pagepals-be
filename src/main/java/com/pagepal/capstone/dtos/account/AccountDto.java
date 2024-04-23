@@ -1,14 +1,16 @@
 package com.pagepal.capstone.dtos.account;
 
 import com.pagepal.capstone.dtos.role.RoleDto;
-import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.entities.postgre.AccountState;
+import com.pagepal.capstone.entities.postgre.Customer;
+import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.Wallet;
 import com.pagepal.capstone.enums.LoginTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Setter

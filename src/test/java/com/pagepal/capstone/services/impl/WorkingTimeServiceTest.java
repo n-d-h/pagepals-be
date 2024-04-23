@@ -28,19 +28,13 @@ public class WorkingTimeServiceTest {
     Role role1 = new Role(UUID.randomUUID(), "READER", Status.ACTIVE, null);
     Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(), new Date(), accountState1,null,null, null, null, role1, null, null);
-    Level level = new Level(UUID.randomUUID(), "name", 259.0,
-            "description", Status.ACTIVE, null
-    );
     Reader reader = new Reader(UUID.randomUUID(), "nickname", 3, "Fiction",
             "US", "US", "", "description", 0, 0,
-            "","avt",  2.5, "", new Date(), new Date(), null, Status.ACTIVE,
-            null, null,
-            account1, level,
-            null, null, null, null,
-            null, null, null,null
+            "","avt", new Date(), new Date(), null, Status.ACTIVE,
+            null, null, account1,
+            null, null, null, null, null,null
     );
 
     WorkingTime workingTime = new WorkingTime(UUID.randomUUID(), new Date(), new Date(), new Date(), reader, null);
-
 
 }

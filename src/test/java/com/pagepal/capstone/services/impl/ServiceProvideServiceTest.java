@@ -42,14 +42,11 @@ public class ServiceProvideServiceTest {
     Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2","fullName1","0123456789", LoginTypeEnum.NORMAL,
             new Date(), new Date(), new Date(), accountState2, null,null,null, null, role2, null, null);
 
-    Level level = new Level(UUID.randomUUID(), "name", 259.0,
-            "description", Status.ACTIVE, null
-    );
 
     Reader reader = new Reader(id, "nickname", 3, "Fiction",
             "US", "US", "", "description", 0, 0,
-            "","avt",  2.5, "", new Date(), new Date(), null, Status.ACTIVE, null, null,account1, level,
-            null,null, null, null,
+            "","avt", new Date(), new Date(), null, Status.ACTIVE, null, null,account1,
+            null,null,
             null, null, null,null
     );
 

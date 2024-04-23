@@ -2,7 +2,6 @@ package com.pagepal.capstone.entities.postgre;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.CurrencyEnum;
-import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import jakarta.persistence.*;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
 import java.util.Date;

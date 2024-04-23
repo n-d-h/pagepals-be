@@ -10,7 +10,6 @@ import com.pagepal.capstone.services.WebhookService;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -134,7 +133,7 @@ public class WebhookImpl implements WebhookService {
             webhook.setContent("PagePal Notification");
             webhook.setWebhookUrl("https://discord.com/api/webhooks/1206078678518206504/6VsXDrAJgmzOVXXwFLbYa7ZO2iD5xQ4n0UsrFzeCBaj03UHJ8gUPvu-7DLVgMr3zHHDU");
             webhook.setUsername("PagePal");
-            webhook.setAvatarUrl("https://via.placeholder.com/150");
+            webhook.setAvatarUrl("https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2FP.png?alt=media&token=62ff0c5e-f776-4678-b381-c89ee52152e5");
             EmbedObject embedObject = new EmbedObject();
 
             String username = account.getUsername();

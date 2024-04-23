@@ -2,7 +2,6 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;
-import com.pagepal.capstone.dtos.request.RequestDto;
 import com.pagepal.capstone.dtos.request.RequestInputDto;
 import com.pagepal.capstone.dtos.service.ServiceDto;
 import com.pagepal.capstone.dtos.workingtime.TimeSlot;
@@ -262,7 +261,6 @@ public class ReaderServiceImpl implements ReaderService {
         reader.setAudioDescriptionUrl(requestInputDto.getInformation().getAudioDescriptionUrl());
         reader.setTotalOfReviews(0);
         reader.setTotalOfBookings(0);
-        reader.setExperience(0.0);
         reader.setRating(0);
         reader.setStatus(Status.ACTIVE);
         reader.setAccount(account);
