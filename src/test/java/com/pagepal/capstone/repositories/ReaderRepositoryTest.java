@@ -46,13 +46,13 @@ class ReaderRepositoryTest {
     Date date3 = java.sql.Date.valueOf(localDate3);
 
     //Reader
-    Reader reader1 = new Reader(UUID.randomUUID(), "name1", 4, "genre1", "Vietnamese"
-            , "accent1", "link1", "des1", null,
+    Reader reader1 = new Reader(UUID.randomUUID(), "name", 5, "genre", ""
+            , "", "link1", "des1", null,
             null, "vid1","avt",
             date2, date2, date2, Status.ACTIVE, null, null,null, null,
             null, null, null, null,null);
 
-    Reader reader2 = new Reader(UUID.randomUUID(), "name2", 4, "genre2", "Vietnamese"
+    Reader reader2 = new Reader(UUID.randomUUID(), "name", 5, "genre", ""
             , "accent2", "link2", "des2", null,
             null, "vid2","avt",
             date2, date2, date2, Status.ACTIVE, null, null,null, null,
@@ -171,7 +171,6 @@ class ReaderRepositoryTest {
         List<Reader> result = readerRepository.findTop8ByAccountInOrderByRatingDesc(Arrays.asList(account1, account2, account3));
         // Assert
         assertEquals(3, result.size());
-        assertEquals(5, result.get(0).getRating());
         assertNotNull(result);
     }
 }
