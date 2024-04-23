@@ -11,6 +11,7 @@ import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookService;
+import com.pagepal.capstone.services.BookingService;
 import com.pagepal.capstone.services.ServiceService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,14 +29,13 @@ import java.util.UUID;
 public class ServiceServiceImpl implements ServiceService {
     private final ServiceRepository serviceRepository;
     private final ServiceTypeRepository serviceTypeRepository;
-
+    private final BookingRepository bookingRepository;
     private final BookRepository bookRepository;
-
     private final ReaderRepository readerRepository;
-
     private final CategoryRepository categoryRepository;
 
     private final AuthorRepository authorRepository;
+    private final BookingService bookingService;
     private final BookService bookService;
     private final DateUtils dateUtils;
 
@@ -45,15 +45,42 @@ public class ServiceServiceImpl implements ServiceService {
         return ServiceMapper.INSTANCE.toDto(serviceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Service not found")));
     }
 
+    private Boolean checkServiceIsInPendingBooking(UUID serviceId) {
+        return bookingRepository.countPendingBookingByService(serviceId) > 0;
+    }
+
+    private Boolean checkServiceIsInBooking(UUID serviceId) {
+        return bookingRepository.countBookingByService(serviceId) > 0;
+    }
+
+    private Boolean checkServiceIsInCompletedOrCanceledBooking(UUID serviceId) {
+        return bookingRepository.countStateBookingByService(serviceId) > 0;
+    }
 
     @Secured("READER")
     @Override
     public ServiceDto updateService(UUID id, ServiceUpdate writeServiceDto) {
         var service = serviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
-        service.setId(id);
-        service.setPrice(writeServiceDto.getPrice());
-        service.setDescription(writeServiceDto.getDescription());
+
+        // If service is in pending booking, we create a new service with the same information
+        if (Boolean.TRUE.equals(checkServiceIsInBooking(id))) {
+
+            // delete old service
+            service.setId(id);
+            service.setIsDeleted(true);
+            serviceRepository.save(service);
+
+            // create new service
+            service.setId(null);
+            service.setIsDeleted(false);
+            service.setPrice(writeServiceDto.getPrice());
+            service.setDescription(writeServiceDto.getDescription());
+        } else {
+            service.setId(id);
+            service.setPrice(writeServiceDto.getPrice());
+            service.setDescription(writeServiceDto.getDescription());
+        }
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
     }
 
@@ -62,8 +89,34 @@ public class ServiceServiceImpl implements ServiceService {
     public String deleteService(UUID id) {
         var service = serviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
-        service.setStatus(Status.INACTIVE);
-        serviceRepository.save(service);
+        if (Boolean.TRUE.equals(checkServiceIsInPendingBooking(id))) {
+            throw new IllegalStateException("Service is in pending booking");
+        } else if (Boolean.TRUE.equals(checkServiceIsInCompletedOrCanceledBooking(id))) {
+            service.setId(id);
+            service.setIsDeleted(true);
+            serviceRepository.save(service);
+        } else {
+            service.setId(id);
+            service.setIsDeleted(true);
+            service.setStatus(Status.INACTIVE);
+            serviceRepository.save(service);
+        }
+        return "Service deleted";
+    }
+
+    @Override
+    public String cancelBookingAndDeleteService(UUID id) {
+        var service = serviceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
+        if (Boolean.TRUE.equals(checkServiceIsInPendingBooking(id))) {
+            var pendingBookings = bookingRepository.findPendingBookingByService(id);
+            for (var booking : pendingBookings) {
+                bookingService.cancelBooking(booking.getId(), "Service is deleted");
+            }
+            service.setId(id);
+            service.setIsDeleted(true);
+            serviceRepository.save(service);
+        } else throw new IllegalStateException("Service is not in pending booking");
         return "Service deleted";
     }
 
@@ -96,6 +149,7 @@ public class ServiceServiceImpl implements ServiceService {
         service.setRating(0);
         service.setTotalOfBooking(0);
         service.setTotalOfReview(0);
+        service.setIsDeleted(false);
         service.setStatus(Status.ACTIVE);
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
     }

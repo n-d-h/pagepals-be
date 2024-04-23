@@ -15,6 +15,8 @@ public interface ServiceService {
 
     String deleteService(UUID id);
 
+    String cancelBookingAndDeleteService(UUID id);
+
     List<ServiceTypeDto> getListServiceType();
 
     ServiceDto createService(WriteServiceDto writeServiceDto);
