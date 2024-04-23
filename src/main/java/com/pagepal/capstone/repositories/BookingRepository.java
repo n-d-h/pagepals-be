@@ -75,17 +75,14 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     @Query("""
             SELECT COUNT (b) FROM Booking b
             WHERE b.service.id = :serviceId
-            AND b.state.name = 'PENDING'
-            OR b.state.name = 'COMPLETED'
-            OR b.state.name = 'CANCEL'
+            AND (b.state.name = 'PENDING' OR b.state.name = 'COMPLETED' OR b.state.name = 'CANCEL')
             """)
     Long countBookingByService(UUID serviceId);
 
     @Query("""
             SELECT COUNT (b) FROM Booking b
             WHERE b.service.id = :serviceId
-            AND b.state.name = 'COMPLETED'
-            OR b.state.name = 'CANCEL'
+            AND (b.state.name = 'COMPLETED' OR b.state.name = 'CANCEL')
             """)
     Long countStateBookingByService(UUID serviceId);
 }
