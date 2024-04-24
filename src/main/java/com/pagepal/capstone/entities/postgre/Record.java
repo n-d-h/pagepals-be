@@ -31,10 +31,10 @@ public class Record implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "text")
     private String title;
 
-    @Column(name = "record_url")
+    @Column(name = "record_url", columnDefinition = "text")
     private String recordUrl;
 
     @Column(name = "date")
@@ -43,7 +43,7 @@ public class Record implements Serializable {
     @Column(name = "capacity")
     private Double capacity;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @Column(name = "duration")

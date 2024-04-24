@@ -31,7 +31,7 @@ public class BookingState implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "text")
     private String name;
 
     @Column(name = "status")

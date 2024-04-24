@@ -45,7 +45,7 @@ public class Customer implements Serializable {
     @Column(name = "dob")
     private Date dob;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", columnDefinition = "text")
     private String imageUrl;
 
     @Temporal(TemporalType.TIMESTAMP)

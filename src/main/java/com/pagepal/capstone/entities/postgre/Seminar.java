@@ -32,7 +32,7 @@ public class Seminar {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "text")
     private String title;
 
     @Column(name = "limit_customer")
@@ -41,10 +41,10 @@ public class Seminar {
     @Column(name = "active_slot")
     private Integer activeSlot;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
-    @Column(name = "imageUrl")
+    @Column(name = "imageUrl", columnDefinition = "text")
     private String imageUrl;
 
     @Column(name = "duration")

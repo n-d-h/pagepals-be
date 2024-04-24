@@ -31,7 +31,7 @@ public class Answer implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "text")
     private String content;
 
     @Column(name = "status")

@@ -35,13 +35,13 @@ public class Book implements Serializable {
     @Column(name = "external_id")
     private String externalId;
 
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "text")
     private String title;
 
-    @Column(name = "publisher")
+    @Column(name = "publisher", columnDefinition = "text")
     private String publisher;
 
-    @Column(name = "published_date")
+    @Column(name = "published_date", columnDefinition = "text")
     private String publishedDate;
 
     @Column(name = "description", columnDefinition = "text")
@@ -50,10 +50,10 @@ public class Book implements Serializable {
     @Column(name = "page_count")
     private Integer pageCount;
 
-    @Column(name = "small_thumbnail_url")
+    @Column(name = "small_thumbnail_url", columnDefinition = "text")
     private String smallThumbnailUrl;
 
-    @Column(name = "thumbnail_url")
+    @Column(name = "thumbnail_url", columnDefinition = "text")
     private String thumbnailUrl;
 
     @Column(name = "language")

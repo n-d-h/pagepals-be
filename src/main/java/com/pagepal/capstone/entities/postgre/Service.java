@@ -37,7 +37,7 @@ public class Service implements Serializable {
     @Column(name = "created_at")
     private Date createdAt;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @Column(name = "duration")

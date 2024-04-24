@@ -29,10 +29,10 @@ public class Notification {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "text")
     private String content;
 
-    @Column(name= "title")
+    @Column(name= "title", columnDefinition = "text")
     private String title;
 
     @Column(name = "status")

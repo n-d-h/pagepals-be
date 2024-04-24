@@ -39,19 +39,19 @@ public class WithdrawRequest {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Column(name = "bank_name")
+    @Column(name = "bank_name", columnDefinition = "text")
     private String bankName;
 
-    @Column(name = "bank_account_number")
+    @Column(name = "bank_account_number", columnDefinition = "text")
     private String bankAccountNumber;
 
-    @Column(name = "bank_account_name")
+    @Column(name = "bank_account_name", columnDefinition = "text")
     private String bankAccountName;
 
-    @Column(name = "transaction_image")
+    @Column(name = "transaction_image", columnDefinition = "text")
     private String transactionImage;
 
-    @Column(name = "reject_reason")
+    @Column(name = "reject_reason", columnDefinition = "text")
     private String rejectReason;
 
     @Column(name = "staff_id")

@@ -31,10 +31,10 @@ public class ServiceType implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "text")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @Column(name = "status")

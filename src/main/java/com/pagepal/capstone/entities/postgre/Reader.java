@@ -33,25 +33,25 @@ public class Reader implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "nickname")
+    @Column(name = "nickname", columnDefinition = "text")
     private String nickname;
 
     @Column(name = "rating")
     private Integer rating;
 
-    @Column(name = "genre")
+    @Column(name = "genre", columnDefinition = "text")
     private String genre;
 
-    @Column(name = "language")
+    @Column(name = "language", columnDefinition = "text")
     private String language;
 
-    @Column(name = "country_accent")
+    @Column(name = "country_accent", columnDefinition = "text")
     private String countryAccent;
 
-    @Column(name = "audio_description_url")
+    @Column(name = "audio_description_url", columnDefinition = "text")
     private String audioDescriptionUrl;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @Column(name = "total_of_reviews")
@@ -60,10 +60,10 @@ public class Reader implements Serializable {
     @Column(name = "total_of_bookings")
     private Integer totalOfBookings;
 
-    @Column(name = "introduction_video_url")
+    @Column(name = "introduction_video_url", columnDefinition = "text")
     private String introductionVideoUrl;
 
-    @Column(name = "avatar_url")
+    @Column(name = "avatar_url", columnDefinition = "text")
     private String avatarUrl;
 
     @Temporal(TemporalType.TIMESTAMP)

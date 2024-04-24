@@ -26,9 +26,9 @@ public class Setting {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "key")
+    @Column(name = "key", columnDefinition = "text")
     private String key;
 
-    @Column(name = "value")
+    @Column(name = "value", columnDefinition = "text")
     private String value;
 }

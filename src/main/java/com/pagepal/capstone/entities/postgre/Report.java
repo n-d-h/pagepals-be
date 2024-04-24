@@ -40,6 +40,7 @@ public class Report {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "reason", columnDefinition = "text")
     private String reason;
 
     @Column(name = "type")
