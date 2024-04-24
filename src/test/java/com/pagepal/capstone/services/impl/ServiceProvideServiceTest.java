@@ -37,17 +37,17 @@ public class ServiceProvideServiceTest {
     Role role2 = new Role(UUID.randomUUID(), "CUSTOMER", Status.ACTIVE, null);
 
     //Account
-    Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1","fullName1","0123456789", LoginTypeEnum.NORMAL,
-            new Date(), new Date(), new Date(), accountState1, null,null,null, null, role1, null, null);
-    Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2","fullName1","0123456789", LoginTypeEnum.NORMAL,
-            new Date(), new Date(), new Date(), accountState2, null,null,null, null, role2, null, null);
+    Account account1 = new Account(UUID.randomUUID(), "username1", "password1", "email1", "fullName1", "0123456789", LoginTypeEnum.NORMAL,
+            new Date(), new Date(), new Date(), accountState1, null, null, null, null, role1, null, null);
+    Account account2 = new Account(UUID.randomUUID(), "username2", "password2", "email2", "fullName1", "0123456789", LoginTypeEnum.NORMAL,
+            new Date(), new Date(), new Date(), accountState2, null, null, null, null, role2, null, null);
 
 
     Reader reader = new Reader(id, "nickname", 3, "Fiction",
             "US", "US", "", "description", 0, 0,
-            "","avt", new Date(), new Date(), null, Status.ACTIVE, null, null,account1,
-            null,null,
-            null, null, null,null
+            "", "avt", new Date(), new Date(), null, Status.ACTIVE, null, null, account1,
+            null, null,
+            null, null, null, null
     );
 
     Category category = new Category(UUID.randomUUID(), "name", "description",
@@ -56,7 +56,7 @@ public class ServiceProvideServiceTest {
 
     Book book = new Book(UUID.randomUUID(), "name", "long title", "author", "publisher",
             "20L", 200, "overview", "imageUrl", "edition",
-            Status.ACTIVE,null, null, null, null
+            Status.ACTIVE, null, null, null, null
     );
 
     ServiceType serviceType = new ServiceType(UUID.randomUUID(), "name", "description",
@@ -65,7 +65,7 @@ public class ServiceProvideServiceTest {
 
     Service service = new Service(UUID.randomUUID(), 255,
             new Date(), "description", 10.0,
-            1, 1, 1,
+            1, 1, 1, false,
             Status.ACTIVE,
             reader, book, serviceType
     );

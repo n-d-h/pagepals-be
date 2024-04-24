@@ -52,6 +52,11 @@ public class ServiceController {
         return serviceService.deleteService(id);
     }
 
+    @MutationMapping(name = "cancelBookingAndDeleteService")
+    public String cancelBookingAndDeleteService(@Argument(name = "id") UUID id) {
+        return serviceService.cancelBookingAndDeleteService(id);
+    }
+
     @QueryMapping
     public List<ServiceTypeDto> getListServiceType() {
         return serviceService.getListServiceType();

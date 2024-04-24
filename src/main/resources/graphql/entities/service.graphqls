@@ -53,6 +53,7 @@ extend type Mutation {
         service: ServiceUpdate
     ): Service
     deleteService(id: ID!): String
+    cancelBookingAndDeleteService(id: ID!): String
     createService(service: ServiceInput): Service
 }
 
