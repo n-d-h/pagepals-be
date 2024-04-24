@@ -52,6 +52,9 @@ public class Service implements Serializable {
     @Column(name = "rating")
     private Integer rating;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;

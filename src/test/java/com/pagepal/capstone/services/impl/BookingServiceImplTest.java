@@ -699,7 +699,7 @@ class BookingServiceImplTest {
         Date createdAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
         Book book = new Book();
 
-        Service service = new Service(id1, 1, createdAt, "The characteristics of someone or something", 10.0d, -1, 1, 1,
+        Service service = new Service(id1, 1, createdAt, "The characteristics of someone or something", 10.0d, -1, 1, 1, false,
                 Status.ACTIVE, reader, book, new ServiceType());
         service.setRating(5);
 
