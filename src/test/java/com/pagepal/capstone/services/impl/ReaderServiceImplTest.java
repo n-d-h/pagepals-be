@@ -56,6 +56,8 @@ class ReaderServiceImplTest {
     private DateUtils dateUtils;
     @MockBean
     private BookRepository bookRepository;
+    @MockBean
+    private ServiceRepository serviceRepository;
 
 
     @Autowired

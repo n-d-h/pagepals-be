@@ -18,4 +18,7 @@ public interface ReportService {
 
     ReportReadDto refundBookingForReport(UUID id);
 
+    ReportReadDto rejectReport(UUID id);
+
+
 }

@@ -136,9 +136,15 @@ public class ZoomServiceImpl implements ZoomService {
         String accessToken = getZoomToken().getAccess_token();
 //        String url = String.format(zoomRecordingUrl, meetingId);
 
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("include_fields", "download_access_token");
+        requestBody.put("ttl", 604800);
+
         RecordingDto record = webClientMeeting.get()
                 .uri(UriBuilder -> UriBuilder
                         .path("/meetings/" + meetingId + "/recordings")
+                        .queryParam("include_fields", "download_access_token")
+                        .queryParam("ttl", 604800)
                         .build())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()

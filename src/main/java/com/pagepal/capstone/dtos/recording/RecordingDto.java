@@ -29,4 +29,5 @@ public class RecordingDto {
     public ArrayList<RecordFileDto> recording_files;
     public String password;
     public String recording_play_passcode;
+    public String download_access_token;
 }

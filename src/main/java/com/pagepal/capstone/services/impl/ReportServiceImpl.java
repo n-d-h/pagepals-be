@@ -258,4 +258,14 @@ public class ReportServiceImpl implements ReportService {
         report = reportRepository.save(report);
         return ReportMapper.INSTANCE.toDto(report);
     }
+
+    @Override
+    public ReportReadDto rejectReport(UUID id) {
+        Report report = reportRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Report not found"));
+        if (report.getState() != ReportStateEnum.PENDING) throw new RuntimeException("Report has been processed");
+        report.setState(ReportStateEnum.REJECTED);
+        report.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        report = reportRepository.save(report);
+        return ReportMapper.INSTANCE.toDto(report);
+    }
 }

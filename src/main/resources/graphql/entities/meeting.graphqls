@@ -42,6 +42,7 @@ type Recording {
     password: String
     recording_play_passcode: String
     recording_files: [RecordFile]
+    download_access_token: String
 }
 
 type AuthZoom{
