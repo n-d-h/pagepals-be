@@ -196,11 +196,20 @@ public class ReportServiceImpl implements ReportService {
         switch (type) {
             case BOOKING -> {
                 Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                Reader reader = booking.getWorkingTime().getReader();
                 reportGenericDto.setBooking(BookingMapper.INSTANCE.toDto(booking));
                 List<ReportReadDto> reports = reportRepository
-                        .findByReportedIdAndType(id, type)
+                        .findByTypeAndState(ReportTypeEnum.BOOKING, ReportStateEnum.PENDING)
                         .stream().map(ReportMapper.INSTANCE::toDto).toList();
-                reportGenericDto.setListReport(reports);
+                List<ReportReadDto> reportByReader = new ArrayList<>();
+                for (ReportReadDto report : reports) {
+                    Booking findBooking = bookingRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                    if (findBooking.getWorkingTime().getReader().getId().equals(reader.getId())) {
+                        reportByReader.add(report);
+                    }
+                }
+                reportGenericDto.setListReport(reportByReader);
             }
             case READER -> {
                 Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
