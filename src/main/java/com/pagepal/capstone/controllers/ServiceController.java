@@ -47,14 +47,21 @@ public class ServiceController {
         return serviceService.updateService(id, writeServiceDto);
     }
 
+    @MutationMapping(name = "keepBookingAndUpdateService")
+    public ServiceDto keepBookingAndUpdateService(
+            @Argument(name = "id") UUID id,
+            @Argument(name = "service") ServiceUpdate writeServiceDto) {
+        return serviceService.keepBookingAndUpdateService(id, writeServiceDto);
+    }
+
     @MutationMapping(name = "deleteService")
     public String deleteService(@Argument(name = "id") UUID id) {
         return serviceService.deleteService(id);
     }
 
-    @MutationMapping(name = "cancelBookingAndDeleteService")
+    @MutationMapping(name = "keepBookingAndDeleteService")
     public String cancelBookingAndDeleteService(@Argument(name = "id") UUID id) {
-        return serviceService.cancelBookingAndDeleteService(id);
+        return serviceService.keepBookingAndDeleteService(id);
     }
 
     @QueryMapping

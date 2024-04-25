@@ -52,8 +52,12 @@ extend type Mutation {
         id: ID!
         service: ServiceUpdate
     ): Service
+    keepBookingAndUpdateService(
+        id: ID!
+        service: ServiceUpdate
+    ): Service
     deleteService(id: ID!): String
-    cancelBookingAndDeleteService(id: ID!): String
+    keepBookingAndDeleteService(id: ID!): String
     createService(service: ServiceInput): Service
 }
 

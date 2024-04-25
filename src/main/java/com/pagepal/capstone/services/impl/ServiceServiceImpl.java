@@ -63,26 +63,67 @@ public class ServiceServiceImpl implements ServiceService {
         var service = serviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
 
-        // If service is in pending booking, we create a new service with the same information
-        if (Boolean.TRUE.equals(checkServiceIsInBooking(id))) {
 
-            // delete old service
-            service.setId(id);
-            service.setIsDeleted(true);
-            serviceRepository.save(service);
-
-            // create new service
-            service.setId(null);
-            service.setIsDeleted(false);
-            service.setPrice(writeServiceDto.getPrice());
-            service.setDescription(writeServiceDto.getDescription());
-        } else {
+        // If service is not in booking, we update service
+        if (Boolean.FALSE.equals(checkServiceIsInBooking(id))) {
             service.setId(id);
             service.setPrice(writeServiceDto.getPrice());
             service.setDescription(writeServiceDto.getDescription());
         }
+        // If service is in pending booking, we throw exception
+        else if (Boolean.TRUE.equals(checkServiceIsInPendingBooking(id))) {
+            throw new IllegalStateException("Service is in pending booking");
+        }
+        // if service is in completed or canceled booking, we delete old service and create new service
+        // with the same information
+        else if (Boolean.TRUE.equals(checkServiceIsInCompletedOrCanceledBooking(id))) {
+            // create new service
+            var clone = createCloneService(writeServiceDto, service);
+
+            // delete old service
+            service.setIsDeleted(true);
+            serviceRepository.save(service);
+
+            return clone;
+        }
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
     }
+
+    @Override
+    public ServiceDto keepBookingAndUpdateService(UUID id, ServiceUpdate writeServiceDto) {
+        var existingService = serviceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Service not found"));
+
+        if (Boolean.TRUE.equals(checkServiceIsInPendingBooking(id))) {
+            // Create a new clone of the existing service
+            var clone = createCloneService(writeServiceDto, existingService);
+
+            // Delete the existing service
+            existingService.setIsDeleted(true);
+            serviceRepository.save(existingService);
+            return clone;
+        } else if (Boolean.TRUE.equals(checkServiceIsInCompletedOrCanceledBooking(id))) {
+            throw new IllegalStateException("Service is not in pending booking");
+        } else throw new IllegalStateException("Service is not in booking");
+    }
+
+    private ServiceDto createCloneService(ServiceUpdate writeServiceDto, com.pagepal.capstone.entities.postgre.Service existingService) {
+        var service = new com.pagepal.capstone.entities.postgre.Service();
+        service.setPrice(writeServiceDto.getPrice());
+        service.setDescription(writeServiceDto.getDescription());
+        service.setDuration(existingService.getDuration());
+        service.setServiceType(existingService.getServiceType());
+        service.setReader(existingService.getReader());
+        service.setBook(existingService.getBook());
+        service.setCreatedAt(existingService.getCreatedAt());
+        service.setRating(0);
+        service.setTotalOfBooking(0);
+        service.setTotalOfReview(0);
+        service.setIsDeleted(false);
+        service.setStatus(Status.ACTIVE);
+        return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
+    }
+
 
     @Secured("READER")
     @Override
@@ -95,7 +136,7 @@ public class ServiceServiceImpl implements ServiceService {
             service.setId(id);
             service.setIsDeleted(true);
             serviceRepository.save(service);
-        } else {
+        } else if (Boolean.FALSE.equals(checkServiceIsInBooking(id))) {
             service.setId(id);
             service.setIsDeleted(true);
             service.setStatus(Status.INACTIVE);
@@ -105,18 +146,16 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public String cancelBookingAndDeleteService(UUID id) {
+    public String keepBookingAndDeleteService(UUID id) {
         var service = serviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
         if (Boolean.TRUE.equals(checkServiceIsInPendingBooking(id))) {
-            var pendingBookings = bookingRepository.findPendingBookingByService(id);
-            for (var booking : pendingBookings) {
-                bookingService.cancelBooking(booking.getId(), "Service is deleted");
-            }
             service.setId(id);
             service.setIsDeleted(true);
             serviceRepository.save(service);
-        } else throw new IllegalStateException("Service is not in pending booking");
+        } else if (Boolean.TRUE.equals(checkServiceIsInCompletedOrCanceledBooking(id))) {
+            throw new IllegalStateException("Service is not in pending booking");
+        } else throw new IllegalStateException("Service is not in booking");
         return "Service deleted";
     }
 
