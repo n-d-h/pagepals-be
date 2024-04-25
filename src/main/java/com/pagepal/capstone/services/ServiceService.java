@@ -13,9 +13,11 @@ public interface ServiceService {
 
     ServiceDto updateService(UUID id, ServiceUpdate writeServiceDto);
 
+    ServiceDto keepBookingAndUpdateService(UUID id, ServiceUpdate writeServiceDto);
+
     String deleteService(UUID id);
 
-    String cancelBookingAndDeleteService(UUID id);
+    String keepBookingAndDeleteService(UUID id);
 
     List<ServiceTypeDto> getListServiceType();
 

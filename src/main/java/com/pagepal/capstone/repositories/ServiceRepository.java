@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface ServiceRepository extends JpaRepository<Service, UUID> {
     Page<Service> findAllByReader(Reader reader, Pageable pageable);
 
-    @Query("SELECT s FROM Service s WHERE s.reader = ?1 AND LOWER(s.book.title) LIKE %?2% AND s.isDeleted = false")
+    @Query("SELECT s FROM Service s WHERE s.reader = ?1 AND LOWER(s.book.title) LIKE %?2% AND (s.isDeleted = false OR s.isDeleted IS NULL)")
     Page<Service> findAllByReaderAndBookTitleContainsIgnoreCase(Reader reader, String title, Pageable pageable);
 
     @Query("SELECT s FROM Service s WHERE s.book = ?1 AND s.book.title LIKE %?2% AND (s.isDeleted = false OR s.isDeleted IS NULL)")
