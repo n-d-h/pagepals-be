@@ -34,6 +34,26 @@ public class SeminarController {
         return seminarService.getSeminarListByReaderId(readerId, page, pageSize, sort);
     }
 
+    @QueryMapping(name = "getAllSeminarsByCustomerId")
+    public ListSeminarDto getAllSeminarsByCustomerId(
+            @Argument(name = "customerId") UUID customerId,
+            @Argument(name = "page") Integer page,
+            @Argument(name = "pageSize") Integer pageSize,
+            @Argument(name = "sort") String sort
+    ) {
+        return seminarService.getSeminarListByCustomerId(customerId, page, pageSize, sort);
+    }
+
+    @QueryMapping(name = "getAllSeminarsNotJoinByCustomerId")
+    public ListSeminarDto getAllSeminarsNotJoinByCustomerId(
+            @Argument(name = "customerId") UUID customerId,
+            @Argument(name = "page") Integer page,
+            @Argument(name = "pageSize") Integer pageSize,
+            @Argument(name = "sort") String sort
+    ) {
+        return seminarService.getSeminarListNotJoinByCustomerId(customerId, page, pageSize, sort);
+    }
+
     @QueryMapping(name = "getSeminarById")
     public SeminarDto getSeminarById(@Argument(name = "id") UUID id) {
         return seminarService.getSeminar(id);

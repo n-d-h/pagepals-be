@@ -76,8 +76,9 @@ public class Seminar {
     @JsonManagedReference
     private Book book;
 
-    @OneToOne(mappedBy = "seminar", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @OneToOne
+    @JoinColumn(name = "meeting_id")
+    @JsonManagedReference
     private Meeting meeting;
 
     @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY)

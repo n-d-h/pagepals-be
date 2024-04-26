@@ -1,6 +1,7 @@
 package com.pagepal.capstone.dtos.seminar;
 
 import com.pagepal.capstone.entities.postgre.Book;
+import com.pagepal.capstone.entities.postgre.Meeting;
 import com.pagepal.capstone.entities.postgre.Reader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,5 @@ public class SeminarDto {
     private String updatedAt;
     private Reader reader;
     private Book book;
-
+    private Meeting meeting;
 }

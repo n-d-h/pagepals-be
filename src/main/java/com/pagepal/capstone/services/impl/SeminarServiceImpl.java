@@ -110,7 +110,6 @@ public class SeminarServiceImpl implements SeminarService {
                 throw new RuntimeException("Seminar not found");
             }
 
-
             List<Booking> bookings = seminar.getBookings();
             if (bookings.size() > 0) {
                 throw new ValidationException("Seminar is booked, Cannot update");
@@ -167,6 +166,20 @@ public class SeminarServiceImpl implements SeminarService {
     public ListSeminarDto getSeminarListByReaderId(UUID readerId, Integer page, Integer pageSize, String sort) {
         Pageable pageable = createPageable(page, pageSize, sort);
         Page<Seminar> data = seminarRepository.findAllByReaderId(readerId, pageable);
+        return this.mapSeminarsToDto(data);
+    }
+
+    @Override
+    public ListSeminarDto getSeminarListByCustomerId(UUID customerId, Integer page, Integer pageSize, String sort) {
+        Pageable pageable = createPageable(page, pageSize, sort);
+        Page<Seminar> data = seminarRepository.findAllByCustomerId(customerId, pageable);
+        return this.mapSeminarsToDto(data);
+    }
+
+    @Override
+    public ListSeminarDto getSeminarListNotJoinByCustomerId(UUID customerId, Integer page, Integer pageSize, String sort) {
+        Pageable pageable = createPageable(page, pageSize, sort);
+        Page<Seminar> data = seminarRepository.findAllByCustomerIdNotJoin(customerId, pageable);
         return this.mapSeminarsToDto(data);
     }
 
@@ -358,6 +371,7 @@ public class SeminarServiceImpl implements SeminarService {
                 .updatedAt(dateFormat.format(seminar.getUpdatedAt()))
                 .reader(seminar.getReader())
                 .book(seminar.getBook())
+                .meeting(seminar.getMeeting())
                 .build();
     }
 }

@@ -13,6 +13,7 @@ type Seminar {
     updatedAt: String
     reader: Reader
     book: Book
+    meeting: Meeting
 }
 
 type SeminarBooking {
@@ -53,6 +54,8 @@ extend type Query {
     getSeminarById(id: ID!): Seminar
     getAllSeminars(sort: String, page: Int, pageSize: Int): ListSeminar
     getAllSeminarsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
+    getAllSeminarsByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
+    getAllSeminarsNotJoinByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
 }
 
 extend type Mutation {
