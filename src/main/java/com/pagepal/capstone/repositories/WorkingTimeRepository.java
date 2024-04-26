@@ -13,4 +13,6 @@ import java.util.UUID;
 public interface WorkingTimeRepository extends JpaRepository<WorkingTime, UUID> {
 
     List<WorkingTime> findByReaderAndDateOrderByStartTimeAsc(Reader reader, Date date);
+
+    List<WorkingTime> findByReaderAndStartTimeAfterOrderByStartTimeAsc(Reader reader, Date startDate);
 }

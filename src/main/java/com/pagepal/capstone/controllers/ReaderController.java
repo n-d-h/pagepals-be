@@ -63,9 +63,8 @@ public class ReaderController {
     }
 
     @QueryMapping
-    public WorkingTimeListRead getReaderWorkingTimes(@Argument(name = "readerId") UUID id,
-                                                     @Argument(name = "date") String date) {
-        return readerService.getReaderWorkingTimes(id, date);
+    public WorkingTimeListRead getReaderWorkingTimes(@Argument(name = "readerId") UUID id) {
+        return readerService.getReaderWorkingTimes(id);
     }
 
     @QueryMapping

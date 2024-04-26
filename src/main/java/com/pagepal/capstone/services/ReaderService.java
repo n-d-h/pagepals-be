@@ -26,7 +26,7 @@ public interface ReaderService {
 
     WorkingTimeListRead getWorkingTimesAvailableByReader(UUID id);
 
-    WorkingTimeListRead getReaderWorkingTimes(UUID id, String date);
+    WorkingTimeListRead getReaderWorkingTimes(UUID id);
 
     ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto readerBookFilterDto);
 

@@ -253,13 +253,13 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Secured("READER")
     @Override
-    public WorkingTimeListRead getReaderWorkingTimes(UUID id, String date) {
+    public WorkingTimeListRead getReaderWorkingTimes(UUID id) {
+        Date now = dateUtils.getCurrentVietnamDate();
         ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
-        LocalDate selectedDate = LocalDate.parse(date);
 
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        List<Seminar> seminars = seminarRepository.findByReaderAndStartDate(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
-        List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndDateOrderByStartTimeAsc(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+        List<Seminar> seminars = seminarRepository.findByReaderAndStartTimeAfterOrderByStartTimeAsc(reader, now);
+        List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndStartTimeAfterOrderByStartTimeAsc(reader, now);
 
         List<WorkingTimeDto> result = new ArrayList<>();
 
@@ -270,13 +270,27 @@ public class ReaderServiceImpl implements ReaderService {
             }
             if (seminars != null && !seminars.isEmpty()) {
                 for (Seminar seminar : seminars) {
-                    LocalDateTime endDate = seminar.getStartTime().toInstant().atZone(vietnamTimeZone).toLocalDateTime().plusMinutes(seminar.getDuration());
+                    // calculate start  of the date from seminar start time
+                    LocalDateTime startLocalDate = seminar
+                            .getStartTime()
+                            .toInstant()
+                            .atZone(vietnamTimeZone)
+                            .toLocalDate()
+                            .atStartOfDay();
+
+
+                    LocalDateTime endLocalDate = seminar
+                            .getStartTime()
+                            .toInstant()
+                            .atZone(vietnamTimeZone)
+                            .toLocalDateTime()
+                            .plusMinutes(seminar.getDuration());
 
                     WorkingTimeDto workingTimeDto = new WorkingTimeDto();
-                    workingTimeDto.setId(seminar.getId());
-                    workingTimeDto.setDate(Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+                    workingTimeDto.setId(null);
+                    workingTimeDto.setDate(Date.from(startLocalDate.atZone(vietnamTimeZone).toInstant()));
                     workingTimeDto.setStartTime(seminar.getStartTime());
-                    workingTimeDto.setEndTime(Date.from(endDate.atZone(vietnamTimeZone).toInstant()));
+                    workingTimeDto.setEndTime(Date.from(endLocalDate.atZone(vietnamTimeZone).toInstant()));
                     workingTimeDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
 
                     result.add(workingTimeDto);
@@ -286,6 +300,42 @@ public class ReaderServiceImpl implements ReaderService {
         }
         return list;
     }
+
+//    @Secured("READER")
+//    @Override
+//    public WorkingTimeListRead getReaderWorkingTimes(UUID id, String date) {
+//        ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
+//        LocalDate selectedDate = LocalDate.parse(date);
+//
+//        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+//        List<Seminar> seminars = seminarRepository.findByReaderAndStartDate(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+//        List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndDateOrderByStartTimeAsc(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+//
+//        List<WorkingTimeDto> result = new ArrayList<>();
+//
+//        WorkingTimeListRead list = new WorkingTimeListRead();
+//        if (workingTimes != null) {
+//            for (WorkingTime workingTime : workingTimes) {
+//                result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));
+//            }
+//            if (seminars != null && !seminars.isEmpty()) {
+//                for (Seminar seminar : seminars) {
+//                    LocalDateTime endDate = seminar.getStartTime().toInstant().atZone(vietnamTimeZone).toLocalDateTime().plusMinutes(seminar.getDuration());
+//
+//                    WorkingTimeDto workingTimeDto = new WorkingTimeDto();
+//                    workingTimeDto.setId(null);
+//                    workingTimeDto.setDate(Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+//                    workingTimeDto.setStartTime(seminar.getStartTime());
+//                    workingTimeDto.setEndTime(Date.from(endDate.atZone(vietnamTimeZone).toInstant()));
+//                    workingTimeDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
+//
+//                    result.add(workingTimeDto);
+//                }
+//            }
+//            list = divideWorkingTimes(result);
+//        }
+//        return list;
+//    }
 
     @Override
     public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
@@ -355,8 +405,8 @@ public class ReaderServiceImpl implements ReaderService {
             reader = new Reader();
         }
         List<Request> requests = reader.getRequests();
-        for(var request : requests){
-            if(request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)){
+        for (var request : requests) {
+            if (request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)) {
                 throw new RuntimeException("You have send request already! Wait for response!");
             }
         }
@@ -603,16 +653,22 @@ public class ReaderServiceImpl implements ReaderService {
             Date date = entry.getKey();
             List<WorkingTimeDto> workingTimesForDate = entry.getValue();
 
+            // format date to yyyy-MM-dd HH:mm:ss
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String strDate = dateFormat.format(date);
+
             // Create WorkingDate object
             WorkingDate workingDate = new WorkingDate();
-            workingDate.setDate(date);
+            workingDate.setDate(strDate + " 00:00:00");
             workingDate.setTimeSlots(new ArrayList<>());
 
             // Iterate over the working times for the date and create TimeSlot objects
             for (WorkingTimeDto workingTimeDto : workingTimesForDate) {
                 TimeSlot timeSlot = new TimeSlot();
                 timeSlot.setId(workingTimeDto.getId());
-                timeSlot.setStartTime(getStartTime(workingTimeDto.getStartTime()));
+                timeSlot.setStartTime(getTime(workingTimeDto.getStartTime()));
+                timeSlot.setEndTime(getTime(workingTimeDto.getEndTime()));
+                timeSlot.setIsSeminar(workingTimeDto.getId() == null);
                 workingDate.getTimeSlots().add(timeSlot);
             }
 
@@ -629,7 +685,7 @@ public class ReaderServiceImpl implements ReaderService {
         return workingTimeListRead;
     }
 
-    private static String getStartTime(Date date) {
+    private static String getTime(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 

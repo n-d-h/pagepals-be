@@ -22,4 +22,6 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
             " AND EXTRACT(YEAR FROM s.startTime) = EXTRACT(YEAR FROM CAST(:startDate AS timestamp))")
     List<Seminar> findByReaderAndStartDate(Reader reader, Date startDate);
 
+    List<Seminar> findByReaderAndStartTimeAfterOrderByStartTimeAsc(Reader reader, Date startDate);
+
 }
