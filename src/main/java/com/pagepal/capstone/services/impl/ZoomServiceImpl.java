@@ -2,6 +2,7 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.dtos.zoom.AuthZoomResponseDto;
+import com.pagepal.capstone.dtos.zoom.ZoomPlan;
 import com.pagepal.capstone.entities.postgre.Meeting;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.MeetingEnum;
@@ -134,11 +135,6 @@ public class ZoomServiceImpl implements ZoomService {
 
     public RecordingDto getRecording(String meetingId) {
         String accessToken = getZoomToken().getAccess_token();
-//        String url = String.format(zoomRecordingUrl, meetingId);
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("include_fields", "download_access_token");
-        requestBody.put("ttl", 604800);
 
         RecordingDto record = webClientMeeting.get()
                 .uri(UriBuilder -> UriBuilder
@@ -154,6 +150,21 @@ public class ZoomServiceImpl implements ZoomService {
             throw new RuntimeException("Failed to get recording");
         }
         return record;
+    }
+
+    @Override
+    public ZoomPlan getZoomPlan() {
+        String accessToken = getZoomToken().getAccess_token();
+
+        return webClientMeeting.get()
+                .uri(UriBuilder -> UriBuilder
+                        .path("/accounts/me/plans/usage")
+                        .build())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(ZoomPlan.class)
+                .block();
+
     }
 
     public static class Recurrence {

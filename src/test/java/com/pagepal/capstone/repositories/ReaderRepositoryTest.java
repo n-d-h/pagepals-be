@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDate;
@@ -68,14 +69,14 @@ class ReaderRepositoryTest {
 
 
     /**
-     * Method under test: {@link ReaderRepository#findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(String, String, String, String, Integer, org.springframework.data.domain.Pageable)}
+     * Method under test: {@link ReaderRepository#findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRatingAndAccountState (String, String, String, String, Integer, org.springframework.data.domain.Pageable)}
      */
     @Test
     void canFindByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating() {
         // Arrange
         readerRepository.saveAll(Arrays.asList(reader1, reader2, reader3));
         // Act
-        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating("name", "genre", "", "", 5, PageRequest.of(0, 10));
+        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRatingAndAccountState("name", "genre", "", "", 5, "READER_ACTIVE", PageRequest.of(0, 10));
         // Assert
         assertEquals(2, result.getTotalElements());
         assertEquals(1, result.getTotalPages());
@@ -87,7 +88,7 @@ class ReaderRepositoryTest {
         // Arrange
         readerRepository.saveAll(Arrays.asList(reader1, reader2, reader3));
         // Act
-        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating("nothing", "genre", "language", "accent", 4, PageRequest.of(0, 10));
+        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRatingAndAccountState("nothing", "genre", "language", "accent", 4, "READER_ACTIVE",PageRequest.of(0, 10));
         // Assert
         assertEquals(0, result.getTotalElements());
         assertEquals(0, result.getTotalPages());
@@ -95,14 +96,14 @@ class ReaderRepositoryTest {
     }
 
     /**
-     * Method under test: {@link ReaderRepository#findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase(String, String, String, String, org.springframework.data.domain.Pageable)}
+     * Method under test: {@link ReaderRepository#findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndAccountState(String, String, String, String, String, Pageable)}
      */
     @Test
     void canFindByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase() {
         // Arrange
         readerRepository.saveAll(Arrays.asList(reader1, reader2, reader3));
         // Act
-        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase("name", "genre", "", "", PageRequest.of(0, 10));
+        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndAccountState("name", "genre", "", "", "READER_ACTIVE" ,PageRequest.of(0, 10));
         // Assert
         assertEquals(3, result.getTotalElements());
         assertEquals(1, result.getTotalPages());
@@ -114,7 +115,7 @@ class ReaderRepositoryTest {
         // Arrange
         readerRepository.saveAll(Arrays.asList(reader1, reader2, reader3));
         // Act
-        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase("nothing", "genre", "language", "accent", PageRequest.of(0, 10));
+        Page<Reader> result = readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndAccountState("nothing", "genre", "language", "accent", "READER_ACTIVE",PageRequest.of(0, 10));
         // Assert
         assertEquals(0, result.getTotalElements());
         assertEquals(0, result.getTotalPages());

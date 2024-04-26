@@ -1,26 +1,27 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.analytic.*;
-import com.pagepal.capstone.entities.postgre.Account;
-import com.pagepal.capstone.entities.postgre.Booking;
-import com.pagepal.capstone.entities.postgre.Setting;
-import com.pagepal.capstone.entities.postgre.Transaction;
+import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.zoom.ZoomPlan;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
+import com.pagepal.capstone.mappers.ReaderMapper;
+import com.pagepal.capstone.mappers.ServiceMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.AnalyticService;
+import com.pagepal.capstone.services.ZoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,9 @@ public class AnalyticServiceImpl implements AnalyticService {
     private final String FORMAT_DATE = "MM/dd/yyyy";
     private final TransactionRepository transactionRepository;
     private final SettingRepository settingRepository;
+
+    private final ZoomService zoomService;
+    private final ReaderRepository readerRepository;
 
     @Secured("ADMIN")
     @Override
@@ -90,12 +94,27 @@ public class AnalyticServiceImpl implements AnalyticService {
         long totalService = serviceRepository.countByStatus(Status.ACTIVE);
         long totalBooking = bookingRepository.count();
 
+        ZoomPlan zoomPlan = zoomService.getZoomPlan();
+
+        FreeStorage freeStorage = new FreeStorage();
+        freeStorage.setTotalStorage(zoomPlan.getPlan_recording().getFree_storage());
+        freeStorage.setUsedStorage(zoomPlan.getPlan_recording().getFree_storage_usage());
+
+        CloudStorage cloudStorage = new CloudStorage();
+        cloudStorage.setTotalStorage(zoomPlan.getPlan_recording().getPlan_storage());
+        cloudStorage.setUsedStorage(zoomPlan.getPlan_recording().getPlan_storage_usage());
+
         analyticAdmin.setTotalCustomers(totalCustomer);
         analyticAdmin.setTotalReaders(totalReader);
         analyticAdmin.setTotalService(totalService);
         analyticAdmin.setTotalBookings(totalBooking);
+        analyticAdmin.setFreeStorage(freeStorage);
+        analyticAdmin.setCloudStorage(cloudStorage);
+        analyticAdmin.setTopServices(getTopServices(parsedStartDate, parsedEndDate));
+        analyticAdmin.setTopReaders(getTopReaders(parsedStartDate, parsedEndDate));
         analyticAdmin.setBookingStatics(getBookingStatics(parsedStartDate, parsedEndDate));
         analyticAdmin.setIncomeByToken(getIncomeByToken(parsedStartDate, parsedEndDate));
+        analyticAdmin.setCirculatingToken(getCirculatingToken(parsedStartDate, parsedEndDate));
         analyticAdmin.setIncomeByRevenueShare(getIncomeByRevenueShare(parsedStartDate, parsedEndDate));
         return analyticAdmin;
     }
@@ -211,6 +230,70 @@ public class AnalyticServiceImpl implements AnalyticService {
         return data;
     }
 
+    private CirculatingToken getCirculatingToken(LocalDate startDate, LocalDate endDate) {
+        List<String> days = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
+        List<LocalDate> dateRange = startDate.datesUntil(endDate.plusDays(1), Period.ofMonths(1)).toList();
+
+        for (var date : dateRange) {
+            days.add(date.format(formatter));
+        }
+
+        List<Transaction> transactions = transactionRepository.findByTransactionTypeAndStatus(
+                TransactionTypeEnum.BOOKING_PAYMENT,
+                TransactionStatusEnum.SUCCESS
+        );
+
+        List<Transaction> transactionRefunds = transactionRepository.findByTransactionTypeAndStatus(
+                TransactionTypeEnum.BOOKING_REFUND,
+                TransactionStatusEnum.SUCCESS
+        );
+
+        int totalTokenSale = (int) Math.round(transactions.stream()
+                .mapToDouble(Transaction::getAmount)
+                .sum());
+
+        int totalTokenRefund = (int) Math.round(transactionRefunds.stream()
+                .mapToDouble(Transaction::getAmount)
+                .sum());
+
+        int totalToken = totalTokenSale - totalTokenRefund;
+
+        List<CirculatingTokenData> data = getCirculatingTokenData(days, transactions);
+
+        List<CirculatingTokenData> dataRefund = getCirculatingTokenData(days, transactionRefunds);
+
+        for (int i = 0; i < data.size(); i++) {
+            data.get(i).setToken(data.get(i).getToken() - dataRefund.get(i).getToken());
+        }
+
+        int lastIndex = data.size() - 1;
+        float percentage = 0;
+        if (lastIndex >= 1 && data.get(lastIndex - 1).getToken() != 0) {
+            percentage = ((float) data.get(lastIndex).getToken() / (float) data.get(lastIndex - 1).getToken()) * 100;
+        }
+        return new CirculatingToken(totalToken, percentage, data);
+    }
+
+    private List<CirculatingTokenData> getCirculatingTokenData(List<String> months, List<Transaction> transactions) {
+        List<CirculatingTokenData> data = new ArrayList<>();
+        for (String month : months) {
+            double totalTokenSale = 0;
+            float totalIncome = 0;
+            for (Transaction transaction : transactions) {
+                LocalDate transactionDate = transaction.getCreateAt().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate monthDate = LocalDate.parse(month, DateTimeFormatter.ofPattern(FORMAT_DATE));
+                if (transactionDate.isBefore(monthDate.plusMonths(1))
+                        && transactionDate.isAfter(monthDate.minusDays(1))) {
+                    totalTokenSale += transaction.getAmount();
+                }
+            }
+            data.add(new CirculatingTokenData((int) totalTokenSale, month));
+        }
+        return data;
+    }
+
     private IncomeByRevenueShare getIncomeByRevenueShare(LocalDate startDate, LocalDate endDate) {
         List<String> days = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_DATE);
@@ -254,4 +337,71 @@ public class AnalyticServiceImpl implements AnalyticService {
 
         return new IncomeByRevenueShare(totalIncome, percentage, data);
     }
+
+    private List<TopReader> getTopReaders(LocalDate startDate, LocalDate endDate) {
+
+        List<Transaction> transactions = transactionRepository.findByCreateAtBetweenAndTransactionTypeAndStatus(
+                Date.valueOf(startDate),
+                Date.valueOf(endDate),
+                TransactionTypeEnum.BOOKING_DONE_RECEIVE,
+                TransactionStatusEnum.SUCCESS
+        );
+
+        Map<Wallet, List<Transaction>> walletTransactionsMap = new HashMap<>();
+        for (Transaction transaction : transactions) {
+            Wallet wallet = transaction.getWallet();
+            List<Transaction> walletTransactions = walletTransactionsMap.getOrDefault(wallet, new ArrayList<>());
+            walletTransactions.add(transaction);
+            walletTransactionsMap.put(wallet, walletTransactions);
+        }
+
+        List<TopReader> topReaders = new ArrayList<>();
+        for (Map.Entry<Wallet, List<Transaction>> entry : walletTransactionsMap.entrySet()) {
+            Wallet wallet = entry.getKey();
+            List<Transaction> walletTransactions = entry.getValue();
+            float totalIncome = (float) walletTransactions.stream()
+                    .mapToDouble(Transaction::getAmount)
+                    .sum();
+            Reader reader = wallet.getAccount().getReader();
+            topReaders.add(new TopReader(ReaderMapper.INSTANCE.toDto(reader), totalIncome));
+        }
+
+        topReaders.sort(Comparator.comparingDouble(TopReader::getTotalIncome).reversed());
+
+        return topReaders.stream()
+                .limit(5)
+                .toList();
+    }
+
+    private List<TopService> getTopServices(LocalDate startDate, LocalDate endDate) {
+        List<Booking> bookings = bookingRepository
+                .findByCreateAtBetweenAndStateAndServiceNotNull(
+                        Date.valueOf(startDate),
+                        Date.valueOf(endDate),
+                        "COMPLETE"
+                );
+
+        Map<com.pagepal.capstone.entities.postgre.Service, List<Booking>> serviceBookingMap = new HashMap<>();
+        for (Booking booking : bookings) {
+            var service = booking.getService();
+            List<Booking> serviceBookings = serviceBookingMap.getOrDefault(service, new ArrayList<>());
+            serviceBookings.add(booking);
+            serviceBookingMap.put(service, serviceBookings);
+        }
+
+        List<TopService> topServices = new ArrayList<>();
+        for (Map.Entry<com.pagepal.capstone.entities.postgre.Service, List<Booking>> entry : serviceBookingMap.entrySet()) {
+            com.pagepal.capstone.entities.postgre.Service service = entry.getKey();
+            List<Booking> serviceBookings = entry.getValue();
+            int totalBooking = serviceBookings.size();
+            topServices.add(new TopService(ServiceMapper.INSTANCE.toDto(service), totalBooking));
+        }
+
+        topServices.sort(Comparator.comparingInt(TopService::getTotalBooking).reversed());
+
+        return topServices.stream()
+                .limit(5)
+                .toList();
+    }
+
 }

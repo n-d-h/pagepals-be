@@ -59,6 +59,12 @@ class ReaderServiceImplTest {
     @MockBean
     private ServiceRepository serviceRepository;
 
+    @MockBean
+    private SeminarRepository seminarRepository;
+
+    @MockBean
+    private WorkingTimeRepository workingTimeRepository;
+
 
     @Autowired
     private ReaderServiceImpl readerServiceImpl;
@@ -194,24 +200,26 @@ class ReaderServiceImplTest {
         List<Reader> readerList = Arrays.asList(reader1, reader2);
         Page<Reader> page = new PageImpl<>(readerList, PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize()), readerList.size());
 
-        when(readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+        when(readerRepository.findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRatingAndAccountState(
                 readerQueryDto.getNickname(),
                 readerQueryDto.getGenre(),
                 readerQueryDto.getLanguage(),
                 readerQueryDto.getCountryAccent(),
                 readerQueryDto.getRating(),
+                "READER_ACTIVE",
                 PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending())
         )).thenReturn(page);
 
         ListReaderDto readers = readerServiceImpl.getListReaders(readerQueryDto);
 
         assertEquals(readers.getList().get(0).getNickname(), readerQueryDto.getNickname());
-        verify(readerRepository).findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+        verify(readerRepository).findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRatingAndAccountState(
                 readerQueryDto.getNickname(),
                 readerQueryDto.getGenre(),
                 readerQueryDto.getLanguage(),
                 readerQueryDto.getCountryAccent(),
                 readerQueryDto.getRating(),
+                "READER_ACTIVE",
                 PageRequest.of(readerQueryDto.getPage(), readerQueryDto.getPageSize(), Sort.by("createdAt").descending())
         );
     }

@@ -97,21 +97,23 @@ public class ReaderServiceImpl implements ReaderService {
         Page<Reader> page;
         if (readerQueryDto.getRating() != null)
             page = readerRepository
-                    .findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
+                    .findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRatingAndAccountState(
                             readerQueryDto.getNickname(),
                             readerQueryDto.getGenre(),
                             readerQueryDto.getLanguage(),
                             readerQueryDto.getCountryAccent(),
                             readerQueryDto.getRating(),
+                            readerActive,
                             pageable
                     );
 
         else page = readerRepository
-                .findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase(
+                .findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndAccountState(
                         readerQueryDto.getNickname(),
                         readerQueryDto.getGenre(),
                         readerQueryDto.getLanguage(),
                         readerQueryDto.getCountryAccent(),
+                        readerActive,
                         pageable
                 );
 
@@ -122,11 +124,6 @@ public class ReaderServiceImpl implements ReaderService {
             listReaderDto.setPagination(null);
             return listReaderDto;
         } else {
-            page = new PageImpl<>(page.stream()
-                    .filter(reader -> reader.getAccount() != null
-                            && reader.getAccount().getAccountState().getName().equals(readerActive)
-                    )
-                    .collect(Collectors.toList()), pageable, page.getTotalElements());
             PagingDto pagingDto = new PagingDto();
             pagingDto.setTotalOfPages(page.getTotalPages());
             pagingDto.setTotalOfElements(page.getTotalElements());

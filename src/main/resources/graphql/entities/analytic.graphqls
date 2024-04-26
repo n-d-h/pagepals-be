@@ -6,6 +6,11 @@ type AnalyticAdmin{
     bookingStatics: BookingStatics
     incomeByToken: IncomeByToken
     incomeByRevenueShare: IncomeByRevenueShare
+    circulatingToken: CirculatingToken
+    freeStorage: FreeStorage
+    cloudStorage: CloudStorage
+    topReaders: [TopReader]
+    topServices: [TopService]
 }
 
 type BookingStatics{
@@ -32,6 +37,17 @@ type IncomeByTokenData{
     date: String
 }
 
+type CirculatingToken{
+    totalCirculating: Int
+    percentageIncrease: Float
+    seriesData: [CirculatingTokenData]
+}
+
+type CirculatingTokenData{
+    token: Int
+    date: String
+}
+
 type IncomeByRevenueShare{
     totalIncome: Float
     percentageIncrease: Float
@@ -41,6 +57,26 @@ type IncomeByRevenueShare{
 type IncomeByRevenueShareData{
     income: Float
     date: String
+}
+
+type FreeStorage{
+    totalStorage: String
+    usedStorage: String
+}
+
+type CloudStorage{
+    totalStorage: String
+    usedStorage: String
+}
+
+type TopReader{
+    reader: Reader
+    totalIncome: Float
+}
+
+type TopService{
+    service: Service
+    totalBooking: Int
 }
 
 extend type Query{

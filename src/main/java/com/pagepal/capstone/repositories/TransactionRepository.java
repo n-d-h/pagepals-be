@@ -121,4 +121,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
                                                                            TransactionTypeEnum transactionType,
                                                                            Pageable pageable);
 
+    List<Transaction> findByCreateAtBetweenAndTransactionTypeAndStatus(Date startDate, Date endDate,
+                                                                       TransactionTypeEnum transactionType,
+                                                                       TransactionStatusEnum status);
 }

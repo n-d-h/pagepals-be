@@ -21,13 +21,28 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
             """)
     Optional<Reader> findById(UUID id);
 
-    Page<Reader> findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRating(
-            String name, String genre, String language, String countryAccent, Integer rating, Pageable pageable);
+    @Query("""
+        SELECT r FROM Reader r
+        WHERE LOWER(r.nickname) LIKE %:nickname%
+        AND LOWER(r.genre) LIKE %:genre%
+        AND LOWER(r.language) LIKE %:language%
+        AND LOWER(r.countryAccent) LIKE %:countryAccent%
+        AND r.rating = :rating
+        AND r.account.accountState.name = :state
+        """)
+    Page<Reader> findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndRatingAndAccountState(
+            String nickname, String genre, String language, String countryAccent, Integer rating, String state, Pageable pageable);
 
-    Page<Reader> findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCase(
-            String name, String genre, String language, String countryAccent, Pageable pageable);
-
-
+    @Query("""
+        SELECT r FROM Reader r
+        WHERE LOWER(r.nickname) LIKE %:nickname%
+        AND LOWER(r.genre) LIKE %:genre%
+        AND LOWER(r.language) LIKE %:language%
+        AND LOWER(r.countryAccent) LIKE %:countryAccent%
+        AND r.account.accountState.name = :state
+        """)
+    Page<Reader> findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndAccountState(
+            String nickname, String genre, String language, String countryAccent, String state, Pageable pageable);
 
     List<Reader> findTop10ByAccountInOrderByRatingDesc(List<Account> account);
 
