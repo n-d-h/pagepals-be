@@ -14,7 +14,9 @@ import java.util.UUID;
 
 public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
     Page<Seminar> findAll(Pageable pageable);
+    
     Page<Seminar> findAllByReaderId(UUID readerId, Pageable pageable);
+
     @Query("SELECT s FROM Seminar s" +
             " WHERE s.reader = :reader" +
             " AND EXTRACT(DAY FROM s.startTime) = EXTRACT(DAY FROM CAST(:startDate AS timestamp))" +
@@ -24,4 +26,21 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
 
     List<Seminar> findByReaderAndStartTimeAfterOrderByStartTimeAsc(Reader reader, Date startDate);
 
+
+    @Query("""
+        SELECT s FROM Seminar s
+        JOIN s.bookings b
+        WHERE b.customer.id = :customerId
+    """)
+    Page<Seminar> findAllByCustomerId(UUID customerId, Pageable pageable);
+
+    @Query("""
+        SELECT s FROM Seminar s
+        WHERE s.id NOT IN (
+            SELECT s.id FROM Seminar s
+            JOIN s.bookings b
+            WHERE b.customer.id = :customerId
+        )
+    """)
+    Page<Seminar> findAllByCustomerIdNotJoin(UUID customerId, Pageable pageable);
 }
