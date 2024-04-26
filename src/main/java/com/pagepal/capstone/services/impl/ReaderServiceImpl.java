@@ -251,6 +251,7 @@ public class ReaderServiceImpl implements ReaderService {
 //        }
 //    }
 
+    @Secured("READER")
     @Override
     public WorkingTimeListRead getReaderWorkingTimes(UUID id, String date) {
         ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
