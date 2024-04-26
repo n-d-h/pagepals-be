@@ -10,6 +10,8 @@ public interface SeminarService {
     SeminarDto getSeminar(UUID id);
     ListSeminarDto getSeminarList(Integer page, Integer pageSize, String sort);
     ListSeminarDto getSeminarListByReaderId(UUID readerId, Integer page, Integer pageSize, String sort);
+    ListSeminarDto getSeminarListByCustomerId(UUID customerId, Integer page, Integer pageSize, String sort);
+    ListSeminarDto getSeminarListNotJoinByCustomerId(UUID customerId, Integer page, Integer pageSize, String sort);
     SeminarDto deleteSeminar(UUID id);
     SeminarBookingDto bookSeminar(UUID seminarId, UUID customerId);
 }
