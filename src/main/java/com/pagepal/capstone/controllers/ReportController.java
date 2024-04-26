@@ -50,4 +50,9 @@ public class ReportController {
     public ReportReadDto refundBookingForReport(@Argument("id") UUID id){
         return reportService.refundBookingForReport(id);
     }
+
+    @MutationMapping
+    public ReportReadDto rejectReport(@Argument("id") UUID id){
+        return reportService.rejectReport(id);
+    }
 }

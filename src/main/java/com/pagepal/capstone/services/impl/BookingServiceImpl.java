@@ -180,7 +180,7 @@ public class BookingServiceImpl implements BookingService {
             }
         });
 
-        Meeting meeting = zoomService.createMeeting(service.getReader(), service.getBook().getTitle(),
+        Meeting meeting = zoomService.createMeeting(wt.getReader(), service.getBook().getTitle(),
                 60, service.getServiceType().getName(), wt.getStartTime());
 
         if (meeting == null) {

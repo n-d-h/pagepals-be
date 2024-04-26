@@ -53,6 +53,7 @@ public class ReaderServiceImpl implements ReaderService {
     private final DateUtils dateUtils;
     private final BookRepository bookRepository;
     private final SeminarRepository seminarRepository;
+    private final ServiceRepository serviceRepository;
 
     @Override
     public List<ReaderDto> getReadersActive() {
@@ -206,6 +207,50 @@ public class ReaderServiceImpl implements ReaderService {
         return list;
     }
 
+//    @Override
+//    public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
+//        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+//        List<ReaderBookDto> books = new ArrayList<>();
+//
+//        if (filter.getPage() == null || filter.getPage() < 0)
+//            filter.setPage(0);
+//        if (filter.getPageSize() == null || filter.getPageSize() < 0)
+//            filter.setPageSize(10);
+//
+//        Pageable pageable;
+//        pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
+//
+//        Page<Book> page;
+//
+//        if (filter.getTitle() == null || filter.getTitle().isEmpty()) {
+//            page = bookRepository.findByReaderId(id, pageable);
+//        } else {
+//            page = bookRepository.findByReaderIdAndTitleContaining(id, filter.getTitle().toLowerCase(), pageable);
+//        }
+//
+//        ReaderBookListDto listReaderDto = new ReaderBookListDto();
+//        if (page != null) {
+//            for (var book : page) {
+//                List<ServiceDto> services = book.getServices().stream().map(ServiceMapper.INSTANCE::toDto).collect(Collectors.toList());
+//                books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(book), services));
+//            }
+//            PagingDto pagingDto = new PagingDto();
+//            pagingDto.setTotalOfPages(page.getTotalPages());
+//            pagingDto.setTotalOfElements(page.getTotalElements());
+//            pagingDto.setSort(page.getSort().toString());
+//            pagingDto.setCurrentPage(page.getNumber());
+//            pagingDto.setPageSize(page.getSize());
+//
+//            listReaderDto.setList(books);
+//            listReaderDto.setPaging(pagingDto);
+//            return listReaderDto;
+//        } else {
+//            listReaderDto.setList(Collections.emptyList());
+//            listReaderDto.setPaging(null);
+//            return listReaderDto;
+//        }
+//    }
+
     @Override
     public WorkingTimeListRead getReaderWorkingTimes(UUID id, String date) {
         ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
@@ -254,19 +299,32 @@ public class ReaderServiceImpl implements ReaderService {
         Pageable pageable;
         pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
 
-        Page<Book> page;
+        Page<com.pagepal.capstone.entities.postgre.Service> page;
+
         if (filter.getTitle() == null || filter.getTitle().isEmpty()) {
-            page = bookRepository.findByReaderId(id, pageable);
+            page = serviceRepository.findByReaderId(id, pageable);
         } else {
-            page = bookRepository.findByReaderIdAndTitleContaining(id, filter.getTitle().toLowerCase(), pageable);
+            page = serviceRepository.findByReaderIdAndBookTitleContaining(id, filter.getTitle().toLowerCase(), pageable);
         }
 
         ReaderBookListDto listReaderDto = new ReaderBookListDto();
+
         if (page != null) {
-            for (var book : page) {
-                List<ServiceDto> services = book.getServices().stream().map(ServiceMapper.INSTANCE::toDto).collect(Collectors.toList());
+            Map<Book, List<ServiceDto>> bookServiceMap = new HashMap<>();
+
+            for (var service : page.getContent()) {
+                Book book = service.getBook();
+                List<ServiceDto> services = bookServiceMap.getOrDefault(book, new ArrayList<>());
+                services.add(ServiceMapper.INSTANCE.toDto(service));
+                bookServiceMap.put(book, services);
+            }
+
+            for (Map.Entry<Book, List<ServiceDto>> entry : bookServiceMap.entrySet()) {
+                Book book = entry.getKey();
+                List<ServiceDto> services = entry.getValue();
                 books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(book), services));
             }
+
             PagingDto pagingDto = new PagingDto();
             pagingDto.setTotalOfPages(page.getTotalPages());
             pagingDto.setTotalOfElements(page.getTotalElements());
@@ -284,6 +342,7 @@ public class ReaderServiceImpl implements ReaderService {
         }
     }
 
+
     @Override
     public ReaderDto registerReader(UUID accountId, RequestInputDto requestInputDto) {
 
@@ -293,6 +352,12 @@ public class ReaderServiceImpl implements ReaderService {
         Reader reader = account.getReader();
         if (reader == null) {
             reader = new Reader();
+        }
+        List<Request> requests = reader.getRequests();
+        for(var request : requests){
+            if(request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)){
+                throw new RuntimeException("You have send request already! Wait for response!");
+            }
         }
         reader.setNickname(requestInputDto.getInformation().getNickname());
         reader.setGenre(requestInputDto.getInformation().getGenres().toString().replaceAll("\\[|\\]", ""));

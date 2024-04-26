@@ -28,4 +28,21 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
 
     @Query("SELECT s FROM Service s WHERE s.serviceType = ?1 AND s.book= ?2 AND (s.isDeleted = false OR s.isDeleted IS NULL)")
     List<Service> findByServiceTypeAndBook(ServiceType serviceType, Book book);
+
+    @Query("""
+            SELECT s FROM Service s
+            WHERE s.reader.id = :readerId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            ORDER BY s.createdAt DESC
+            """)
+    Page<Service> findByReaderId(UUID readerId, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM Service s
+            WHERE s.reader.id = :readerId
+            AND s.book.title LIKE %:title%
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            ORDER BY s.createdAt DESC
+            """)
+    Page<Service> findByReaderIdAndBookTitleContaining(UUID readerId, String title, Pageable pageable);
 }
