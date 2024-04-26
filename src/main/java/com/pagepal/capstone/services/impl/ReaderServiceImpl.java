@@ -22,7 +22,13 @@ import org.springframework.data.domain.*;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +44,7 @@ public class ReaderServiceImpl implements ReaderService {
     private final RequestRepository requestRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final WorkingTimeRepository workingTimeRepository;
 
     private final String readerActive = "READER_ACTIVE";
 
@@ -45,6 +52,7 @@ public class ReaderServiceImpl implements ReaderService {
     private final BookingRepository bookingRepository;
     private final DateUtils dateUtils;
     private final BookRepository bookRepository;
+    private final SeminarRepository seminarRepository;
 
     @Override
     public List<ReaderDto> getReadersActive() {
@@ -199,6 +207,41 @@ public class ReaderServiceImpl implements ReaderService {
     }
 
     @Override
+    public WorkingTimeListRead getReaderWorkingTimes(UUID id, String date) {
+        ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
+        LocalDate selectedDate = LocalDate.parse(date);
+
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        List<Seminar> seminars = seminarRepository.findByReaderAndStartDate(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+        List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndDateOrderByStartTimeAsc(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+
+        List<WorkingTimeDto> result = new ArrayList<>();
+
+        WorkingTimeListRead list = new WorkingTimeListRead();
+        if (workingTimes != null) {
+            for (WorkingTime workingTime : workingTimes) {
+                result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));
+            }
+            if (seminars != null && !seminars.isEmpty()) {
+                for (Seminar seminar : seminars) {
+                    LocalDateTime endDate = seminar.getStartTime().toInstant().atZone(vietnamTimeZone).toLocalDateTime().plusMinutes(seminar.getDuration());
+
+                    WorkingTimeDto workingTimeDto = new WorkingTimeDto();
+                    workingTimeDto.setId(seminar.getId());
+                    workingTimeDto.setDate(Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
+                    workingTimeDto.setStartTime(seminar.getStartTime());
+                    workingTimeDto.setEndTime(Date.from(endDate.atZone(vietnamTimeZone).toInstant()));
+                    workingTimeDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
+
+                    result.add(workingTimeDto);
+                }
+            }
+            list = divideWorkingTimes(result);
+        }
+        return list;
+    }
+
+    @Override
     public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         List<ReaderBookDto> books = new ArrayList<>();
@@ -300,7 +343,7 @@ public class ReaderServiceImpl implements ReaderService {
     public String updateReaderProfile(UUID id, ReaderRequestInputDto readerUpdateDto) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         Reader isReaderUpdate = readerRepository.findByReaderUpdateReferenceId(id).orElse(null);
-        if(isReaderUpdate != null) throw new RuntimeException("Reader is updating");
+        if (isReaderUpdate != null) throw new RuntimeException("Reader is updating");
         reader.setIsUpdating(true);
 
         Reader readerUpdate = new Reader();
@@ -507,8 +550,14 @@ public class ReaderServiceImpl implements ReaderService {
                 workingDate.getTimeSlots().add(timeSlot);
             }
 
+            // Sort the time slots by start time
+            workingDate.getTimeSlots().sort(Comparator.comparing(TimeSlot::getStartTime));
+
             // Add WorkingDate object to WorkingTimeListRead
             workingTimeListRead.getWorkingDates().add(workingDate);
+
+            // Sort the working dates by date
+            workingTimeListRead.getWorkingDates().sort(Comparator.comparing(WorkingDate::getDate));
         }
 
         return workingTimeListRead;

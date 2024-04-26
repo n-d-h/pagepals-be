@@ -34,6 +34,7 @@ type TimeSlot {
 
 extend type Query {
     getWorkingTimesAvailableByReader(readerId: ID!): WorkingTimeList
+    getReaderWorkingTimes(readerId: ID!, date: String): WorkingTimeList
 }
 
 extend type Mutation {
