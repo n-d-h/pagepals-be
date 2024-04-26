@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkingDate {
-    private Date date;
+    private String date;
     private List<TimeSlot> timeSlots;
 }

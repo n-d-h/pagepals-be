@@ -14,4 +14,6 @@ import java.util.UUID;
 public class TimeSlot {
     private UUID id;
     private String startTime;
+    private String endTime;
+    private Boolean isSeminar;
 }

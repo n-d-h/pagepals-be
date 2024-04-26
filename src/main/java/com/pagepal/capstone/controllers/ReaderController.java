@@ -63,6 +63,11 @@ public class ReaderController {
     }
 
     @QueryMapping
+    public WorkingTimeListRead getReaderWorkingTimes(@Argument(name = "readerId") UUID id) {
+        return readerService.getReaderWorkingTimes(id);
+    }
+
+    @QueryMapping
     public ReaderBookListDto getReaderBooks(@Argument("id") UUID id,
                                             @Argument(name = "filter") ReaderBookFilterDto filter) {
         return readerService.getBookOfReader(id, filter);

@@ -28,12 +28,15 @@ type WorkingDate {
 }
 
 type TimeSlot {
-    id: ID!
+    id: ID
     startTime: String
+    endTime: String
+    isSeminar: Boolean
 }
 
 extend type Query {
     getWorkingTimesAvailableByReader(readerId: ID!): WorkingTimeList
+    getReaderWorkingTimes(readerId: ID!): WorkingTimeList
 }
 
 extend type Mutation {
