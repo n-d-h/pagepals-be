@@ -2,6 +2,7 @@ package com.pagepal.capstone.repositories;
 
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Seminar;
+import com.pagepal.capstone.enums.SeminarStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,9 +14,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
-    Page<Seminar> findAll(Pageable pageable);
+    Page<Seminar> findAllByStatus(SeminarStatus status, Pageable pageable);
     
-    Page<Seminar> findAllByReaderId(UUID readerId, Pageable pageable);
+    Page<Seminar> findAllByReaderIdAndStatus(UUID readerId, SeminarStatus status, Pageable pageable);
 
     @Query("SELECT s FROM Seminar s" +
             " WHERE s.reader = :reader" +
@@ -40,7 +41,9 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
             SELECT s.id FROM Seminar s
             JOIN s.bookings b
             WHERE b.customer.id = :customerId
+            AND b.state.name = 'PENDING'
         )
+        AND s.status = :state
     """)
-    Page<Seminar> findAllByCustomerIdNotJoin(UUID customerId, Pageable pageable);
+    Page<Seminar> findAllByCustomerIdNotJoin(UUID customerId, SeminarStatus state, Pageable pageable);
 }

@@ -19,9 +19,10 @@ public class SeminarController {
     public ListSeminarDto getAllSeminars(
             @Argument(name = "page") Integer page,
             @Argument(name = "pageSize") Integer pageSize,
-            @Argument(name = "sort") String sort
+            @Argument(name = "sort") String sort,
+            @Argument(name = "state") String state
     ) {
-        return seminarService.getSeminarList(page, pageSize, sort);
+        return seminarService.getSeminarList(page, pageSize, sort, state);
     }
 
     @QueryMapping(name = "getAllSeminarsByReaderId")
@@ -29,9 +30,10 @@ public class SeminarController {
             @Argument(name = "readerId") UUID readerId,
             @Argument(name = "page") Integer page,
             @Argument(name = "pageSize") Integer pageSize,
-            @Argument(name = "sort") String sort
+            @Argument(name = "sort") String sort,
+            @Argument(name = "state") String state
     ) {
-        return seminarService.getSeminarListByReaderId(readerId, page, pageSize, sort);
+        return seminarService.getSeminarListByReaderId(readerId, page, pageSize, sort, state);
     }
 
     @QueryMapping(name = "getAllSeminarsByCustomerId")
@@ -49,9 +51,10 @@ public class SeminarController {
             @Argument(name = "customerId") UUID customerId,
             @Argument(name = "page") Integer page,
             @Argument(name = "pageSize") Integer pageSize,
-            @Argument(name = "sort") String sort
+            @Argument(name = "sort") String sort,
+            @Argument(name = "state") String state
     ) {
-        return seminarService.getSeminarListNotJoinByCustomerId(customerId, page, pageSize, sort);
+        return seminarService.getSeminarListNotJoinByCustomerId(customerId, page, pageSize, sort, state);
     }
 
     @QueryMapping(name = "getSeminarById")
