@@ -45,4 +45,12 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
             ORDER BY s.createdAt DESC
             """)
     Page<Service> findByReaderIdAndBookTitleContaining(UUID readerId, String title, Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Service s
+            WHERE s.reader.id = :readerId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    Long countActiveServicesByReaderId(UUID readerId);
 }

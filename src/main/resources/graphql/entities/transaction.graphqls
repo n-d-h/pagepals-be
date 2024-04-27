@@ -10,6 +10,12 @@ type Transaction {
     paymentMethod: PaymentMethod
 }
 
+type Setting{
+    id: ID!
+    key: String
+    value: String
+}
+
 type ListTransaction{
     list: [Transaction]
     paging: Paging
@@ -27,4 +33,5 @@ extend type Query {
     getListTransactionForCustomer(customerId: ID, filter: TransactionFilter): ListTransaction
     getListTransactionForReader(readerId: ID, filter: TransactionFilter): ListTransaction
     getTransactionById(id: ID!): Transaction
+    getAllSettings: [Setting]
 }

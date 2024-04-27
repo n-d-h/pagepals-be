@@ -96,14 +96,14 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     @Query("""
             SELECT COUNT (b) FROM Booking b
             WHERE b.service.id = :serviceId
-            AND (b.state.name = 'PENDING' OR b.state.name = 'COMPLETED' OR b.state.name = 'CANCEL')
+            AND (b.state.name = 'PENDING' OR b.state.name = 'COMPLETE' OR b.state.name = 'CANCEL')
             """)
     Long countBookingByService(UUID serviceId);
 
     @Query("""
             SELECT COUNT (b) FROM Booking b
             WHERE b.service.id = :serviceId
-            AND (b.state.name = 'COMPLETED' OR b.state.name = 'CANCEL')
+            AND (b.state.name = 'COMPLETE' OR b.state.name = 'CANCEL')
             """)
     Long countStateBookingByService(UUID serviceId);
 
@@ -114,4 +114,53 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             AND b.state.name = :state
             """)
     List<Booking> findByCreateAtBetweenAndStateAndServiceNotNull(Date start, Date end, String state);
+
+    @Query("""
+            SELECT count(b) FROM Booking b
+            WHERE b.createAt BETWEEN :start AND :end
+            AND b.workingTime.reader.id = :readerId
+            AND (b.state.name = 'COMPLETE' OR b.state.name = 'CANCEL')
+            """)
+    Long countByCreateAtBetweenAndReaderIdAndState(Date start, Date end, UUID readerId);
+
+
+    @Query("""
+            SELECT count(b) FROM Booking b
+            WHERE b.createAt <= CURRENT_TIMESTAMP
+            AND b.workingTime.reader.id = :readerId
+            AND (b.state.name = 'COMPLETE' OR b.state.name = 'CANCEL')
+            """)
+    Long countByReaderIdAndState(UUID readerId);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE b.createAt BETWEEN :start AND :end
+            AND b.workingTime.reader.id = :readerId
+            AND b.state.name = :state
+            """)
+    List<Booking> findByCreateAtBetweenAndReaderIdAndState(Date start, Date end, UUID readerId, String state);
+
+    @Query("""
+            SELECT count(b) FROM Booking b
+            WHERE b.createAt <= :date
+            AND b.workingTime.reader.id = :readerId
+            AND b.state.name = :state
+            """)
+    Long countByCreateAtBeforeAndReaderIdAndState(Date date, UUID readerId, String state);
+
+    @Query("""
+            SELECT SUM(b.totalPrice) FROM Booking b
+            WHERE b.createAt BETWEEN :start AND :end
+            AND b.workingTime.reader.id = :readerId
+            AND b.state.name = 'COMPLETE'
+            """)
+    Long sumPriceByCreateAtBetweenAndReaderId(Date start, Date end, UUID readerId);
+
+    @Query("""
+            SELECT SUM(b.totalPrice) FROM Booking b
+            WHERE b.createAt <= :now
+            AND b.workingTime.reader.id = :readerId
+            AND b.state.name = 'COMPLETE'
+            """)
+    Double sumPriceByReaderId(UUID readerId, Date now);
 }

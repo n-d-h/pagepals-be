@@ -13,6 +13,21 @@ type AnalyticAdmin{
     topServices: [TopService]
 }
 
+type ReaderStatistics{
+    milestones: [String]
+    completedBookingData: [Int]
+    canceledBookingData: [Int]
+    successBookingRate: Int
+    totalFinishBookingInThisPeriod: Int
+    totalIncomeInThisPeriod: String
+    totalAmountShareInThisPeriod: String
+    totalRefundInThisPeriod: String
+    totalProfitInThisPeriod: String
+    allTimeTotalFinishBooking: Int
+    allTimeIncome: String
+    totalActiveServices: Int
+}
+
 type BookingStatics{
     percentageOfDone: Int
     months: [String]
@@ -81,6 +96,7 @@ type TopService{
 
 extend type Query{
     getAnalyticAdmin(startDate: String, endDate: String): AnalyticAdmin
+    getReaderStatistics(readerId: ID!, startDate: String!, endDate: String!): ReaderStatistics
 }
 
 

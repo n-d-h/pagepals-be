@@ -24,11 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -692,6 +689,5 @@ public class ReaderServiceImpl implements ReaderService {
 
         return String.format("%02d:%02d:%02d", hour, minute, second); // Example start time
     }
-
 
 }

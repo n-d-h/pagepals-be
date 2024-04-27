@@ -1,7 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.analytic.*;
-import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.dtos.analytic.admin.*;
+import com.pagepal.capstone.dtos.analytic.reader.ReaderStatistics;
 import com.pagepal.capstone.dtos.zoom.ZoomPlan;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.Status;
@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -402,6 +403,138 @@ public class AnalyticServiceImpl implements AnalyticService {
         return topServices.stream()
                 .limit(5)
                 .toList();
+    }
+
+    @Secured("READER")
+    @Override
+    public ReaderStatistics getReaderStatistics(UUID id, String startDate, String endDate) {
+        // Parse the start and end dates
+        LocalDate parsedStartDate = LocalDate.parse(startDate);
+        LocalDate parsedEndDate = LocalDate.parse(endDate);
+
+        ReaderStatistics statistics = new ReaderStatistics();
+        List<LocalDate> chartDates = generateChartDates(parsedStartDate, parsedEndDate);
+        var milestones = chartDates.stream().map(date -> date.format(DateTimeFormatter.ofPattern(FORMAT_DATE))).toList();
+
+        var completedBookings = bookingRepository.findByCreateAtBetweenAndReaderIdAndState(
+                Date.valueOf(parsedStartDate),
+                Date.valueOf(parsedEndDate),
+                id,
+                BOOKING_STATUS_COMPLETED
+        );
+        var canceledBookings = bookingRepository.findByCreateAtBetweenAndReaderIdAndState(
+                Date.valueOf(parsedStartDate),
+                Date.valueOf(parsedEndDate),
+                id,
+                BOOKING_STATUS_CANCELLED
+        );
+
+        var completedData = getReaderStateStatic(BOOKING_STATUS_COMPLETED, chartDates, completedBookings, id);
+        var canceledData = getReaderStateStatic(BOOKING_STATUS_CANCELLED, chartDates, canceledBookings, id);
+
+
+        var totalBookings = bookingRepository.countByCreateAtBetweenAndReaderIdAndState(
+                Date.valueOf(parsedStartDate),
+                Date.valueOf(parsedEndDate),
+                id
+        ).intValue();
+
+        double percentage = (double) completedBookings.size() / totalBookings * 100;
+        int roundedPercentage = (int) Math.round(percentage);
+
+        var totalAmountShare = calculateAmountShare(completedBookings.size());
+        var totalIncome = completedBookings.stream()
+                .mapToDouble(Booking::getTotalPrice)
+                .sum();
+        var totalRefund = canceledBookings.stream()
+                .mapToDouble(Booking::getTotalPrice)
+                .sum();
+
+        var allTimeIncome = bookingRepository.sumPriceByReaderId(id, Date.valueOf(LocalDate.now()));
+
+        // Set the statistics data
+        statistics.setMilestones(milestones);
+        statistics.setCompletedBookingData(completedData);
+        statistics.setCanceledBookingData(canceledData);
+        statistics.setTotalFinishBookingInThisPeriod(totalBookings);
+        statistics.setSuccessBookingRate(roundedPercentage);
+        statistics.setTotalIncomeInThisPeriod(String.format("%.2f", totalIncome));
+        statistics.setTotalRefundInThisPeriod(String.format("%.2f", totalRefund));
+        statistics.setTotalProfitInThisPeriod(String.format("%.2f", (totalIncome - totalAmountShare)));
+        statistics.setTotalAmountShareInThisPeriod(String.format("%.2f", totalAmountShare));
+        statistics.setAllTimeTotalFinishBooking(bookingRepository.countByReaderIdAndState(id).intValue());
+        statistics.setAllTimeIncome(String.format("%.2f", allTimeIncome));
+        statistics.setTotalActiveServices(serviceRepository.countActiveServicesByReaderId(id).intValue());
+        return statistics;
+    }
+
+    private List<Integer> getReaderStateStatic(String stateName, List<LocalDate> mileStone, List<Booking> bookings, UUID readerId) {
+        List<Integer> data = new ArrayList<>();
+        Long countFirstMileStoneBooking = bookingRepository.countByCreateAtBeforeAndReaderIdAndState(
+                Date.valueOf(mileStone.get(0)),
+                readerId,
+                stateName
+        );
+        data.add(countFirstMileStoneBooking.intValue());
+
+        // Iterate through consecutive pairs of milestones
+        for (int i = 0; i < mileStone.size() - 1; i++) {
+            LocalDate startDate = mileStone.get(i);
+            LocalDate endDate = mileStone.get(i + 1).minusDays(1); // Exclude the next milestone date itself
+
+            int count = 0;
+            for (Booking booking : bookings) {
+                LocalDate bookingDate = booking.getCreateAt().toInstant()
+                        .atZone(ZoneId.systemDefault()).toLocalDate();
+                if (bookingDate.isBefore(endDate.plusDays(1)) // Include endDate
+                        && bookingDate.isAfter(startDate.minusDays(1))) { // Include startDate
+                    count++;
+                }
+            }
+            data.add(count);
+        }
+
+        return data;
+    }
+
+    private Double calculateAmountShare(Integer length) {
+        var amountShare = settingRepository
+                .findByKey("REVENUE_SHARE")
+                .orElseThrow(() -> new IllegalStateException("Revenue share setting not found"));
+        var value = Integer.parseInt(amountShare.getValue());
+        return (double) (length * value) / 100;
+    }
+
+    private static List<LocalDate> generateChartDates(LocalDate startDate, LocalDate endDate) {
+        List<LocalDate> dates = new ArrayList<>();
+
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        if (daysBetween <= 10) {
+            // Include all days from start to end (inclusive)
+            for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+                dates.add(date);
+            }
+        } else {
+            // Calculate interval size for 10 dates (excluding start and end)
+            long interval = (daysBetween - 1) / 9;
+
+            // Add start date
+            dates.add(startDate);
+
+            // Add evenly spaced dates between start and end
+            for (int i = 1; i < 9; i++) {
+                LocalDate newDate = startDate.plusDays(interval * i);
+                dates.add(newDate);
+            }
+
+            // Add end date if it's not already included
+            if (endDate.isAfter(dates.get(dates.size() - 1))) {
+                dates.add(endDate);
+            }
+        }
+
+        return dates;
     }
 
 }
