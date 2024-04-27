@@ -1,4 +1,4 @@
-package com.pagepal.capstone.dtos.analytic;
+package com.pagepal.capstone.dtos.analytic.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +11,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CirculatingToken {
-    private int totalCirculating;
+public class IncomeByToken {
+    private int totalTokenSale;
+    private float totalIncome;
     private float percentageIncrease;
-    private List<CirculatingTokenData> seriesData;
+    private List<IncomeByTokenData> seriesData;
 }

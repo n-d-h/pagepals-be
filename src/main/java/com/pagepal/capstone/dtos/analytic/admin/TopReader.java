@@ -1,4 +1,4 @@
-package com.pagepal.capstone.dtos.analytic;
+package com.pagepal.capstone.dtos.analytic.admin;
 
 import com.pagepal.capstone.dtos.reader.ReaderDto;
 import lombok.AllArgsConstructor;

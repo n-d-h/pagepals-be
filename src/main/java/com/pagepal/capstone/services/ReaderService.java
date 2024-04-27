@@ -30,13 +30,15 @@ public interface ReaderService {
 
     ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto readerBookFilterDto);
 
-    ReaderDto registerReader(UUID accountId,RequestInputDto requestInputDto);
+    ReaderDto registerReader(UUID accountId, RequestInputDto requestInputDto);
 
     ListReaderReviewDto getReaderReviewsByReaderId(UUID id, Integer page, Integer size);
 
     ReaderRequestReadDto getUpdateRequestByReaderId(UUID readerId);
 
     ListReaderUpdateRequestDto getAllUpdateRequestedReader(Integer page, Integer pageSize);
+
     ReaderDto acceptUpdateReader(UUID id);
+
     ReaderDto rejectUpdateReader(UUID id);
 }

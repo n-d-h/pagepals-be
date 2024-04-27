@@ -1,5 +1,6 @@
 package com.pagepal.capstone.controllers;
 
+import com.pagepal.capstone.dtos.setting.SettingDto;
 import com.pagepal.capstone.dtos.transaction.ListTransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionFilterDto;
@@ -10,6 +11,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import java.text.ParseException;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -33,5 +35,10 @@ public class TransactionController {
     @QueryMapping
     public TransactionDto getTransactionById(@Argument("id") UUID id) {
         return transactionService.getTransactionById(id);
+    }
+
+    @QueryMapping
+    public List<SettingDto> getAllSettings() {
+        return transactionService.getAllSettings();
     }
 }

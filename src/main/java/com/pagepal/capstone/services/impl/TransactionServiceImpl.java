@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.setting.SettingDto;
 import com.pagepal.capstone.dtos.transaction.ListTransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionFilterDto;
@@ -11,6 +12,7 @@ import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.mappers.TransactionMapper;
 import com.pagepal.capstone.repositories.CustomerRepository;
 import com.pagepal.capstone.repositories.ReaderRepository;
+import com.pagepal.capstone.repositories.SettingRepository;
 import com.pagepal.capstone.repositories.TransactionRepository;
 import com.pagepal.capstone.services.TransactionService;
 import jakarta.persistence.EntityNotFoundException;
@@ -48,6 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final CustomerRepository customerRepository;
     private final ReaderRepository readerRepository;
+    private final SettingRepository settingRepository;
 
 
     @Override
@@ -213,5 +216,19 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto getTransactionById(UUID id) {
         return TransactionMapper.INSTANCE.toDto(transactionRepository.findById(id).orElse(null));
+    }
+
+    @Override
+    public List<SettingDto> getAllSettings() {
+        var settings = new ArrayList<SettingDto>();
+        var setting = new SettingDto();
+        var list = settingRepository.findAll();
+        for (var s : list) {
+            setting.setId(s.getId());
+            setting.setKey(s.getKey());
+            setting.setValue(s.getValue());
+            settings.add(setting);
+        }
+        return settings;
     }
 }

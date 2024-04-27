@@ -1,4 +1,4 @@
-package com.pagepal.capstone.dtos.analytic;
+package com.pagepal.capstone.dtos.analytic.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class IncomeByRevenueShareData {
-    private float income;
-    private String date;
+public class FreeStorage {
+    private String totalStorage;
+    private String usedStorage;
 }
