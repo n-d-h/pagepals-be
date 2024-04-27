@@ -64,4 +64,5 @@ extend type Mutation {
     updateSeminar(readerId: ID, id: ID!, seminar: SeminarUpdateInput): Seminar
     deleteSeminar(id: ID!) : Seminar
     joinSeminar(customerId: ID, seminarId: ID): SeminarBooking
+    completeSeminar(seminarId: ID): Seminar
 }

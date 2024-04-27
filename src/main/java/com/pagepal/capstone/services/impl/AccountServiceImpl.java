@@ -12,6 +12,7 @@ import com.pagepal.capstone.services.EmailService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -419,11 +420,24 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto updateFcmToken(UUID id, String fcmToken, Boolean isWebToken) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
-        if (isWebToken == Boolean.TRUE) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new ValidationException("Account not found"));
+        if (Objects.equals(isWebToken, Boolean.TRUE)) {
             account.setFcmWebToken(fcmToken);
+
+            List<Account> accounts = accountRepository.findAllByFcmWebToken(fcmToken);
+            for (Account acc : accounts) {
+                acc.setFcmWebToken(null);
+            }
+            accountRepository.saveAll(accounts);
+
         } else {
             account.setFcmMobileToken(fcmToken);
+
+            List<Account> accounts = accountRepository.findAllByFcmMobileToken(fcmToken);
+            for (Account acc : accounts) {
+                acc.setFcmMobileToken(null);
+            }
+            accountRepository.saveAll(accounts);
         }
         account.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         account = accountRepository.save(account);

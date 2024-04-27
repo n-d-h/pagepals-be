@@ -90,4 +90,9 @@ public class SeminarController {
     ) {
         return seminarService.bookSeminar(seminarId, customerId);
     }
+
+    @MutationMapping(name = "completeSeminar")
+    public SeminarDto completeSeminar(@Argument(name = "seminarId") UUID seminarId) {
+        return seminarService.completeSeminar(seminarId);
+    }
 }
