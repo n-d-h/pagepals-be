@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.dtos.seminar.*;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.CurrencyEnum;
@@ -30,7 +31,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -47,6 +51,11 @@ public class SeminarServiceImpl implements SeminarService {
 	private final ZoomServiceImpl zoomService;
 	private final DateUtils dateUtils;
 	private final BookService bookService;
+	private final SettingRepository settingRepository;
+	private final WalletRepository walletRepository;
+
+	private final String revenueString = "REVENUE_SHARE";
+	private final String tokenPriceString = "TOKEN_PRICE";
 
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -298,6 +307,81 @@ public class SeminarServiceImpl implements SeminarService {
 		return seminarBookingDto;
 	}
 
+	@Secured({ "READER" })
+	@Override
+	public SeminarDto completeSeminar(UUID seminarId) {
+		Seminar seminar = seminarRepository.findById(seminarId).orElse(null);
+		if(seminar != null) {
+			Integer durationSeminar = seminar.getDuration();
+			RecordingDto recording = zoomService.getRecording(seminar.getMeeting().getMeetingCode());
+
+			if (recording == null) {
+				throw new RuntimeException("Cannot complete booking, recording not found");
+			}
+
+			int durationInMinutes = getDurationInMinutes(recording.getRecording_files().get(0).getRecording_start(),
+					recording.getRecording_files().get(0).getRecording_end());
+
+			if (durationInMinutes < (int) (durationSeminar * 0.8)) {
+				throw new ValidationException("Cannot complete booking, recording duration less than 40 minutes");
+			}
+
+			List<Booking> bookings = seminar.getBookings();
+			Integer totalOfBooking = 0;
+
+			if(bookings != null && !bookings.isEmpty()) {
+				BookingState bookingStateComplete = bookingStateRepository
+						.findByName("COMPLETE")
+						.orElseThrow(() -> new ValidationException("State not found"));
+				for(Booking booking : bookings) {
+					if("PENDING".equals(booking.getState().getName())) {
+						booking.setState(bookingStateComplete);
+						booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+						bookingRepository.save(booking);
+
+						totalOfBooking++;
+					}
+				}
+
+				Integer totalOfMoneyBeforeValueShare = seminar.getPrice() * totalOfBooking;
+				Setting revenue = settingRepository.findByKey(revenueString).orElse(null);
+				Setting tokenPrice = settingRepository.findByKey(tokenPriceString).orElse(null);
+
+				if (revenue == null || tokenPrice == null) {
+					throw new EntityNotFoundException("Setting not found");
+				}
+
+				Float receiveCash = ((totalOfMoneyBeforeValueShare * Float.parseFloat(tokenPrice.getValue()))
+						* (100 - Float.parseFloat(revenue.getValue()))) / 100;
+
+				Account account = seminar.getReader().getAccount();
+				if(account != null) {
+					Wallet wallet = account.getWallet();
+					if(wallet != null) {
+						wallet.setCash(wallet.getCash() + receiveCash);
+						wallet = walletRepository.save(wallet);
+						if(wallet != null) {
+							Transaction transaction = new Transaction();
+							transaction.setStatus(TransactionStatusEnum.SUCCESS);
+							transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
+							transaction.setTransactionType(TransactionTypeEnum.BOOKING_DONE_RECEIVE);
+							transaction.setCurrency(CurrencyEnum.DOLLAR);
+							transaction.setAmount(Double.valueOf(receiveCash));
+							transaction.setWallet(wallet);
+							transactionRepository.save(transaction);
+						}
+					}
+				}
+
+				seminar.setStatus(SeminarStatus.INACTIVE);
+				seminar.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+				seminarRepository.save(seminar);
+			}
+			return toSeminarDto(seminar);
+		}
+		return null;
+	}
+
 	private ListSeminarDto mapSeminarsToDto(Page<Seminar> seminars) {
 		var listSeminarDto = new ListSeminarDto();
 
@@ -415,5 +499,14 @@ public class SeminarServiceImpl implements SeminarService {
 								: seminar.getBookings().stream().map(BookingMapper.INSTANCE::toDto).toList()
 				)
 				.build();
+	}
+
+	private static int getDurationInMinutes(Date start, Date end) {
+		long durationInMillis = end.getTime() - start.getTime();
+
+		// Convert the duration to minutes
+		long durationInSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMillis);
+
+		return (int) (durationInSeconds / 60);
 	}
 }

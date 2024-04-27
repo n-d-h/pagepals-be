@@ -41,4 +41,6 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
             WHERE a.role.id = :roleId
             """)
     List<Account> findAccountsByRole(String roleId);
+    List<Account> findAllByFcmMobileToken(String fcmMobileToken);
+    List<Account> findAllByFcmWebToken(String fcmWebToken);
 }

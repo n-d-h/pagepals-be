@@ -14,4 +14,5 @@ public interface SeminarService {
     ListSeminarDto getSeminarListNotJoinByCustomerId(UUID customerId, Integer page, Integer pageSize, String sort, String state);
     SeminarDto deleteSeminar(UUID id);
     SeminarBookingDto bookSeminar(UUID seminarId, UUID customerId);
+    SeminarDto completeSeminar(UUID seminarId);
 }
