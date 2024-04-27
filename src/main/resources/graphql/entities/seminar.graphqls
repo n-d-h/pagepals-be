@@ -14,6 +14,7 @@ type Seminar {
     reader: Reader
     book: Book
     meeting: Meeting
+    bookings: [Booking]
 }
 
 type SeminarBooking {

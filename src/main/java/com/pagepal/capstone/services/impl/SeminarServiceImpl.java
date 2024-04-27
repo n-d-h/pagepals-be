@@ -7,6 +7,7 @@ import com.pagepal.capstone.enums.CurrencyEnum;
 import com.pagepal.capstone.enums.SeminarStatus;
 import com.pagepal.capstone.enums.TransactionStatusEnum;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
+import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookService;
 import com.pagepal.capstone.services.SeminarService;
@@ -372,6 +373,7 @@ public class SeminarServiceImpl implements SeminarService {
                 .reader(seminar.getReader())
                 .book(seminar.getBook())
                 .meeting(seminar.getMeeting())
+                .bookings(seminar.getBookings().stream().map(BookingMapper.INSTANCE::toDto).toList())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.pagepal.capstone.dtos.seminar;
 
+import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.entities.postgre.Book;
 import com.pagepal.capstone.entities.postgre.Meeting;
 import com.pagepal.capstone.entities.postgre.Reader;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -30,4 +32,5 @@ public class SeminarDto {
     private Reader reader;
     private Book book;
     private Meeting meeting;
+    private List<BookingDto> bookings;
 }

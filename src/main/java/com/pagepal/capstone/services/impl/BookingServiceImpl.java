@@ -79,10 +79,10 @@ public class BookingServiceImpl implements BookingService {
         Page<Booking> bookings;
 
         if (queryDto.getBookingState() == null || queryDto.getBookingState().isEmpty())
-            bookings = bookingRepository.findAllByReaderId(readerId, pageable);
+            bookings = bookingRepository.findAllByReaderIdAndServiceIsNotNull(readerId, pageable);
         else {
             bookings = bookingRepository
-                    .findAllByReaderIdAndBookingState(readerId,
+                    .findAllByReaderIdAndBookingStateAndServiceIsNotNull(readerId,
                             queryDto.getBookingState().toUpperCase(),
                             pageable);
         }
