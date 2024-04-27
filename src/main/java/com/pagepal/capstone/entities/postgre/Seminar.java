@@ -21,7 +21,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "status = 'ACTIVE'")
 public class Seminar {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

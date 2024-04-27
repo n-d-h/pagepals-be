@@ -53,10 +53,10 @@ input SeminarUpdateInput {
 
 extend type Query {
     getSeminarById(id: ID!): Seminar
-    getAllSeminars(sort: String, page: Int, pageSize: Int): ListSeminar
-    getAllSeminarsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
+    getAllSeminars(sort: String, page: Int, pageSize: Int, state: String): ListSeminar
+    getAllSeminarsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int, state: String): ListSeminar
     getAllSeminarsByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
-    getAllSeminarsNotJoinByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
+    getAllSeminarsNotJoinByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int, state: String): ListSeminar
 }
 
 extend type Mutation {
