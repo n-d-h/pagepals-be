@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.report.*;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
@@ -8,6 +9,7 @@ import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.mappers.ReaderMapper;
 import com.pagepal.capstone.mappers.ReportMapper;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.services.EmailService;
 import com.pagepal.capstone.services.ReportService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +36,10 @@ public class ReportServiceImpl implements ReportService {
     private final BookingStateRepository bookingStateRepository;
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
+    private final AccountStateRepository accountStateRepository;
+    private final AccountRepository accountRepository;
+    private final EmailService emailService;
+    private final RoleRepository roleRepository;
 
     @Override
     public ReportReadDto getReportById(UUID id) {
@@ -149,7 +155,7 @@ public class ReportServiceImpl implements ReportService {
             }
         }
 
-        for(ReportBookingDto booking : list) {
+        for (ReportBookingDto booking : list) {
             booking.getListReport().sort(Comparator.comparing(ReportReadDto::getCreatedAt).reversed());
         }
         return list;
@@ -181,7 +187,7 @@ public class ReportServiceImpl implements ReportService {
             }
         }
 
-        for(ReportReaderDto reader : list) {
+        for (ReportReaderDto reader : list) {
             reader.getListReport().sort(Comparator.comparing(ReportReadDto::getCreatedAt).reversed());
         }
         return list;
@@ -237,19 +243,19 @@ public class ReportServiceImpl implements ReportService {
                 .findByName("CANCEL")
                 .orElseThrow(() -> new EntityNotFoundException("Booking state not found"));
 
-        if(booking.getState().getId().equals(state.getId())) throw new RuntimeException("Booking has been cancelled");
+        if (booking.getState().getId().equals(state.getId())) throw new RuntimeException("Booking has been cancelled");
 
         booking.setState(state);
         booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
         booking = bookingRepository.save(booking);
 
-        if(booking != null) {
+        if (booking != null) {
             Wallet cusWallet = booking.getCustomer().getAccount().getWallet();
             cusWallet.setTokenAmount(cusWallet.getTokenAmount() + booking.getTotalPrice());
             cusWallet.setUpdatedAt(dateUtils.getCurrentVietnamDate());
             cusWallet = walletRepository.save(cusWallet);
 
-            if(cusWallet == null) throw new RuntimeException("Cannot refund to customer");
+            if (cusWallet == null) throw new RuntimeException("Cannot refund to customer");
 
             Transaction transaction = new Transaction();
             transaction.setStatus(TransactionStatusEnum.SUCCESS);
@@ -277,4 +283,56 @@ public class ReportServiceImpl implements ReportService {
         report = reportRepository.save(report);
         return ReportMapper.INSTANCE.toDto(report);
     }
+
+    @Override
+    public Boolean acceptReportReader(UUID readerId, String reason) {
+
+        Reader reader = readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
+        List<Report> reportReaders = reportRepository
+                .findByReportedIdAndTypeAndState(
+                        readerId,
+                        ReportTypeEnum.READER,
+                        ReportStateEnum.PENDING
+                );
+
+        reader.setStatus(Status.INACTIVE);
+        reader.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        reader = readerRepository.save(reader);
+        readerRepository.findByReaderUpdateReferenceId(readerId).ifPresent(readerRepository::delete);
+
+        if (reader != null) {
+
+            Account account = reader.getAccount();
+            account.setAccountState(accountStateRepository
+                    .findByNameAndStatus("ACTIVE", Status.ACTIVE)
+                    .orElseThrow(() -> new EntityNotFoundException("Account state not found")
+                    )
+            );
+            account.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+            account.setRole(roleRepository
+                    .findByName("CUSTOMER")
+                    .orElseThrow(() -> new EntityNotFoundException("Role not found"))
+            );
+            account = accountRepository.save(account);
+            if (account != null) {
+                reportReaders.forEach(report -> {
+                    report.setState(ReportStateEnum.PROCESSED);
+                    report.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+                });
+                reportRepository.saveAll(reportReaders);
+                emailService.sendSimpleEmail(
+                        reader.getAccount().getEmail(),
+                        "Your account has been blocked",
+                        reason);
+
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.pagepal.capstone.repositories;
 
 import com.pagepal.capstone.entities.postgre.Account;
 import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,8 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
             WHERE r.id = :id
             """)
     Optional<Reader> findById(UUID id);
+
+    Optional<Reader> findByIdAndStatus(UUID id, Status status);
 
     @Query("""
         SELECT r FROM Reader r
@@ -50,7 +53,6 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
 
     Optional<Reader> findByReaderUpdateReferenceId(UUID id);
 
-//    @Query("SELECT r FROM Reader r WHERE r.readerUpdateReferenceId IS NOT NULL AND r.account IS NULL")
     Page<Reader> findByReaderUpdateReferenceIdIsNotNullAndAccountIsNull(Pageable pageable);
 
 }

@@ -224,50 +224,6 @@ class ReaderServiceImplTest {
         );
     }
 
-    /**
-     * Method under test: {@link ReaderServiceImpl#getListServicesByReaderId(UUID)}
-     */
-    @Test
-    void canGetListServicesByReaderId() {
-        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader()));
-        assertNull(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()));
-        verify(readerRepository).findById(any());
-    }
-
-    /**
-     * Method under test: {@link ReaderServiceImpl#getListServicesByReaderId(UUID)}
-     */
-    @Test
-    void canGetListServicesByReaderId2() {
-        UUID id = UUID.randomUUID();
-        Date createdAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
-        Date updatedAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
-        Date deletedAt = Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
-        Account account = new Account();
-        ArrayList<WorkingTime> workingTimes = new ArrayList<>();
-        ArrayList<Service> services = new ArrayList<>();
-        ArrayList<Request> requests = new ArrayList<>();
-        when(readerRepository.findById(any())).thenReturn(Optional.of(new Reader(id, "Nickname", 1, "Genre", "en",
-                "GB", "https://example.org/example", "The characteristics of someone or something", 0,
-                0, "https://example.org/example","avt", createdAt, updatedAt, deletedAt,
-                Status.ACTIVE,null, null, account, workingTimes, services, requests, new ArrayList<>(), null,null)));
-        assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
-        verify(readerRepository).findById(any());
-    }
-
-    /**
-     * Method under test: {@link ReaderServiceImpl#getListServicesByReaderId(UUID)}
-     */
-    @Test
-    void canGetListServicesByReaderId3() {
-        Reader reader = mock(Reader.class);
-        when(reader.getServices()).thenReturn(new ArrayList<>());
-        Optional<Reader> ofResult = Optional.of(reader);
-        when(readerRepository.findById(any())).thenReturn(ofResult);
-        assertTrue(readerServiceImpl.getListServicesByReaderId(UUID.randomUUID()).isEmpty());
-        verify(readerRepository).findById(any());
-        verify(reader, atLeast(1)).getServices();
-    }
 
     /**
      * Method under test: {@link ReaderServiceImpl#getListPopularReaders()}

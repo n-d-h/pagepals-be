@@ -11,6 +11,7 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -109,5 +110,10 @@ public class AccountController {
             @Argument(name = "fcmToken") String fcmToken,
             @Argument(name = "isWebToken") Boolean isWebToken) {
         return accountService.updateFcmToken(id, fcmToken, isWebToken);
+    }
+
+    @QueryMapping
+    public Date getCurrentTime() {
+        return new Date();
     }
 }

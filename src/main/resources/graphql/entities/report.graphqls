@@ -56,5 +56,6 @@ extend type Mutation {
     createReport(input: ReportCreateInput): Report
     refundBookingForReport(id: ID!): Report
     rejectReport(id: ID!): Report
+    acceptReportReader(readerId: ID!, reason: String): Boolean
 }
 

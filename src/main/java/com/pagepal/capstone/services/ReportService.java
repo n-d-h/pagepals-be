@@ -1,5 +1,6 @@
 package com.pagepal.capstone.services;
 
+import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.report.*;
 
 import java.util.List;
@@ -20,5 +21,5 @@ public interface ReportService {
 
     ReportReadDto rejectReport(UUID id);
 
-
+    Boolean acceptReportReader(UUID readerId, String reason);
 }

@@ -270,6 +270,9 @@ public class AccountServiceImpl implements AccountService {
     @Secured("ADMIN")
     @Override
     public AccountDto registerStaff(AccountStaffCreateDto account) {
+
+        checkExits(account.getUsername(), account.getEmail());
+
         var role = roleRepository.findByName(ROLE_STAFF).orElseThrow(
                 () -> new EntityNotFoundException("Role not found")
         );
@@ -458,4 +461,6 @@ public class AccountServiceImpl implements AccountService {
 
         return generatedString;
     }
+
+
 }

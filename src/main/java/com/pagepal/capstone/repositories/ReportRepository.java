@@ -29,4 +29,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
 
     List<Report> findByReportedIdAndType(UUID reportedId, ReportTypeEnum type);
 
+    List<Report> findByReportedIdAndTypeAndState(UUID reportedId, ReportTypeEnum type, ReportStateEnum state);
+
+
 }

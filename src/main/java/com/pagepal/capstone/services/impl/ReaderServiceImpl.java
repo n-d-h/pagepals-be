@@ -17,6 +17,7 @@ import com.pagepal.capstone.services.ReaderService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.access.annotation.Secured;
@@ -151,7 +152,7 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public List<ServiceDto> getListServicesByReaderId(UUID id) {
         Reader reader = readerRepository
-                .findById(id)
+                .findByIdAndStatus(id, Status.ACTIVE)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Reader not found")
                 );
@@ -168,7 +169,7 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public ReaderProfileDto getReaderProfileById(UUID id) {
         Reader reader = readerRepository
-                .findById(id)
+                .findByIdAndStatus(id, Status.ACTIVE)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Reader not found")
                 );
@@ -333,7 +334,7 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Override
     public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
-        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+        Reader reader = readerRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
         List<ReaderBookDto> books = new ArrayList<>();
 
         if (filter.getPage() == null || filter.getPage() < 0)
@@ -398,6 +399,11 @@ public class ReaderServiceImpl implements ReaderService {
         if (reader == null) {
             reader = new Reader();
         }
+
+        if(Status.INACTIVE.equals(reader.getStatus())){
+            throw new ValidationException("Reader is banned or deleted!");
+        }
+
         List<Request> requests = reader.getRequests();
         for (var request : requests) {
             if (request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)) {

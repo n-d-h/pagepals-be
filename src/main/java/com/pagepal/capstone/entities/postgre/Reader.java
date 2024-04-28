@@ -22,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "READER")
-@Where(clause = "status = 'ACTIVE'")
+//@Where(clause = "status = 'ACTIVE'")
 public class Reader implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

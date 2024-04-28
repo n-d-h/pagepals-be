@@ -55,4 +55,9 @@ public class ReportController {
     public ReportReadDto rejectReport(@Argument("id") UUID id){
         return reportService.rejectReport(id);
     }
+
+    @MutationMapping
+    public Boolean acceptReportReader(@Argument("readerId") UUID readerId, @Argument("reason") String reason){
+        return reportService.acceptReportReader(readerId, reason);
+    }
 }

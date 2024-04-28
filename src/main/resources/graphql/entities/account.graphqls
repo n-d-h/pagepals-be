@@ -75,6 +75,7 @@ extend type Query {
     getListStaff: [Account]
     getListCustomer: [Account]
     getListReader: [Account]
+    getCurrentTime: String
 }
 
 extend type Mutation {
