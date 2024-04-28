@@ -182,8 +182,12 @@ public class SeminarServiceImpl implements SeminarService {
 	public ListSeminarDto getSeminarListByReaderId(UUID readerId, Integer page, Integer pageSize, String sort,
 			String state) {
 		Pageable pageable = createPageable(page, pageSize, sort);
-		Page<Seminar> data = seminarRepository.findAllByReaderIdAndStatus(readerId, SeminarStatus.valueOf(state),
-				pageable);
+		Page<Seminar> data;
+		if(!state.isEmpty() || !"".equals(state)) {
+			data = seminarRepository.findAllByReaderIdAndStatus(readerId, SeminarStatus.valueOf(state), pageable);
+		} else {
+			data = seminarRepository.findAllByReaderId(readerId, pageable);
+		}
 		return mapSeminarsToDto(data);
 	}
 
