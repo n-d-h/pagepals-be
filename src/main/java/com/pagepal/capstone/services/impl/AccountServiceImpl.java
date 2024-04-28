@@ -180,7 +180,15 @@ public class AccountServiceImpl implements AccountService {
                 )
         );
         var account = accountRepository.findByUsername(request.getUsername()).orElse(null);
-
+        if (account == null) {
+            throw new RuntimeException("Account not found");
+        }
+        if ("DELETED".equals(account.getAccountState().getName())) {
+            throw new RuntimeException("Account is deleted");
+        }
+        if("BANNED".equals(account.getAccountState().getName())){
+            throw new RuntimeException("Account is banned");
+        }
         String accessToken = jwtService.generateAccessToken(account);
         String refreshToken = jwtService.generateRefreshToken(account);
 
