@@ -15,8 +15,10 @@ import java.util.UUID;
 public class ServiceTypeController {
     private final ServiceTypeService serviceTypeService;
 
-    @QueryMapping(name = "getListServiceTypesByService")
-    public List<ServiceTypeDto> getListServiceTypesByService(@Argument(name = "services") List<UUID> serviceIds) {
-        return serviceTypeService.getListServiceTypesByService(serviceIds);
+    @QueryMapping(name = "getListServiceTypesByServicesOfReaderBook")
+    public List<ServiceTypeDto> getListServiceTypesByServicesOfReaderBook(
+            @Argument(name = "readerId") UUID readerId,
+            @Argument(name = "bookId") UUID bookId) {
+        return serviceTypeService.getListServiceTypesByService(readerId, bookId);
     }
 }

@@ -6,5 +6,5 @@ type ServiceType{
 
 extend type Query{
     getListServiceType: [ServiceType]
-    getListServiceTypesByService(services : [ID]): [ServiceType]
+    getListServiceTypesByServicesOfReaderBook(readerId: ID!, bookId: ID!): [ServiceType]
 }

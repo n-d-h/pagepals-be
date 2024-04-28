@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ServiceTypeService {
-    List<ServiceTypeDto> getListServiceTypesByService(List<UUID> serviceIds);
+    List<ServiceTypeDto> getListServiceTypesByService(UUID readerId, UUID bookId);
 }
