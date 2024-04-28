@@ -194,11 +194,12 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public List<ServiceDto> getListServiceByServiceTypeAndBook(UUID serviceTypeId, UUID bookId) {
+    public List<ServiceDto> getListServiceByServiceTypeAndBook(UUID serviceTypeId, UUID bookId, UUID readerId) {
         ServiceType serviceType = serviceTypeRepository.findById(serviceTypeId)
                 .orElseThrow(() -> new EntityNotFoundException("Service type not found"));
         Book book = bookRepository.findById(bookId).orElseThrow();
-        return serviceRepository.findByServiceTypeAndBook(serviceType, book)
+        Reader reader = readerRepository.findById(readerId).orElseThrow();
+        return serviceRepository.findByServiceTypeAndBook(serviceType, book, reader)
                 .stream().map(ServiceMapper.INSTANCE::toDto).toList();
     }
 

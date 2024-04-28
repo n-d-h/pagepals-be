@@ -11,6 +11,14 @@ import java.util.UUID;
 
 @Repository
 public interface ServiceTypeRepository extends JpaRepository<ServiceType, UUID> {
-    @Query("SELECT DISTINCT st FROM ServiceType st WHERE EXISTS (SELECT s FROM st.services s WHERE s IN ?1)")
+    @Query("""
+            SELECT DISTINCT st FROM ServiceType st
+            WHERE EXISTS (
+            SELECT s FROM st.services s
+            WHERE s IN ?1
+            AND (s.isDeleted = false OR s.isDeleted IS NULL)
+            )
+            """)
     List<ServiceType> findAllByServices(List<Service> services);
+
 }

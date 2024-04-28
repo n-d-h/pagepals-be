@@ -23,5 +23,5 @@ public interface ServiceService {
 
     ServiceDto createService(WriteServiceDto writeServiceDto);
 
-    List<ServiceDto> getListServiceByServiceTypeAndBook(UUID serviceTypeId, UUID bookId);
+    List<ServiceDto> getListServiceByServiceTypeAndBook(UUID serviceTypeId, UUID bookId, UUID readerId);
 }
