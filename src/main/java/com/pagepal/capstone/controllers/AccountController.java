@@ -4,6 +4,7 @@ import com.pagepal.capstone.configurations.jwt.JwtService;
 import com.pagepal.capstone.dtos.account.*;
 import com.pagepal.capstone.services.AccountService;
 import com.pagepal.capstone.services.ZoomService;
+import com.pagepal.capstone.utils.DateUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -25,6 +26,7 @@ public class AccountController {
     private final JwtService jwtService;
     private final static String ROLE_CUSTOMER = "CUSTOMER";
     private final static String ROLE_STAFF = "STAFF";
+    private final DateUtils dateUlti;
 
     @MutationMapping(name = "login")
     public AccountResponse login(@Argument(name = "account") AccountRequest accountRequest) {
@@ -114,6 +116,6 @@ public class AccountController {
 
     @QueryMapping
     public Date getCurrentTime() {
-        return new Date();
+        return dateUlti.getCurrentVietnamDate();
     }
 }

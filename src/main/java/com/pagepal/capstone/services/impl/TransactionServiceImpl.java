@@ -221,13 +221,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<SettingDto> getAllSettings() {
         var settings = new ArrayList<SettingDto>();
-        var setting = new SettingDto();
         var list = settingRepository.findAll();
         for (var s : list) {
-            setting.setId(s.getId());
-            setting.setKey(s.getKey());
-            setting.setValue(s.getValue());
-            settings.add(setting);
+            settings.add(new SettingDto(s.getId(), s.getKey(), s.getValue()));
         }
         return settings;
     }

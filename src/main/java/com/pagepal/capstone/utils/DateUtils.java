@@ -12,12 +12,14 @@ public class DateUtils {
 
     public Date getCurrentVietnamDate() {
         Calendar calendar = Calendar.getInstance(VIETNAM_TIME_ZONE);
+        calendar.add(Calendar.HOUR_OF_DAY, 7);
         return calendar.getTime();
     }
 
     public Date formatDate(Date date) {
         Calendar calendar = Calendar.getInstance(VIETNAM_TIME_ZONE);
         calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, 7);
         return calendar.getTime();
     }
 }
