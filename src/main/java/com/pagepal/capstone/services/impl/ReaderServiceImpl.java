@@ -406,9 +406,11 @@ public class ReaderServiceImpl implements ReaderService {
         }
 
         List<Request> requests = reader.getRequests();
-        for (var request : requests) {
-            if (request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)) {
-                throw new RuntimeException("You have send request already! Wait for response!");
+        if(requests!= null && !requests.isEmpty()){
+            for (var request : requests) {
+                if (request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)) {
+                    throw new RuntimeException("You have send request already! Wait for response!");
+                }
             }
         }
         reader.setNickname(requestInputDto.getInformation().getNickname());
