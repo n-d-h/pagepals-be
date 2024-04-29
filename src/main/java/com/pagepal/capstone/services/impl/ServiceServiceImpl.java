@@ -116,9 +116,9 @@ public class ServiceServiceImpl implements ServiceService {
         service.setReader(existingService.getReader());
         service.setBook(existingService.getBook());
         service.setCreatedAt(existingService.getCreatedAt());
-        service.setRating(existingService.getRating());
-        service.setTotalOfBooking(existingService.getTotalOfBooking());
-        service.setTotalOfReview(existingService.getTotalOfReview());
+        service.setRating(0);
+        service.setTotalOfBooking(0);
+        service.setTotalOfReview(0);
         service.setIsDeleted(false);
         service.setStatus(Status.ACTIVE);
         return ServiceMapper.INSTANCE.toDto(serviceRepository.save(service));
