@@ -2,6 +2,7 @@ package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeCreateDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListCreateDto;
+import com.pagepal.capstone.entities.postgre.Booking;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.WorkingTime;
 import com.pagepal.capstone.repositories.ReaderRepository;
@@ -9,6 +10,7 @@ import com.pagepal.capstone.repositories.WorkingTimeRepository;
 import com.pagepal.capstone.services.WorkingTimeService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +62,17 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
         }
 
         return "Working time created successfully";
+    }
+
+    public Boolean deleteReaderWorkingTime(UUID id){
+        WorkingTime wt = workingTimeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Working time not found"));
+        List<Booking> workingTimeBookings = wt.getBookings();
+        if(workingTimeBookings != null && workingTimeBookings.size() > 0){
+            throw new ValidationException("Working time have booking, cannot delete");
+        }
+        workingTimeRepository.delete(wt);
+        return true;
     }
 
     private void createWorkingTimeSlot(LocalDate date, LocalDate endDate, LocalDateTime startTime, LocalDateTime endTime, Reader reader) {

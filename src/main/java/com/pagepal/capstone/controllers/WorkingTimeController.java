@@ -7,6 +7,8 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.UUID;
+
 @Controller
 @RequiredArgsConstructor
 public class WorkingTimeController {
@@ -16,5 +18,11 @@ public class WorkingTimeController {
     public String createReaderWorkingTime(
             @Argument(name = "workingTime") WorkingTimeListCreateDto list) {
         return workingTimeService.createReaderWorkingTime(list);
+    }
+
+    @MutationMapping
+    public Boolean deleteReaderWorkingTime(
+            @Argument(name = "id") UUID id) {
+        return workingTimeService.deleteReaderWorkingTime(id);
     }
 }
