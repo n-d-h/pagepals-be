@@ -323,8 +323,34 @@ public class ReportServiceImpl implements ReportService {
                 reportRepository.saveAll(reportReaders);
                 emailService.sendSimpleEmail(
                         reader.getAccount().getEmail(),
-                        "Your account has been blocked",
-                        reason);
+                        "[PagePals]: Your PagePals reader account Status",
+                        """
+                                Dear %s,
+                                                    
+                                We hope this email finds you well. We're writing to inform you that, regrettably, your PagePals reader account has been temporarily suspended. This decision was made following a review of your account activity and is in accordance with our community guidelines.
+                                                    
+                                Reason for Suspension:
+                                %s
+
+                                We understand that this news may be disappointing, and we want to assure you that we take such actions seriously. Our top priority is to maintain a safe and respectful environment for all our users.
+
+                                If you believe this suspension was a mistake or would like to appeal this decision, please don't hesitate to reach out to our support team at support@pagepals.com. We're here to assist you and address any concerns you may have.
+
+                                In the meantime, we kindly ask for your cooperation and understanding as we work to ensure the integrity of our platform. Your patience is greatly appreciated.
+
+                                Thank you for your understanding and cooperation in this matter.
+
+                                Sincerely,
+
+                                The PagePals Team
+
+                                ---
+
+                                PagePals - Connecting Readers Everywhere
+                                Visit our website: https://pagepals-fe.vercel.app
+                                """.formatted(reader.getNickname(), reason)
+                );
+
 
             }
 
