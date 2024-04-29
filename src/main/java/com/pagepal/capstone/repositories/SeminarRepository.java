@@ -47,4 +47,6 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
         AND s.status = :state
     """)
     Page<Seminar> findAllByCustomerIdNotJoin(UUID customerId, SeminarStatus state, Pageable pageable);
+
+    List<Seminar> findByReaderIdAndStatus(UUID reader_id, SeminarStatus status);
 }

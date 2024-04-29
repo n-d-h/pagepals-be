@@ -428,7 +428,7 @@ public class SeminarServiceImpl implements SeminarService {
 			SeminarUpdateDto seminarUpdateDto) throws Exception {
 		Reader reader = readerRepository.findById(readerId).orElseThrow(EntityNotFoundException::new);
 		List<WorkingTime> workingTimes = reader.getWorkingTimes();
-		List<Seminar> seminars = reader.getSeminars();
+		List<Seminar> seminars = seminarRepository.findByReaderIdAndStatus(readerId, SeminarStatus.ACTIVE);
 
 		LocalDateTime startTime;
 		if(seminarCreateDto != null) {
