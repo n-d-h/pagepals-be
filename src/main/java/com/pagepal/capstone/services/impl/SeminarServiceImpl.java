@@ -180,14 +180,20 @@ public class SeminarServiceImpl implements SeminarService {
 
 	@Override
 	public ListSeminarDto getSeminarListByReaderId(UUID readerId, Integer page, Integer pageSize, String sort,
-			String state) {
+			String state, Boolean isCustomer) {
 		Pageable pageable = createPageable(page, pageSize, sort);
 		Page<Seminar> data;
-		if(!state.isEmpty() || !"".equals(state)) {
-			data = seminarRepository.findAllByReaderIdAndStatus(readerId, SeminarStatus.valueOf(state), pageable);
-		} else {
-			data = seminarRepository.findAllByReaderId(readerId, pageable);
+
+		if(isCustomer){
+			data = seminarRepository.findAllByReaderIdAndStartTimeAfter(readerId, dateUtils.getCurrentVietnamDate() ,pageable);
+		}else{
+			if (!state.isEmpty() || !"".equals(state)) {
+				data = seminarRepository.findAllByReaderIdAndStatus(readerId, SeminarStatus.valueOf(state), pageable);
+			} else {
+				data = seminarRepository.findAllByReaderId(readerId, pageable);
+			}
 		}
+
 		return mapSeminarsToDto(data);
 	}
 
@@ -320,6 +326,11 @@ public class SeminarServiceImpl implements SeminarService {
 	public SeminarDto completeSeminar(UUID seminarId) {
 		Seminar seminar = seminarRepository.findById(seminarId).orElse(null);
 		if(seminar != null) {
+
+			if(SeminarStatus.INACTIVE.equals(seminar.getStatus())) {
+				throw new ValidationException("Seminar is completed or deleted!");
+			}
+
 			Integer durationSeminar = seminar.getDuration();
 			RecordingDto recording = zoomService.getRecording(seminar.getMeeting().getMeetingCode());
 

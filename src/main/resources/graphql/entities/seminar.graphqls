@@ -54,7 +54,7 @@ input SeminarUpdateInput {
 extend type Query {
     getSeminarById(id: ID!): Seminar
     getAllSeminars(sort: String, page: Int, pageSize: Int, state: String): ListSeminar
-    getAllSeminarsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int, state: String): ListSeminar
+    getAllSeminarsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int, state: String, isCustomer: Boolean): ListSeminar
     getAllSeminarsByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
     getAllSeminarsNotJoinByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int, state: String): ListSeminar
 }

@@ -31,9 +31,10 @@ public class SeminarController {
             @Argument(name = "page") Integer page,
             @Argument(name = "pageSize") Integer pageSize,
             @Argument(name = "sort") String sort,
-            @Argument(name = "state") String state
+            @Argument(name = "state") String state,
+            @Argument(name = "isCustomer") Boolean isCustomer
     ) {
-        return seminarService.getSeminarListByReaderId(readerId, page, pageSize, sort, state);
+        return seminarService.getSeminarListByReaderId(readerId, page, pageSize, sort, state, isCustomer);
     }
 
     @QueryMapping(name = "getAllSeminarsByCustomerId")
