@@ -450,7 +450,11 @@ public class AnalyticServiceImpl implements AnalyticService {
                 .mapToDouble(Booking::getTotalPrice)
                 .sum();
 
+
         var allTimeIncome = bookingRepository.sumPriceByReaderId(id, Date.valueOf(LocalDate.now()));
+        if (allTimeIncome == null) {
+            allTimeIncome = 0.00;
+        }
 
         // Set the statistics data
         statistics.setMilestones(milestones);
