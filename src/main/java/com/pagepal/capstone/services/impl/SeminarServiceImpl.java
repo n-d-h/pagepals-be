@@ -235,6 +235,10 @@ public class SeminarServiceImpl implements SeminarService {
 		var customer = customerRepository.findById(customerId).orElse(null);
 		var seminar = seminarRepository.findById(seminarId).orElse(null);
 
+		if(customer.getAccount().getId().equals(seminar.getReader().getAccount().getId())) {
+			throw new ValidationException("Cannot book seminar with reader account");
+		}
+
 		if(customer == null || seminar == null) {
 			throw new ValidationException("Customer or Seminar not found");
 		}
