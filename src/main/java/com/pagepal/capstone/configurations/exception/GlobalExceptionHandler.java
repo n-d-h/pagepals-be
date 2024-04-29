@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
 
     @GraphQlExceptionHandler
     public GraphQLError handleRuntimeException(RuntimeException ex) {
-        return GraphQLError.newError().errorType(ErrorType.INTERNAL_ERROR).message(ex.getMessage()).build();
+        Map<String, Object> extensions = Map.of("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return GraphQLError.newError().errorType(ErrorType.INTERNAL_ERROR).extensions(extensions).message(ex.getMessage()).build();
     }
 
     @GraphQlExceptionHandler

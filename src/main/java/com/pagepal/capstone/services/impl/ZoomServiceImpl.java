@@ -8,6 +8,7 @@ import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.enums.MeetingEnum;
 import com.pagepal.capstone.repositories.MeetingRepository;
 import com.pagepal.capstone.services.ZoomService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -135,19 +136,23 @@ public class ZoomServiceImpl implements ZoomService {
 
     public RecordingDto getRecording(String meetingId) {
         String accessToken = getZoomToken().getAccess_token();
-
-        RecordingDto record = webClientMeeting.get()
-                .uri(UriBuilder -> UriBuilder
-                        .path("/meetings/" + meetingId + "/recordings")
-                        .queryParam("include_fields", "download_access_token")
-                        .queryParam("ttl", 604800)
-                        .build())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .retrieve()
-                .bodyToMono(RecordingDto.class)
-                .block();
-        if(record == null) {
-            throw new RuntimeException("Failed to get recording");
+        RecordingDto record = null;
+        try {
+            record = webClientMeeting.get()
+                    .uri(UriBuilder -> UriBuilder
+                            .path("/meetings/" + meetingId + "/recordings")
+                            .queryParam("include_fields", "download_access_token")
+                            .queryParam("ttl", 604800)
+                            .build())
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .retrieve()
+                    .bodyToMono(RecordingDto.class)
+                    .block();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (record == null) {
+            throw new EntityNotFoundException("Failed to get recording");
         }
         return record;
     }

@@ -18,6 +18,7 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
     
     Page<Seminar> findAllByReaderIdAndStatus(UUID readerId, SeminarStatus status, Pageable pageable);
 
+    Page<Seminar> findAllByReaderId(UUID readerId, Pageable pageable);
     @Query("SELECT s FROM Seminar s" +
             " WHERE s.reader = :reader" +
             " AND EXTRACT(DAY FROM s.startTime) = EXTRACT(DAY FROM CAST(:startDate AS timestamp))" +
