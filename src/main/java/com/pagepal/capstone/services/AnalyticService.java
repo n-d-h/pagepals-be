@@ -10,5 +10,5 @@ public interface AnalyticService {
 
     AnalyticAdmin getAnalyticAdminByDate(String startDate, String endDate);
 
-    ReaderStatistics getReaderStatistics(UUID id, String startDate, String endDate);
+    ReaderStatistics getReaderStatistics(UUID id, String startDate, String endDate, Boolean isMobile);
 }

@@ -24,7 +24,8 @@ public class AnalyticController {
     @QueryMapping
     public ReaderStatistics getReaderStatistics(@Argument("readerId") UUID id,
                                                 @Argument("startDate") String startDate,
-                                                @Argument("endDate") String endDate) {
-        return analyticService.getReaderStatistics(id, startDate, endDate);
+                                                @Argument("endDate") String endDate,
+                                                @Argument("isMobile") Boolean isMobile) {
+        return analyticService.getReaderStatistics(id, startDate, endDate, isMobile);
     }
 }

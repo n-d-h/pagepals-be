@@ -407,13 +407,20 @@ public class AnalyticServiceImpl implements AnalyticService {
 
     @Secured("READER")
     @Override
-    public ReaderStatistics getReaderStatistics(UUID id, String startDate, String endDate) {
+    public ReaderStatistics getReaderStatistics(UUID id, String startDate, String endDate, Boolean isMobile) {
+        if (isMobile == null) {
+            isMobile = false;
+        }
+
         // Parse the start and end dates
         LocalDate parsedStartDate = LocalDate.parse(startDate);
         LocalDate parsedEndDate = LocalDate.parse(endDate);
 
         ReaderStatistics statistics = new ReaderStatistics();
-        List<LocalDate> chartDates = generateChartDates(parsedStartDate, parsedEndDate);
+        List<LocalDate> chartDates = isMobile
+                ? generateChartDatesForMobile(parsedStartDate, parsedEndDate)
+                : generateChartDates(parsedStartDate, parsedEndDate);
+
         var milestones = chartDates.stream().map(date -> date.format(DateTimeFormatter.ofPattern(FORMAT_DATE))).toList();
 
         var completedBookings = bookingRepository.findByCreateAtBetweenAndReaderIdAndState(
@@ -528,6 +535,38 @@ public class AnalyticServiceImpl implements AnalyticService {
 
             // Add evenly spaced dates between start and end
             for (int i = 1; i < 9; i++) {
+                LocalDate newDate = startDate.plusDays(interval * i);
+                dates.add(newDate);
+            }
+
+            // Add end date if it's not already included
+            if (endDate.isAfter(dates.get(dates.size() - 1))) {
+                dates.add(endDate);
+            }
+        }
+
+        return dates;
+    }
+
+    private static List<LocalDate> generateChartDatesForMobile(LocalDate startDate, LocalDate endDate) {
+        List<LocalDate> dates = new ArrayList<>();
+
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        if (daysBetween <= 5) {
+            // Include all days from start to end (inclusive)
+            for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+                dates.add(date);
+            }
+        } else {
+            // Calculate interval size for 10 dates (excluding start and end)
+            long interval = (daysBetween - 1) / 4;
+
+            // Add start date
+            dates.add(startDate);
+
+            // Add evenly spaced dates between start and end
+            for (int i = 1; i < 5; i++) {
                 LocalDate newDate = startDate.plusDays(interval * i);
                 dates.add(newDate);
             }

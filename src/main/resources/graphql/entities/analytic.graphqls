@@ -96,7 +96,7 @@ type TopService{
 
 extend type Query{
     getAnalyticAdmin(startDate: String, endDate: String): AnalyticAdmin
-    getReaderStatistics(readerId: ID!, startDate: String!, endDate: String!): ReaderStatistics
+    getReaderStatistics(readerId: ID!, startDate: String!, endDate: String!, isMobile: Boolean): ReaderStatistics
 }
 
 
