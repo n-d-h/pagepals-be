@@ -664,13 +664,18 @@ public class BookingServiceImpl implements BookingService {
         booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
         booking = bookingRepository.save(booking);
         var service = booking.getService();
-        int serviceRating = (service.getRating() * service.getTotalOfReview());
-        service.setTotalOfReview(service.getTotalOfReview() + 1);
-        int newServiceRating = Math.round((serviceRating + review.getRating()) / (service.getTotalOfReview()));
-        service.setRating(newServiceRating);
-        serviceRepository.save(service);
+        Reader reader = null;
+        if(service != null) {
+            reader = service.getReader();
+            int serviceRating = (service.getRating() * service.getTotalOfReview());
+            service.setTotalOfReview(service.getTotalOfReview() + 1);
+            int newServiceRating = Math.round((serviceRating + review.getRating()) / (service.getTotalOfReview()));
+            service.setRating(newServiceRating);
+            serviceRepository.save(service);
+        }else{
+            reader = booking.getSeminar().getReader();
+        }
 
-        var reader = service.getReader();
         int rating = (reader.getRating() * reader.getTotalOfReviews());
         reader.setTotalOfReviews(reader.getTotalOfReviews() + 1);
         int newRating = Math.round((rating + review.getRating()) / (reader.getTotalOfReviews()));
