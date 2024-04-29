@@ -22,7 +22,7 @@ public class WorkingTimeController {
 
     @MutationMapping
     public Boolean deleteReaderWorkingTime(
-            @Argument(name = "id") UUID id) {
+            @Argument(name = "workingTimeId") UUID id) {
         return workingTimeService.deleteReaderWorkingTime(id);
     }
 }
