@@ -10,6 +10,7 @@ import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.RequestStateEnum;
+import com.pagepal.capstone.enums.SeminarStatus;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.*;
 import com.pagepal.capstone.repositories.*;
@@ -253,7 +254,7 @@ public class ReaderServiceImpl implements ReaderService {
         ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
 
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        List<Seminar> seminars = seminarRepository.findByReaderAndStartTimeAfterOrderByStartTimeAsc(reader, now);
+        List<Seminar> seminars = seminarRepository.findByReaderAndStatusAndStartTimeAfterOrderByStartTimeAsc(reader, SeminarStatus.ACTIVE, now);
         List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndStartTimeAfterOrderByStartTimeAsc(reader, now);
 
         List<WorkingTimeDto> result = new ArrayList<>();
