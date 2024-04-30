@@ -70,6 +70,8 @@ public class ZoomServiceImpl implements ZoomService {
         requestBody.put("type", 2);
         requestBody.put("start_time", startTime);
         requestBody.put("topic", topic);
+        requestBody.put("waiting_room", false);
+        requestBody.put("join_before_host", true);
 
         MeetingResponse response = webClientMeeting.post()
                 .uri(UriBuilder -> UriBuilder
@@ -108,6 +110,8 @@ public class ZoomServiceImpl implements ZoomService {
         requestBody.put("type", 2);
         requestBody.put("start_time", startTime);
         requestBody.put("topic", topic);
+        requestBody.put("waiting_room", false);
+        requestBody.put("join_before_host", true);
 
         MeetingResponse response = webClientMeeting.post()
                 .uri(UriBuilder -> UriBuilder
