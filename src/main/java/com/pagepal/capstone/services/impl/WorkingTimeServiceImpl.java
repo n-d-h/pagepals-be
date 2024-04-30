@@ -52,6 +52,8 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
                     createWorkingTimeSlot(startDate, endDate, startTime, endTime, reader);
 
                     // Move to the next week
+                    startTime = startTime.plusWeeks(1);
+                    endTime = endTime.plusWeeks(1);
                     startDate = startDate.plusWeeks(1);
                     endDate = endDate.plusWeeks(1);
                 }
@@ -81,6 +83,9 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
         workingTime.setEndTime(Date.from(endTime.atZone(java.time.ZoneId.systemDefault()).toInstant()));
         workingTime.setDate(Date.from(date.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant()));
         workingTime.setReader(reader);
-        workingTimeRepository.save(workingTime);
+        Boolean isExist = workingTimeRepository.existsByStartTimeAndEndTimeAndReaderId(workingTime.getStartTime(), workingTime.getEndTime(), reader.getId());
+        if(!isExist){
+            workingTimeRepository.save(workingTime);
+        }
     }
 }
