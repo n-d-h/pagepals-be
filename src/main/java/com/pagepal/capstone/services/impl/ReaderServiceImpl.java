@@ -9,6 +9,7 @@ import com.pagepal.capstone.dtos.workingtime.WorkingDate;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.entities.postgre.*;
+import com.pagepal.capstone.enums.EventStateEnum;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import com.pagepal.capstone.enums.SeminarStatus;
 import com.pagepal.capstone.enums.Status;
@@ -53,6 +54,7 @@ public class ReaderServiceImpl implements ReaderService {
     private final BookRepository bookRepository;
     private final SeminarRepository seminarRepository;
     private final ServiceRepository serviceRepository;
+    private final EventRepository eventRepository;
 
     @Override
     public List<ReaderDto> getReadersActive() {
@@ -203,50 +205,6 @@ public class ReaderServiceImpl implements ReaderService {
         return list;
     }
 
-//    @Override
-//    public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
-//        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-//        List<ReaderBookDto> books = new ArrayList<>();
-//
-//        if (filter.getPage() == null || filter.getPage() < 0)
-//            filter.setPage(0);
-//        if (filter.getPageSize() == null || filter.getPageSize() < 0)
-//            filter.setPageSize(10);
-//
-//        Pageable pageable;
-//        pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
-//
-//        Page<Book> page;
-//
-//        if (filter.getTitle() == null || filter.getTitle().isEmpty()) {
-//            page = bookRepository.findByReaderId(id, pageable);
-//        } else {
-//            page = bookRepository.findByReaderIdAndTitleContaining(id, filter.getTitle().toLowerCase(), pageable);
-//        }
-//
-//        ReaderBookListDto listReaderDto = new ReaderBookListDto();
-//        if (page != null) {
-//            for (var book : page) {
-//                List<ServiceDto> services = book.getServices().stream().map(ServiceMapper.INSTANCE::toDto).collect(Collectors.toList());
-//                books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(book), services));
-//            }
-//            PagingDto pagingDto = new PagingDto();
-//            pagingDto.setTotalOfPages(page.getTotalPages());
-//            pagingDto.setTotalOfElements(page.getTotalElements());
-//            pagingDto.setSort(page.getSort().toString());
-//            pagingDto.setCurrentPage(page.getNumber());
-//            pagingDto.setPageSize(page.getSize());
-//
-//            listReaderDto.setList(books);
-//            listReaderDto.setPaging(pagingDto);
-//            return listReaderDto;
-//        } else {
-//            listReaderDto.setList(Collections.emptyList());
-//            listReaderDto.setPaging(null);
-//            return listReaderDto;
-//        }
-//    }
-
     @Secured("READER")
     @Override
     public WorkingTimeListRead getReaderWorkingTimes(UUID id) {
@@ -254,7 +212,7 @@ public class ReaderServiceImpl implements ReaderService {
         ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
 
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        List<Seminar> seminars = seminarRepository.findByReaderAndStatusAndStartTimeAfterOrderByStartTimeAsc(reader, SeminarStatus.ACTIVE, now);
+        List<Event> events = eventRepository.findByReaderAndStatusAndStartTimeAfterOrderByStartTimeAsc(reader.getId(), EventStateEnum.ACTIVE, now);
         List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndStartTimeAfterOrderByStartTimeAsc(reader, now);
 
         List<WorkingTimeDto> result = new ArrayList<>();
@@ -264,28 +222,28 @@ public class ReaderServiceImpl implements ReaderService {
             for (WorkingTime workingTime : workingTimes) {
                 result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));
             }
-            if (seminars != null && !seminars.isEmpty()) {
-                for (Seminar seminar : seminars) {
+            if (events != null && !events.isEmpty()) {
+                for (Event event : events) {
                     // calculate start  of the date from seminar start time
-                    LocalDateTime startLocalDate = seminar
-                            .getStartTime()
+                    LocalDateTime startLocalDate = event
+                            .getStartAt()
                             .toInstant()
                             .atZone(vietnamTimeZone)
                             .toLocalDate()
                             .atStartOfDay();
 
 
-                    LocalDateTime endLocalDate = seminar
-                            .getStartTime()
+                    LocalDateTime endLocalDate = event
+                            .getStartAt()
                             .toInstant()
                             .atZone(vietnamTimeZone)
                             .toLocalDateTime()
-                            .plusMinutes(seminar.getDuration());
+                            .plusMinutes(event.getSeminar().getDuration());
 
                     WorkingTimeDto workingTimeDto = new WorkingTimeDto();
                     workingTimeDto.setId(null);
                     workingTimeDto.setDate(Date.from(startLocalDate.atZone(vietnamTimeZone).toInstant()));
-                    workingTimeDto.setStartTime(seminar.getStartTime());
+                    workingTimeDto.setStartTime(event.getStartAt());
                     workingTimeDto.setEndTime(Date.from(endLocalDate.atZone(vietnamTimeZone).toInstant()));
                     workingTimeDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
 
@@ -460,31 +418,31 @@ public class ReaderServiceImpl implements ReaderService {
     @Secured({"READER", "STAFF", "ADMIN"})
     @Override
     public String updateReaderProfile(UUID id, ReaderRequestInputDto readerUpdateDto) {
-        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        Reader isReaderUpdate = readerRepository.findByReaderUpdateReferenceId(id).orElse(null);
-        if (isReaderUpdate != null) throw new RuntimeException("Reader is updating");
-        reader.setIsUpdating(true);
-
-        Reader readerUpdate = new Reader();
-
-        readerUpdate.setNickname(readerUpdateDto.getNickname());
-        readerUpdate.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
-        readerUpdate.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
-        readerUpdate.setCountryAccent(readerUpdateDto.getCountryAccent());
-        readerUpdate.setDescription(readerUpdateDto.getDescription());
-        readerUpdate.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
-        readerUpdate.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
-        readerUpdate.setAvatarUrl(readerUpdateDto.getAvatarUrl());
-        readerUpdate.setUpdatedAt(dateUtils.getCurrentVietnamDate());
-        readerUpdate.setIsUpdating(true);
-        readerUpdate.setReaderUpdateReferenceId(reader.getId());
-
-        readerUpdate = readerRepository.save(readerUpdate);
-
-        if (readerUpdate != null) {
-            reader = readerRepository.save(reader);
-            return reader != null ? "Request update success!" : "Fail!";
-        }
+//        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+//        Reader isReaderUpdate = readerRepository.findByReaderUpdateReferenceId(id).orElse(null);
+//        if (isReaderUpdate != null) throw new RuntimeException("Reader is updating");
+//        reader.setIsUpdating(true);
+//
+//        Reader readerUpdate = new Reader();
+//
+//        readerUpdate.setNickname(readerUpdateDto.getNickname());
+//        readerUpdate.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
+//        readerUpdate.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
+//        readerUpdate.setCountryAccent(readerUpdateDto.getCountryAccent());
+//        readerUpdate.setDescription(readerUpdateDto.getDescription());
+//        readerUpdate.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
+//        readerUpdate.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
+//        readerUpdate.setAvatarUrl(readerUpdateDto.getAvatarUrl());
+//        readerUpdate.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+//        readerUpdate.setIsUpdating(true);
+//        readerUpdate.setReaderUpdateReferenceId(reader.getId());
+//
+//        readerUpdate = readerRepository.save(readerUpdate);
+//
+//        if (readerUpdate != null) {
+//            reader = readerRepository.save(reader);
+//            return reader != null ? "Request update success!" : "Fail!";
+//        }
 
         return "Fail!";
     }
@@ -533,113 +491,6 @@ public class ReaderServiceImpl implements ReaderService {
             list.setPagination(pagingDto);
             return list;
         }
-    }
-
-    @Override
-    public ReaderRequestReadDto getUpdateRequestByReaderId(UUID readerId) {
-
-        var reader = readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-
-        Reader clone = readerRepository.findByReaderUpdateReferenceId(readerId).orElse(null);
-
-        if (clone != null) {
-            return ReaderRequestReadDto.builder()
-                    .id(clone.getId())
-                    .preference(ReaderMapper.INSTANCE.toDto(reader))
-                    .nickname(clone.getNickname())
-                    .genres(Arrays.stream(clone.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
-                    .languages(Arrays.stream(clone.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
-                    .countryAccent(clone.getCountryAccent())
-                    .description(clone.getDescription())
-                    .introductionVideoUrl(clone.getIntroductionVideoUrl())
-                    .audioDescriptionUrl(clone.getAudioDescriptionUrl())
-                    .avatarUrl(clone.getAvatarUrl())
-                    .build();
-        }
-        return null;
-    }
-
-    @Override
-    public ListReaderUpdateRequestDto getAllUpdateRequestedReader(Integer page, Integer pageSize) {
-        if (page == null || page < 0)
-            page = 0;
-        if (pageSize == null || pageSize < 0)
-            pageSize = 10;
-        Pageable pageable = PageRequest.of(page, pageSize);
-        Page<Reader> readers = readerRepository.findByReaderUpdateReferenceIdIsNotNullAndAccountIsNull(pageable);
-        List<ReaderRequestReadDto> list = new ArrayList<>();
-        for (var reader : readers.getContent()) {
-            var oldReader = readerRepository.findById(reader.getReaderUpdateReferenceId()).orElse(null);
-            list.add(
-                    ReaderRequestReadDto.builder()
-                            .id(reader.getId())
-                            .preference(ReaderMapper.INSTANCE.toDto(oldReader))
-                            .nickname(reader.getNickname())
-                            .genres(Arrays.stream(reader.getGenre().split(",")).map(String::trim).collect(Collectors.toList()))
-                            .languages(Arrays.stream(reader.getLanguage().split(",")).map(String::trim).collect(Collectors.toList()))
-                            .countryAccent(reader.getCountryAccent())
-                            .description(reader.getDescription())
-                            .introductionVideoUrl(reader.getIntroductionVideoUrl())
-                            .audioDescriptionUrl(reader.getAudioDescriptionUrl())
-                            .avatarUrl(reader.getAvatarUrl())
-                            .build()
-            );
-        }
-        ListReaderUpdateRequestDto listReaderUpdateRequestDto = new ListReaderUpdateRequestDto();
-        listReaderUpdateRequestDto.setList(list);
-        listReaderUpdateRequestDto.setPagination(
-                new PagingDto(
-                        readers.getTotalPages(),
-                        readers.getTotalElements(),
-                        readers.getSort().toString(),
-                        readers.getNumber(),
-                        readers.getSize()
-                )
-        );
-        return listReaderUpdateRequestDto;
-    }
-
-    @Override
-    public ReaderDto acceptUpdateReader(UUID id) {
-        Reader cloneReader = readerRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Update not found"));
-        Reader reader = readerRepository
-                .findById(cloneReader.getReaderUpdateReferenceId())
-                .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        reader.setNickname(cloneReader.getNickname());
-        reader.setGenre(cloneReader.getGenre());
-        reader.setLanguage(cloneReader.getLanguage());
-        reader.setCountryAccent(cloneReader.getCountryAccent());
-        reader.setDescription(cloneReader.getDescription());
-        reader.setIntroductionVideoUrl(cloneReader.getIntroductionVideoUrl());
-        reader.setAudioDescriptionUrl(cloneReader.getAudioDescriptionUrl());
-        reader.setAvatarUrl(cloneReader.getAvatarUrl());
-        reader.setUpdatedAt(dateUtils.getCurrentVietnamDate());
-        reader.setIsUpdating(false);
-        reader = readerRepository.save(reader);
-        if (reader != null) {
-            readerRepository.delete(cloneReader);
-            return ReaderMapper.INSTANCE.toDto(reader);
-        }
-        return null;
-    }
-
-    @Override
-    public ReaderDto rejectUpdateReader(UUID id) {
-        Reader cloneReader = readerRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Update not found"));
-        Reader reader = readerRepository
-                .findById(cloneReader.getReaderUpdateReferenceId())
-                .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        reader.setIsUpdating(false);
-        readerRepository.delete(cloneReader);
-        reader = readerRepository.save(reader);
-        if (reader != null) {
-            return ReaderMapper.INSTANCE.toDto(reader);
-        }
-        return null;
     }
 
     private static WorkingTimeListRead divideWorkingTimes(List<WorkingTimeDto> workingTimes) {

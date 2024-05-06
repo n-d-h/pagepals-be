@@ -66,7 +66,7 @@ public class ZoomServiceImpl implements ZoomService {
         requestBody.put("agenda", agenda);
         requestBody.put("duration", duration);
         requestBody.put("recurrence", Map.of("type", 1));
-        requestBody.put("settings", Map.of("auto_recording", "cloud"));
+        requestBody.put("settings", Map.of("auto_recording", "cloud", "waiting_room", false));
         requestBody.put("type", 2);
         requestBody.put("start_time", startTime);
         requestBody.put("topic", topic);
@@ -92,9 +92,7 @@ public class ZoomServiceImpl implements ZoomService {
         meeting.setMeetingCode(String.valueOf(response.id));
         meeting.setPassword(response.password);
         meeting.setStartAt(response.start_time);
-        meeting.setLimitOfPerson(0);
         meeting.setState(MeetingEnum.AVAILABLE);
-        meeting.setReader(reader);
         meeting = meetingRepository.save(meeting);
         return meeting;
     }
@@ -106,7 +104,7 @@ public class ZoomServiceImpl implements ZoomService {
         requestBody.put("agenda", agenda);
         requestBody.put("duration", duration);
         requestBody.put("recurrence", Map.of("type", 1));
-        requestBody.put("settings", Map.of("auto_recording", "cloud"));
+        requestBody.put("settings", Map.of("auto_recording", "cloud", "waiting_room", false));
         requestBody.put("type", 2);
         requestBody.put("start_time", startTime);
         requestBody.put("topic", topic);
@@ -132,7 +130,6 @@ public class ZoomServiceImpl implements ZoomService {
         meeting.setMeetingCode(String.valueOf(response.id));
         meeting.setPassword(response.password);
         meeting.setStartAt(response.start_time);
-        meeting.setLimitOfPerson(0);
         meeting.setState(MeetingEnum.AVAILABLE);
         meeting = meetingRepository.save(meeting);
         return meeting;

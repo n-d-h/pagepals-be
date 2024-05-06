@@ -1,20 +1,16 @@
 type Seminar {
     id: ID!
     title: String
-    limitCustomer: Int
-    activeSlot: Int
     description: String
     imageUrl: String
     duration: Int
     price: Int
-    startTime: String
+    rejectReason: String
     status: String
     createdAt: String
     updatedAt: String
     reader: Reader
     book: Book
-    meeting: Meeting
-    bookings: [Booking]
 }
 
 type SeminarBooking {

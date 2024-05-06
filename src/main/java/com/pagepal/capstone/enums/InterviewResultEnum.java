@@ -1,7 +1,7 @@
 package com.pagepal.capstone.enums;
 
-public enum SeminarStatus {
+public enum InterviewResultEnum {
     PENDING,
     ACCEPTED,
-    REJECTED,
+    REJECTED
 }

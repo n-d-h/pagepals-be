@@ -23,6 +23,7 @@ public class ServiceCustomerDto {
     private Double duration;
     private Integer totalOfReview;
     private Integer totalOfBooking;
+    private String imageUrl;
     private Integer rating;
     private Status status;
     private ReaderDto reader;

@@ -17,6 +17,7 @@ public class WriteServiceDto {
     private String description;
     private Double duration;
     private UUID readerId;
+    private String imageUrl;
     private UUID serviceTypeId;
     private GoogleBook book;
 }

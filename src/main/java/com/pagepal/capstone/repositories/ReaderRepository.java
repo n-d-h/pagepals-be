@@ -51,8 +51,4 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
 
     List<Reader> findTop8ByAccountInOrderByRatingDesc(List<Account> account);
 
-    Optional<Reader> findByReaderUpdateReferenceId(UUID id);
-
-    Page<Reader> findByReaderUpdateReferenceIdIsNotNullAndAccountIsNull(Pageable pageable);
-
 }

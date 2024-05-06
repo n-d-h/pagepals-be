@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import jakarta.persistence.*;
@@ -33,20 +34,14 @@ public class Request implements Serializable {
     @Column(name = "description", columnDefinition = "text")
     private String description;
 
+    @Column(name = "reject_reason", columnDefinition = "text")
+    private String rejectReason;
+
     @Column(name = "created_at")
     private Date createdAt;
 
     @Column(name = "updated_at")
     private Date updatedAt;
-
-    @Column(name = "interview_at")
-    private Date interviewAt;
-
-    @Column(name = "meeting_code")
-    private String meetingCode;
-
-    @Column(name = "meeting_password")
-    private String meetingPassword;
 
     @Column(name = "staff_id")
     private UUID staffId;
@@ -66,4 +61,8 @@ public class Request implements Serializable {
     @JoinColumn(name = "reader_id")
     @JsonManagedReference
     private Reader reader;
+
+    @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Interview> interviews;
 }

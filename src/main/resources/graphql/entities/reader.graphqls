@@ -10,16 +10,17 @@ type Reader {
     totalOfReviews: Int
     totalOfBookings: Int
     introductionVideoUrl: String
+    thumbnailUrl: String
     avatarUrl: String
     createdAt: String
     updatedAt: String
     deletedAt: String
     status: Status
     account: Account
+    readerRequestReference: Reader
     workingTimes: [WorkingTime]
     services: [Service]
     requests: [Request]
-    meetings: [Meeting]
 }
 
 type ReaderRead{
@@ -34,12 +35,14 @@ type ReaderRead{
     totalOfReviews: Int
     totalOfBookings: Int
     introductionVideoUrl: String
+    thumbnailUrl: String
     avatarUrl: String
     createdAt: String
     updatedAt: String
     deletedAt: String
     status: Status
     account: AccountRead
+    readerRequestReference: ReaderRead
     services: [Service]
 }
 
@@ -90,6 +93,7 @@ input ReaderUpdate{
     audioDescriptionUrl: String
     description: String
     introductionVideoUrl: String
+    thumbnailUrl: String
     avatarUrl: String
 }
 
@@ -112,6 +116,7 @@ input ReaderRequestInput {
     audioDescriptionUrl: String
     description: String
     introductionVideoUrl: String
+    thumbnailUrl: String
     avatarUrl: String
 }
 
@@ -125,6 +130,7 @@ type ReaderRequestRead {
     audioDescriptionUrl: String
     description: String
     introductionVideoUrl: String
+    thumbnailUrl: String
     avatarUrl: String
 }
 
@@ -142,13 +148,9 @@ extend type Query {
     getReaderBooks(id: ID!, filter: ReaderBookFilter): ReaderBookList
     getListPopularReaders: [Reader]
     getReaderReviews(readerId: ID!, page: Int, pageSize: Int): ListReaderReview
-    getUpdateRequestByReaderId(readerId: ID!): ReaderRequestRead
-    getAllUpdateRequestedReader(page: Int, pageSize: Int): ListUpdateRequestedReader
 }
 
 extend type Mutation {
     updateReader(id: ID!, data: ReaderRequestInput): String
     registerReader(accountId: ID, data: RequestInput): Reader
-    acceptUpdateRequestedReader(id: ID!): Reader
-    rejectUpdateRequestedReader(id: ID!): Reader
 }

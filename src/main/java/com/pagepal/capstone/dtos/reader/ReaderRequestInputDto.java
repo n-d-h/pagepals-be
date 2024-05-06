@@ -16,6 +16,7 @@ public class ReaderRequestInputDto {
     private String countryAccent;
     private String audioDescriptionUrl;
     private String introductionVideoUrl;
+    private String thumbnailUrl;
     private String description;
     private String avatarUrl;
 }

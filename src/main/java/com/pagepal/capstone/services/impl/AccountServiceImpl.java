@@ -440,23 +440,22 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto updateFcmToken(UUID id, String fcmToken, Boolean isWebToken) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new ValidationException("Account not found"));
-        if (Objects.equals(isWebToken, Boolean.TRUE)) {
-            account.setFcmWebToken(fcmToken);
-
+        if (isWebToken) {
             List<Account> accounts = accountRepository.findAllByFcmWebToken(fcmToken);
             for (Account acc : accounts) {
                 acc.setFcmWebToken(null);
             }
             accountRepository.saveAll(accounts);
-
+            account.setFcmWebToken(fcmToken);
+            accountRepository.save(account);
         } else {
-            account.setFcmMobileToken(fcmToken);
-
             List<Account> accounts = accountRepository.findAllByFcmMobileToken(fcmToken);
             for (Account acc : accounts) {
                 acc.setFcmMobileToken(null);
             }
             accountRepository.saveAll(accounts);
+            account.setFcmMobileToken(fcmToken);
+            accountRepository.save(account);
         }
         account.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         account = accountRepository.save(account);

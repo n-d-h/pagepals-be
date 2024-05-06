@@ -16,6 +16,7 @@ public class ReaderUpdateDto {
     private String language;
     private String countryAccent;
     private String audioDescriptionUrl;
+    private String thumbnailUrl;
     private String description;
     private String introductionVideoUrl;
     private String avatarUrl;

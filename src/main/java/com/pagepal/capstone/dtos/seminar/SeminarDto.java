@@ -19,18 +19,14 @@ import java.util.UUID;
 public class SeminarDto {
     private UUID id;
     private String title;
-    private Integer limitCustomer;
-    private Integer activeSlot;
     private String description;
     private String imageUrl;
+    private String rejectReason;
     private Integer duration;
     private Integer price;
-    private String startTime;
     private String status;
     private String createdAt;
     private String updatedAt;
     private Reader reader;
     private Book book;
-    private Meeting meeting;
-    private List<BookingDto> bookings;
 }

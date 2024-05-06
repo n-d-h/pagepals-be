@@ -33,4 +33,7 @@ public interface WebhookService {
      */
     void sendWebhook(Webhook webhook, Boolean isWarning) throws IOException;
     void sendWebhookWithData(Account account, Map<String, String> content, Boolean isReader, Boolean isWarning);
+
+    void sendWebhookWithDataSchedule(String title, Map<String, String> content, Boolean isWarning);
+
 }

@@ -22,7 +22,7 @@ public class SeminarController {
             @Argument(name = "sort") String sort,
             @Argument(name = "state") String state
     ) {
-        return seminarService.getSeminarList(page, pageSize, sort, state);
+        return null;
     }
 
     @QueryMapping(name = "getAllSeminarsByReaderId")
@@ -34,7 +34,7 @@ public class SeminarController {
             @Argument(name = "state") String state,
             @Argument(name = "isCustomer") Boolean isCustomer
     ) {
-        return seminarService.getSeminarListByReaderId(readerId, page, pageSize, sort, state, isCustomer);
+        return null;
     }
 
     @QueryMapping(name = "getAllSeminarsByCustomerId")
@@ -44,7 +44,7 @@ public class SeminarController {
             @Argument(name = "pageSize") Integer pageSize,
             @Argument(name = "sort") String sort
     ) {
-        return seminarService.getSeminarListByCustomerId(customerId, page, pageSize, sort);
+        return null;
     }
 
     @QueryMapping(name = "getAllSeminarsNotJoinByCustomerId")
@@ -55,19 +55,19 @@ public class SeminarController {
             @Argument(name = "sort") String sort,
             @Argument(name = "state") String state
     ) {
-        return seminarService.getSeminarListNotJoinByCustomerId(customerId, page, pageSize, sort, state);
+        return null;
     }
 
     @QueryMapping(name = "getSeminarById")
     public SeminarDto getSeminarById(@Argument(name = "id") UUID id) {
-        return seminarService.getSeminar(id);
+        return null;
     }
 
     @MutationMapping(name = "createSeminar")
     public SeminarDto createSeminar(
             @Argument(name = "seminar") SeminarCreateDto dto
     ) {
-        return seminarService.createSeminar(dto);
+        return null;
     }
 
     @MutationMapping(name = "updateSeminar")
@@ -76,12 +76,12 @@ public class SeminarController {
             @Argument(name = "id") UUID id,
             @Argument(name = "seminar") SeminarUpdateDto dto
     ) {
-        return seminarService.updateSeminar(readerId, id, dto);
+        return null;
     }
 
     @MutationMapping(name = "deleteSeminar")
     public SeminarDto deleteSeminar(@Argument(name = "id") UUID id) {
-        return seminarService.deleteSeminar(id);
+        return null;
     }
 
     @MutationMapping(name = "joinSeminar")
@@ -89,11 +89,11 @@ public class SeminarController {
             @Argument(name = "seminarId") UUID seminarId,
             @Argument(name = "customerId") UUID customerId
     ) {
-        return seminarService.bookSeminar(seminarId, customerId);
+        return null;
     }
 
     @MutationMapping(name = "completeSeminar")
     public SeminarDto completeSeminar(@Argument(name = "seminarId") UUID seminarId) {
-        return seminarService.completeSeminar(seminarId);
+        return null;
     }
 }

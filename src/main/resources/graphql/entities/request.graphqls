@@ -4,13 +4,33 @@ type Request {
     state: RequestStateEnum
     createdAt: String
     updatedAt: String
-    interviewAt: String
     staffId: ID
     staffName: String
-    meetingCode: String
-    meetingPassword: String
+    rejectReason: String
     answers: [Answer]
     reader: ReaderRead
+}
+
+type Interview {
+    id: ID!
+    note: String
+    interviewAt: String
+    state: InterviewStateEnum
+    result: InterviewResultEnum
+    meeting: Meeting
+    request: Request
+}
+
+enum InterviewStateEnum{
+    PENDING
+    DONE
+    MISSED
+}
+
+enum InterviewResultEnum{
+    PENDING
+    ACCEPTED
+    REJECTED
 }
 
 input RequestInput{

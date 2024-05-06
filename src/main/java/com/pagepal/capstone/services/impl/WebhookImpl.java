@@ -45,7 +45,7 @@ public class WebhookImpl implements WebhookService {
                 if (embed.getColor() != null) {
                     int rgb;
 
-                    if(isWarning == Boolean.TRUE) {
+                    if (isWarning == Boolean.TRUE) {
                         rgb = 16711680;
                     } else {
                         rgb = 65280;
@@ -146,6 +146,29 @@ public class WebhookImpl implements WebhookService {
                 String imageAvatar = customer.getImageUrl();
                 embedObject.setAuthor(username, null, imageAvatar);
             }
+
+            for (Map.Entry<String, String> entry : content.entrySet()) {
+                embedObject.addField(entry.getKey(), entry.getValue(), false);
+            }
+
+            webhook.addEmbed(embedObject);
+            this.sendWebhook(webhook, isWarning);
+        } catch (Exception e) {
+            System.out.println("Webhooks fails");
+        }
+    }
+
+    @Override
+    public void sendWebhookWithDataSchedule(String title, Map<String, String> content, Boolean isWarning) {
+        try {
+            Webhook webhook = new Webhook();
+            webhook.setContent("PagePal Schedule Notification");
+            webhook.setWebhookUrl("https://discord.com/api/webhooks/1206078678518206504/6VsXDrAJgmzOVXXwFLbYa7ZO2iD5xQ4n0UsrFzeCBaj03UHJ8gUPvu-7DLVgMr3zHHDU");
+            webhook.setUsername("PagePal");
+            webhook.setAvatarUrl("https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2FP.png?alt=media&token=62ff0c5e-f776-4678-b381-c89ee52152e5");
+            EmbedObject embedObject = new EmbedObject();
+
+            embedObject.setAuthor(title, null, null);
 
             for (Map.Entry<String, String> entry : content.entrySet()) {
                 embedObject.addField(entry.getKey(), entry.getValue(), false);

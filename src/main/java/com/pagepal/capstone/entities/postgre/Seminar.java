@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.SeminarStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
@@ -15,12 +12,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Builder
-@Table(name = "SEMINAR")
-@Data
-@NoArgsConstructor
+@Setter
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "SEMINAR")
 public class Seminar {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,26 +31,20 @@ public class Seminar {
     @Column(name = "title", columnDefinition = "text")
     private String title;
 
-    @Column(name = "limit_customer")
-    private Integer limitCustomer;
-
-    @Column(name = "active_slot")
-    private Integer activeSlot;
-
     @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @Column(name = "imageUrl", columnDefinition = "text")
     private String imageUrl;
 
+    @Column(name = "reject_reason", columnDefinition = "text")
+    private String rejectReason;
+
     @Column(name = "duration")
     private Integer duration;
 
     @Column(name = "price")
     private Integer price;
-
-    @Column(name = "start_time")
-    private Date startTime;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -75,12 +66,7 @@ public class Seminar {
     @JsonManagedReference
     private Book book;
 
-    @OneToOne
-    @JoinColumn(name = "meeting_id")
-    @JsonManagedReference
-    private Meeting meeting;
-
-    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "seminar")
     @JsonBackReference
-    private List<Booking> bookings;
+    private List<Event> events;
 }

@@ -1,0 +1,16 @@
+type Event {
+    id: ID!
+    startAt: String
+    createdAt: String
+    limitCustomer: Int
+    activeSlot: Int
+    isFeatured: Boolean
+    state: EventStateEnum
+    seminar: Seminar
+    bookings: [Booking]
+}
+
+enum EventStateEnum {
+    ACTIVE
+    INACTIVE
+}

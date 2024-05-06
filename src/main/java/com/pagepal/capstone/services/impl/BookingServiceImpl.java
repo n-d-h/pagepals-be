@@ -673,7 +673,7 @@ public class BookingServiceImpl implements BookingService {
             service.setRating(newServiceRating);
             serviceRepository.save(service);
         }else{
-            reader = booking.getSeminar().getReader();
+            reader = booking.getEvent().getSeminar().getReader();
         }
 
         int rating = (reader.getRating() * reader.getTotalOfReviews());

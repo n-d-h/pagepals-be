@@ -299,7 +299,6 @@ public class ReportServiceImpl implements ReportService {
         reader.setStatus(Status.INACTIVE);
         reader.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         reader = readerRepository.save(reader);
-        readerRepository.findByReaderUpdateReferenceId(readerId).ifPresent(readerRepository::delete);
 
         if (reader != null) {
 

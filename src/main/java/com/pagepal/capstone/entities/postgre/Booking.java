@@ -86,9 +86,9 @@ public class Booking implements Serializable {
     private Service service;
 
     @ManyToOne
-    @JoinColumn(name = "seminar_id")
+    @JoinColumn(name = "event_id")
     @JsonManagedReference
-    private Seminar seminar;
+    private Event event;
 
     @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
     @JsonBackReference

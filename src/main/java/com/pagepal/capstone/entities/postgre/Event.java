@@ -2,7 +2,7 @@ package com.pagepal.capstone.entities.postgre;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pagepal.capstone.enums.MeetingEnum;
+import com.pagepal.capstone.enums.EventStateEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -20,8 +19,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "MEETING")
-public class Meeting implements Serializable {
+@Table(name = "EVENT")
+public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
@@ -31,31 +30,35 @@ public class Meeting implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "meeting_code")
-    private String meetingCode;
-
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "start_at")
     private Date startAt;
 
-    @Column(name = "create_at")
-    private Date createAt;
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @Column(name = "limit_customer")
+    private Integer limitCustomer;
+
+    @Column(name = "active_slot")
+    private Integer activeSlot;
+
+    @Column(name = "is_featured")
+    private Boolean isFeatured;
 
     @Column(name = "state")
-    @Enumerated(EnumType.STRING)
-    private MeetingEnum state;
+    private EventStateEnum state;
 
-    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "seminar_id")
+    @JsonManagedReference
+    private Seminar seminar;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Booking> bookings;
 
-    @OneToOne(mappedBy = "meeting")
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
     @JsonBackReference
-    private Interview interview;
+    private List<BannerAds> bannerAds;
 
-    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<MeetingTimeline> meetingTimelines;
 }

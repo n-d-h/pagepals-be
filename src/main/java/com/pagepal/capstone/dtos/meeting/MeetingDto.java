@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -25,10 +26,8 @@ public class MeetingDto {
 
     private Date createAt;
 
-    private Integer limitOfPerson;
-
     private MeetingEnum state;
 
-    private Reader reader;
+    private List<MeetingTimelineDto> timelines;
 
 }

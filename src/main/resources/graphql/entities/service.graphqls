@@ -6,6 +6,7 @@ type Service {
     duration: Float
     totalOfReview: Int
     totalOfBooking: Int
+    imageUrl: String
     rating: Int
     status: Status
     reader: Reader
@@ -38,6 +39,7 @@ input ServiceInput {
     duration: Float
     readerId: ID!
     serviceTypeId: ID!
+    imageUrl: String
     book: GoogleBookInput
 }
 

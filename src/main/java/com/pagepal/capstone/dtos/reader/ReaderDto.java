@@ -1,6 +1,7 @@
 package com.pagepal.capstone.dtos.reader;
 
 import com.pagepal.capstone.entities.postgre.Account;
+import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Service;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.EnumType;
@@ -35,6 +36,8 @@ public class ReaderDto {
 
     private String avatarUrl;
 
+    private String thumbnailUrl;
+
     private String description;
 
     private Integer totalOfReviews;
@@ -53,6 +56,8 @@ public class ReaderDto {
     private Status status = Status.ACTIVE;
 
     private Account account;
+
+    private ReaderDto readerRequestReference;
 
     private List<Service> services;
 

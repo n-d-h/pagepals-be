@@ -1,6 +1,8 @@
 package com.pagepal.capstone.dtos.request;
 
+import com.pagepal.capstone.dtos.interview.InterviewDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
+import com.pagepal.capstone.entities.postgre.Interview;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +22,10 @@ public class RequestDto {
     private RequestStateEnum state;
     private String createdAt;
     private String updatedAt;
-    private String interviewAt;
     private UUID staffId;
     private String staffName;
-    private String meetingCode;
-    private String meetingPassword;
+    private String rejectReason;
     private List<AnswerDto> answers;
+    private List<InterviewDto> interviews;
     private ReaderDto reader;
 }

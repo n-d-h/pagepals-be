@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -43,6 +45,9 @@ public class Service implements Serializable {
     @Column(name = "duration")
     private Double duration;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name = "total_of_review")
     private Integer totalOfReview;
 
@@ -73,4 +78,8 @@ public class Service implements Serializable {
     @JoinColumn(name = "service_type_id")
     @JsonManagedReference
     private ServiceType serviceType;
+
+    @OneToMany(mappedBy = "service")
+    @JsonBackReference
+    private List<Booking> bookings;
 }

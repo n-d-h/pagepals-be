@@ -7,6 +7,7 @@ import com.pagepal.capstone.services.MeetingService;
 import com.pagepal.capstone.services.ZoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
@@ -30,5 +31,11 @@ public class MeetingController {
     @QueryMapping
     public AuthZoomResponseDto getAuthZoom(){
         return zoomService.getZoomToken();
+    }
+
+    @MutationMapping
+    public Boolean sendStatusChange(@Argument("userName") String userName, @Argument("event") String event){
+        meetingService.sendStatusChange(userName, event);
+        return true;
     }
 }

@@ -63,6 +63,9 @@ public class Reader implements Serializable {
     @Column(name = "introduction_video_url", columnDefinition = "text")
     private String introductionVideoUrl;
 
+    @Column(name = "thumbnail_url", columnDefinition = "text")
+    private String thumbnailUrl;
+
     @Column(name = "avatar_url", columnDefinition = "text")
     private String avatarUrl;
 
@@ -82,11 +85,13 @@ public class Reader implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    @Column(name = "reader_update_reference_id")
-    private UUID readerUpdateReferenceId;
-
     @Column(name = "is_updating")
     private Boolean isUpdating;
+
+    @ManyToOne
+    @JoinColumn(name = "reader_request_reference_id")
+    @JsonManagedReference
+    private Reader readerRequestReference;
 
     @OneToOne
     @JoinColumn(name = "account_id")
@@ -104,10 +109,6 @@ public class Reader implements Serializable {
     @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Request> requests;
-
-    @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<Meeting> meetings;
 
     @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
     @JsonBackReference

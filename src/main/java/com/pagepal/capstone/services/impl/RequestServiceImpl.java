@@ -65,73 +65,73 @@ public class RequestServiceImpl implements RequestService {
     @Secured("STAFF")
     @Override
     public RequestDto updateRequestInterview(UUID staffId, UUID requestId, String interviewAt, String description) throws ParseException {
-        Request request = requestRepository.findById(requestId).orElseThrow(
-                () -> new EntityNotFoundException("Request not found")
-        );
-        Account account = accountRepository.findById(staffId).orElseThrow(
-                () -> new EntityNotFoundException("Staff not found")
-        );
-
-        Date startDate = dateFormat.parse(interviewAt);
-
-        Meeting meeting = zoomService.createInterviewMeeting("Interview for " + request.getReader().getAccount().getEmail(),
-                120, "Interview become reader", startDate);
-        if (meeting == null) {
-            throw new RuntimeException("Failed to create meeting");
-        }
-        request.setMeetingCode(meeting.getMeetingCode());
-        request.setMeetingPassword(meeting.getPassword());
-        request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
-        request.setInterviewAt(startDate);
-        request.setStaffId(account.getId());
-        request.setStaffName(account.getFullName());
-        request.setDescription(description);
-        request.setState(RequestStateEnum.INTERVIEW_PENDING);
-
-        request = requestRepository.save(request);
-
-        if (request != null) {
-            Reader reader = request.getReader();
-            String email = reader.getAccount().getEmail();
-            String subject = "[PagePals]: Interview schedule";
-            String emailBody = getUpdateRequestInterviewEmailBody(reader, startDate, requestId);
-            if (email != null && !email.isEmpty()) {
-                emailService.sendSimpleEmail(email, subject, emailBody);
-
-                NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
-                        .accountId(reader.getAccount().getId())
-                        .content("You have an interview schedule at: " + startDate + "; Please check your request on our website.")
-                        .title("Interview schedule")
-                        .notificationRole(NotificationRoleEnum.CUSTOMER)
-                        .build();
-
-                notificationService.createNotification(notificationCreateDto);
-
-                String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
-                String readerFcmWebToken = reader.getAccount().getFcmWebToken();
-
-                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
-                    firebaseMessagingService.sendNotificationToDevice(
-                            pagePalLogoUrl,
-                            "Interview schedule",
-                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
-                            Map.of("requestId", request.getId().toString()),
-                            readerFcmMobileToken
-                    );
-                }
-
-                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
-                    firebaseMessagingService.sendNotificationToDevice(
-                            pagePalLogoUrl,
-                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
-                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
-                            Map.of("requestId", request.getId().toString()),
-                            readerFcmWebToken
-                    );
-                }
-            }
-            return RequestMapper.INSTANCE.toDto(request);
-        }
+//        Request request = requestRepository.findById(requestId).orElseThrow(
+//                () -> new EntityNotFoundException("Request not found")
+//        );
+//        Account account = accountRepository.findById(staffId).orElseThrow(
+//                () -> new EntityNotFoundException("Staff not found")
+//        );
+//
+//        Date startDate = dateFormat.parse(interviewAt);
+//
+//        Meeting meeting = zoomService.createInterviewMeeting("Interview for " + request.getReader().getAccount().getEmail(),
+//                120, "Interview become reader", startDate);
+//        if (meeting == null) {
+//            throw new RuntimeException("Failed to create meeting");
+//        }
+//        request.setMeetingCode(meeting.getMeetingCode());
+//        request.setMeetingPassword(meeting.getPassword());
+//        request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+//        request.setInterviewAt(startDate);
+//        request.setStaffId(account.getId());
+//        request.setStaffName(account.getFullName());
+//        request.setDescription(description);
+//        request.setState(RequestStateEnum.INTERVIEW_PENDING);
+//
+//        request = requestRepository.save(request);
+//
+//        if (request != null) {
+//            Reader reader = request.getReader();
+//            String email = reader.getAccount().getEmail();
+//            String subject = "[PagePals]: Interview schedule";
+//            String emailBody = getUpdateRequestInterviewEmailBody(reader, startDate, requestId);
+//            if (email != null && !email.isEmpty()) {
+//                emailService.sendSimpleEmail(email, subject, emailBody);
+//
+//                NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
+//                        .accountId(reader.getAccount().getId())
+//                        .content("You have an interview schedule at: " + startDate + "; Please check your request on our website.")
+//                        .title("Interview schedule")
+//                        .notificationRole(NotificationRoleEnum.CUSTOMER)
+//                        .build();
+//
+//                notificationService.createNotification(notificationCreateDto);
+//
+//                String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
+//                String readerFcmWebToken = reader.getAccount().getFcmWebToken();
+//
+//                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
+//                    firebaseMessagingService.sendNotificationToDevice(
+//                            pagePalLogoUrl,
+//                            "Interview schedule",
+//                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
+//                            Map.of("requestId", request.getId().toString()),
+//                            readerFcmMobileToken
+//                    );
+//                }
+//
+//                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
+//                    firebaseMessagingService.sendNotificationToDevice(
+//                            pagePalLogoUrl,
+//                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
+//                            "You have an interview schedule at: " + startDate + "; Please check your email for more details.",
+//                            Map.of("requestId", request.getId().toString()),
+//                            readerFcmWebToken
+//                    );
+//                }
+//            }
+//            return RequestMapper.INSTANCE.toDto(request);
+//        }
         return null;
     }
 

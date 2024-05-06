@@ -24,6 +24,7 @@ public class ServiceDto {
     private Integer totalOfReview;
     private Integer totalOfBooking;
     private Integer rating;
+    private String imageUrl;
     private Status status;
     private Reader reader;
     private Book book;

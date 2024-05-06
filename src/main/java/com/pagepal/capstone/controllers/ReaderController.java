@@ -84,25 +84,4 @@ public class ReaderController {
                                                 @Argument(name = "pageSize") Integer pageSize) {
         return readerService.getReaderReviewsByReaderId(id, page, pageSize);
     }
-
-    @QueryMapping
-    public ReaderRequestReadDto getUpdateRequestByReaderId(@Argument("readerId") UUID readerId) {
-        return readerService.getUpdateRequestByReaderId(readerId);
-    }
-
-    @QueryMapping
-    public ListReaderUpdateRequestDto getAllUpdateRequestedReader(@Argument(name = "page") Integer page,
-                                                                 @Argument(name = "pageSize") Integer pageSize) {
-        return readerService.getAllUpdateRequestedReader(page, pageSize);
-    }
-
-    @MutationMapping
-    public ReaderDto acceptUpdateRequestedReader(@Argument("id") UUID id) {
-        return readerService.acceptUpdateReader(id);
-    }
-
-    @MutationMapping
-    public ReaderDto rejectUpdateRequestedReader(@Argument("id") UUID id) {
-        return readerService.rejectUpdateReader(id);
-    }
 }

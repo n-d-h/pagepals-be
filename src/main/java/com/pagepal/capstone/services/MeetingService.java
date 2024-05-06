@@ -5,4 +5,6 @@ import com.pagepal.capstone.dtos.meeting.MeetingDto;
 public interface MeetingService {
 
     MeetingDto getMeetingById(String id);
+
+    void sendStatusChange(String userName, String event);
 }

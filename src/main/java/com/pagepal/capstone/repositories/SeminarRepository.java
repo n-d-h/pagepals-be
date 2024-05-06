@@ -20,36 +20,5 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
 
     Page<Seminar> findAllByReaderId(UUID readerId, Pageable pageable);
 
-    Page<Seminar> findAllByReaderIdAndStartTimeAfter(UUID readerId, Date startTime, Pageable pageable);
-
-    @Query("SELECT s FROM Seminar s" +
-            " WHERE s.reader = :reader" +
-            " AND EXTRACT(DAY FROM s.startTime) = EXTRACT(DAY FROM CAST(:startDate AS timestamp))" +
-            " AND EXTRACT(MONTH FROM s.startTime) = EXTRACT(MONTH FROM CAST(:startDate AS timestamp))" +
-            " AND EXTRACT(YEAR FROM s.startTime) = EXTRACT(YEAR FROM CAST(:startDate AS timestamp))")
-    List<Seminar> findByReaderAndStartDate(Reader reader, Date startDate);
-
-    List<Seminar> findByReaderAndStatusAndStartTimeAfterOrderByStartTimeAsc(Reader reader, SeminarStatus status, Date startDate);
-
-
-    @Query("""
-        SELECT s FROM Seminar s
-        JOIN s.bookings b
-        WHERE b.customer.id = :customerId
-    """)
-    Page<Seminar> findAllByCustomerId(UUID customerId, Pageable pageable);
-
-    @Query("""
-        SELECT s FROM Seminar s
-        WHERE s.id NOT IN (
-            SELECT s.id FROM Seminar s
-            JOIN s.bookings b
-            WHERE b.customer.id = :customerId
-            AND b.state.name = 'PENDING'
-        )
-        AND s.status = :state
-    """)
-    Page<Seminar> findAllByCustomerIdNotJoin(UUID customerId, SeminarStatus state, Pageable pageable);
-
     List<Seminar> findByReaderIdAndStatus(UUID reader_id, SeminarStatus status);
 }

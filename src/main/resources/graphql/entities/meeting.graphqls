@@ -4,11 +4,17 @@ type Meeting {
     password:String
     startAt: String
     createAt: String
-    limitOfPerson: Int
     state: MeetingEnum
-    reader: Reader
+    timelines: [MeetingTimeline]
 }
 
+type MeetingTimeline{
+    id: ID!
+    userName: String
+    action: String
+    time: String
+    meeting: Meeting
+}
 
 type RecordFile {
     id: String
@@ -56,4 +62,8 @@ extend type Query {
     getRecording(roomId: String): Recording
     getMeetingById(roomId: String): Meeting
     getAuthZoom: AuthZoom
+}
+
+extend type Mutation {
+    sendStatusChange(userName: String, event: String): Boolean
 }

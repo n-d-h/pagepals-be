@@ -17,7 +17,6 @@ public interface RequestMapper {
 
     @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "toDateFormat")
     @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "toDateFormat")
-    @Mapping(target = "interviewAt", source = "interviewAt", qualifiedByName = "toDateFormat")
     RequestDto toDto(Request request);
 
     @Named("toDateFormat")
