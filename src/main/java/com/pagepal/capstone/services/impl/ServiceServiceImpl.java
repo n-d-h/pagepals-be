@@ -69,6 +69,7 @@ public class ServiceServiceImpl implements ServiceService {
             service.setId(id);
             service.setPrice(writeServiceDto.getPrice());
             service.setDescription(writeServiceDto.getDescription());
+            service.setImageUrl(writeServiceDto.getImageUrl());
         }
         // If service is in pending booking, we throw exception
         else if (Boolean.TRUE.equals(checkServiceIsInPendingBooking(id))) {
@@ -111,6 +112,7 @@ public class ServiceServiceImpl implements ServiceService {
         var service = new com.pagepal.capstone.entities.postgre.Service();
         service.setPrice(writeServiceDto.getPrice());
         service.setDescription(writeServiceDto.getDescription());
+        service.setImageUrl(writeServiceDto.getImageUrl());
         service.setDuration(existingService.getDuration());
         service.setServiceType(existingService.getServiceType());
         service.setReader(existingService.getReader());
@@ -184,6 +186,7 @@ public class ServiceServiceImpl implements ServiceService {
         service.setServiceType(serviceType);
         service.setReader(reader);
         service.setBook(book);
+        service.setImageUrl(writeServiceDto.getImageUrl());
         service.setCreatedAt(dateUtils.getCurrentVietnamDate());
         service.setRating(0);
         service.setTotalOfBooking(0);

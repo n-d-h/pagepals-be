@@ -4,11 +4,9 @@ import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.dtos.seminar.*;
 import com.pagepal.capstone.entities.postgre.*;
-import com.pagepal.capstone.enums.CurrencyEnum;
-import com.pagepal.capstone.enums.SeminarStatus;
-import com.pagepal.capstone.enums.TransactionStatusEnum;
-import com.pagepal.capstone.enums.TransactionTypeEnum;
+import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
+import com.pagepal.capstone.mappers.SeminarMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.BookService;
 import com.pagepal.capstone.services.SeminarService;
@@ -24,6 +22,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.time.*;
+import java.time.temporal.*;
+import java.util.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,130 +41,165 @@ import java.util.concurrent.TimeUnit;
 @Transactional
 @RequiredArgsConstructor
 public class SeminarServiceImpl implements SeminarService {
-	private final BookingStateRepository bookingStateRepository;
-	private final TransactionRepository transactionRepository;
-	private final CustomerRepository customerRepository;
-	private final SeminarRepository seminarRepository;
-	private final ReaderRepository readerRepository;
-	private final BookRepository bookRepository;
-	private final BookingRepository bookingRepository;
-	private final MeetingRepository meetingRepository;
-	private final ZoomServiceImpl zoomService;
-	private final DateUtils dateUtils;
-	private final BookService bookService;
-	private final SettingRepository settingRepository;
-	private final WalletRepository walletRepository;
+    private final BookingStateRepository bookingStateRepository;
+    private final TransactionRepository transactionRepository;
+    private final CustomerRepository customerRepository;
+    private final SeminarRepository seminarRepository;
+    private final ReaderRepository readerRepository;
+    private final BookRepository bookRepository;
+    private final BookingRepository bookingRepository;
+    private final MeetingRepository meetingRepository;
+    private final ZoomServiceImpl zoomService;
+    private final DateUtils dateUtils;
+    private final BookService bookService;
+    private final SettingRepository settingRepository;
+    private final WalletRepository walletRepository;
 
-	private final String revenueString = "REVENUE_SHARE";
-	private final String tokenPriceString = "TOKEN_PRICE";
+    private final String revenueString = "REVENUE_SHARE";
+    private final String tokenPriceString = "TOKEN_PRICE";
 
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final int MAX_SEMINARS_PER_DAY = 5;
+    private static final int MAX_SEMINARS_PER_WEEK = 12;
+    private static final int MAX_SEMINARS_PER_MONTH = 25;
 
-//	@Secured({ "READER" })
-//	@Override
-//	public SeminarDto createSeminar(SeminarCreateDto seminarCreateDto) {
-//		try {
-//			Reader reader = this.checkWorkingTime(seminarCreateDto.getReaderId(), seminarCreateDto, null, null);
-//
-//			Book book = bookRepository.findByExternalId(seminarCreateDto.getBook().getId()).orElse(null);
-//
-//			if(book == null) {
-//				book = bookService.createNewBook(seminarCreateDto.getBook());
-//			}
-//
-//			Date startTime = dateFormat.parse(seminarCreateDto.getStartTime());
-//
-//			Meeting meeting = zoomService
-//					.createMeeting(
-//							reader,
-//							seminarCreateDto.getDescription(),
-//							seminarCreateDto.getDuration(),
-//							seminarCreateDto.getTitle(),
-//							startTime
-//					);
-//
-//			if(meeting == null) {
-//				throw new RuntimeException("Cannot create meeting");
-//			}
-//
-//			Seminar seminar = Seminar.builder()
-//					.title(seminarCreateDto.getTitle())
-//					.limitCustomer(seminarCreateDto.getLimitCustomer())
-//					.activeSlot(seminarCreateDto.getActiveSlot())
-//					.description(seminarCreateDto.getDescription())
-//					.imageUrl(seminarCreateDto.getImageUrl())
-//					.duration(seminarCreateDto.getDuration())
-//					.price(seminarCreateDto.getPrice())
-//					.status(SeminarStatus.ACTIVE)
-//					.createdAt(dateUtils.getCurrentVietnamDate())
-//					.updatedAt(dateUtils.getCurrentVietnamDate())
-//					.startTime(startTime)
-//					.reader(reader)
-//					.book(book)
-//					.meeting(meeting)
-//					.build();
-//
-//			seminar = seminarRepository.save(seminar);
-//
-//			if(seminar == null) {
-//				throw new RuntimeException("Cannot create seminar");
-//			}
-//
-//			return toSeminarDto(seminar);
-//		} catch(Exception e) {
-//			throw new RuntimeException("Cannot create seminar:" + e.getMessage());
-//		}
-//	}
-//
-//	@Secured({ "READER" })
-//	@Override
-//	public SeminarDto updateSeminar(UUID readerId, UUID id, SeminarUpdateDto seminarUpdateDto) {
-//		try {
-//			Seminar seminar = seminarRepository.findById(id).orElse(null);
-//			if(seminar == null) {
-//				throw new RuntimeException("Seminar not found");
-//			}
-//
-//			List<Booking> bookings = seminar.getBookings();
-//			if(bookings.size() > 0) {
-//				throw new ValidationException("Seminar is booked, Cannot update");
-//			}
-//
-//			Reader reader = this.checkWorkingTime(readerId, null, id, seminarUpdateDto);
-//
-//			Date startTime = dateFormat.parse(seminarUpdateDto.getStartTime());
-//
-//			Meeting meeting = zoomService
-//					.createMeeting(
-//							reader,
-//							seminarUpdateDto.getDescription(),
-//							seminarUpdateDto.getDuration(),
-//							seminarUpdateDto.getTitle(),
-//							startTime
-//					);
-//
-//			if(meeting == null) {
-//				throw new RuntimeException("Cannot create meeting");
-//			}
-//
-//			seminar.setTitle(seminarUpdateDto.getTitle());
-//			seminar.setLimitCustomer(seminarUpdateDto.getLimitCustomer());
-//			seminar.setActiveSlot(seminarUpdateDto.getActiveSlot());
-//			seminar.setDescription(seminarUpdateDto.getDescription());
-//			seminar.setImageUrl(seminarUpdateDto.getImageUrl());
-//			seminar.setDuration(seminarUpdateDto.getDuration());
-//			seminar.setPrice(seminarUpdateDto.getPrice());
-//			seminar.setUpdatedAt(dateUtils.getCurrentVietnamDate());
-//			seminar.setStartTime(startTime);
-//			seminar.setReader(reader);
-//			seminar.setMeeting(meeting);
-//
-//			var data = seminarRepository.save(seminar);
-//			return toSeminarDto(data);
-//		} catch(Exception e) {
-//			throw new RuntimeException(e.getMessage());
-//		}
-//	}
+    // Check if creating a seminar exceeds the limit
+    public boolean canCreateSeminar(UUID readerId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
+        LocalDateTime startOfWeek = startOfDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDateTime startOfMonth = startOfDay.with(TemporalAdjusters.firstDayOfMonth());
+
+        // convert to date
+        Date nowDate = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+        Date startOfDayDate = Date.from(startOfDay.atZone(ZoneId.systemDefault()).toInstant());
+        Date startOfWeekDate = Date.from(startOfWeek.atZone(ZoneId.systemDefault()).toInstant());
+        Date startOfMonthDate = Date.from(startOfMonth.atZone(ZoneId.systemDefault()).toInstant());
+
+        long seminarsToday = seminarRepository.countByReaderIdAndCreatedAtBetween(readerId, startOfDayDate, nowDate);
+        long seminarsThisWeek = seminarRepository.countByReaderIdAndCreatedAtBetween(readerId, startOfWeekDate, nowDate);
+        long seminarsThisMonth = seminarRepository.countByReaderIdAndCreatedAtBetween(readerId, startOfMonthDate, nowDate);
+
+        return seminarsToday <= MAX_SEMINARS_PER_DAY &&
+                seminarsThisWeek <= MAX_SEMINARS_PER_WEEK &&
+                seminarsThisMonth <= MAX_SEMINARS_PER_MONTH;
+    }
+
+    @Secured({"READER"})
+    @Override
+    public SeminarDto createSeminarRequest(SeminarCreateDto seminarCreateDto) {
+
+        Reader reader = readerRepository.findById(seminarCreateDto.getReaderId()).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
+        if (Boolean.FALSE.equals(canCreateSeminar(reader.getId()))) {
+            throw new ValidationException("Reader exceeds the limit of creating seminar requests");
+        }
+
+        Book book = bookRepository.findByExternalId(seminarCreateDto.getBook().getId()).orElse(null);
+
+        if (book == null) {
+            book = bookService.createNewBook(seminarCreateDto.getBook());
+        }
+
+
+        Seminar seminar = new Seminar();
+        seminar.setTitle(seminarCreateDto.getTitle());
+        seminar.setDescription(seminarCreateDto.getDescription());
+        seminar.setImageUrl(seminarCreateDto.getImageUrl());
+        seminar.setRejectReason(null);
+        seminar.setDuration(seminarCreateDto.getDuration());
+        seminar.setState(SeminarStatus.PENDING);
+        seminar.setCreatedAt(dateUtils.getCurrentVietnamDate());
+        seminar.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        seminar.setReader(reader);
+        seminar.setBook(book);
+        seminar.setEvents(null);
+        seminar.setStatus(Status.INACTIVE);
+
+        return SeminarMapper.INSTANCE.toDto(seminarRepository.save(seminar));
+
+    }
+
+    @Secured({"READER"})
+    @Override
+    public SeminarDto updateSeminarRequest(SeminarUpdateDto seminarUpdateDto) {
+
+        Seminar seminar = seminarRepository.findById(seminarUpdateDto.getId()).orElseThrow(() -> new EntityNotFoundException("Seminar not found"));
+
+        if (seminar.getState() != SeminarStatus.PENDING) {
+            throw new ValidationException("Seminar is not available for update");
+        }
+
+        seminar.setId(seminarUpdateDto.getId());
+        seminar.setTitle(seminarUpdateDto.getTitle());
+        seminar.setDescription(seminarUpdateDto.getDescription());
+        seminar.setImageUrl(seminarUpdateDto.getImageUrl());
+        seminar.setDuration(seminarUpdateDto.getDuration());
+        seminar.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+
+        return SeminarMapper.INSTANCE.toDto(seminarRepository.save(seminar));
+    }
+
+    @Secured({"READER"})
+    @Override
+    public SeminarDto deleteSeminarRequest(UUID id) {
+        Seminar seminar = seminarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Seminar not found"));
+        if (seminar.getState() != SeminarStatus.PENDING) {
+            throw new ValidationException("Seminar is not available for delete");
+        } else if (seminar.getStatus() == Status.INACTIVE) {
+            throw new ValidationException("Seminar is already deleted");
+        }
+        seminar.setStatus(Status.INACTIVE);
+        return SeminarMapper.INSTANCE.toDto(seminarRepository.save(seminar));
+    }
+
+    @Override
+    public ListSeminarDto getAllSeminarRequests(Integer page, Integer pageSize, String sort, SeminarStatus state) {
+        if (page == null) {
+            page = 0;
+        }
+        if (pageSize == null) {
+            pageSize = 10;
+        }
+        if (sort == null || sort.trim().isEmpty() || sort.trim().isBlank()) {
+            sort = "asc";
+        }
+
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").ascending());
+        if (sort.equals("desc")) {
+            pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+        }
+
+        Page<Seminar> list = seminarRepository.findByStateAndStatus(state, Status.ACTIVE, pageable);
+
+        ListSeminarDto listSeminarDto = new ListSeminarDto();
+
+        PagingDto pagingDto = new PagingDto();
+        pagingDto.setTotalOfPages(list.getTotalPages());
+        pagingDto.setTotalOfElements(list.getTotalElements());
+        pagingDto.setSort(list.getSort().toString());
+        pagingDto.setCurrentPage(list.getNumber());
+        pagingDto.setPageSize(list.getSize());
+
+        // set value
+        listSeminarDto.setList(list.map(SeminarMapper.INSTANCE::toDto).toList());
+        listSeminarDto.setPagination(pagingDto);
+
+        return listSeminarDto;
+    }
+
+    @Override
+    public SeminarDto getSeminarRequest(UUID id) {
+        var seminar = seminarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Seminar not found"));
+        if (seminar.getState() != SeminarStatus.PENDING) {
+            throw new ValidationException("Seminar is not available for view");
+        } else if (seminar.getStatus() == Status.INACTIVE) {
+            throw new ValidationException("Seminar is already deleted");
+        }
+        return SeminarMapper.INSTANCE.toDto(seminar);
+    }
+
+
 //
 //	@Override
 //	public SeminarDto getSeminar(UUID id) {
@@ -494,7 +530,7 @@ public class SeminarServiceImpl implements SeminarService {
 //		});
 //		return reader;
 //	}
-//
+
 //	private SeminarDto toSeminarDto(Seminar seminar) {
 //		return SeminarDto.builder()
 //				.id(seminar.getId())
@@ -519,13 +555,13 @@ public class SeminarServiceImpl implements SeminarService {
 //				)
 //				.build();
 //	}
-//
-//	private static int getDurationInMinutes(Date start, Date end) {
-//		long durationInMillis = end.getTime() - start.getTime();
-//
-//		// Convert the duration to minutes
-//		long durationInSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMillis);
-//
-//		return (int) (durationInSeconds / 60);
-//	}
+
+    private static int getDurationInMinutes(Date start, Date end) {
+        long durationInMillis = end.getTime() - start.getTime();
+
+        // Convert the duration to minutes
+        long durationInSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMillis);
+
+        return (int) (durationInSeconds / 60);
+    }
 }

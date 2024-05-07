@@ -21,6 +21,12 @@ type ListTransaction{
     paging: Paging
 }
 
+input UpdateSettingInput {
+    id: ID!
+    key: String!
+    value: String!
+}
+
 input TransactionFilter {
     startDate: String
     endDate: String
@@ -34,4 +40,9 @@ extend type Query {
     getListTransactionForReader(readerId: ID, filter: TransactionFilter): ListTransaction
     getTransactionById(id: ID!): Transaction
     getAllSettings: [Setting]
+}
+
+extend type Mutation {
+    createSetting(key: String!, value: String!): Setting
+    updateSetting(setting: UpdateSettingInput!): Setting
 }

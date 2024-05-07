@@ -1,12 +1,16 @@
 package com.pagepal.capstone.services;
 
 import com.pagepal.capstone.dtos.seminar.*;
+import com.pagepal.capstone.enums.SeminarStatus;
 
 import java.util.UUID;
 
 public interface SeminarService {
-//    SeminarDto createSeminar(SeminarCreateDto seminarCreateDto);
-//    SeminarDto updateSeminar(UUID readerId, UUID id, SeminarUpdateDto seminarUpdateDto);
+    SeminarDto createSeminarRequest(SeminarCreateDto seminarCreateDto);
+    SeminarDto updateSeminarRequest(SeminarUpdateDto seminarUpdateDto);
+    SeminarDto deleteSeminarRequest(UUID id);
+    ListSeminarDto getAllSeminarRequests(Integer page, Integer pageSize, String sort, SeminarStatus state);
+    SeminarDto getSeminarRequest(UUID id);
 //    SeminarDto getSeminar(UUID id);
 //    ListSeminarDto getSeminarList(Integer page, Integer pageSize, String sort, String state);
 //    ListSeminarDto getSeminarListByReaderId(UUID readerId, Integer page, Integer pageSize, String sort, String state, Boolean isCustomer);

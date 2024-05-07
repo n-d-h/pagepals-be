@@ -7,6 +7,7 @@ import com.pagepal.capstone.dtos.transaction.TransactionDto;
 import com.pagepal.capstone.dtos.transaction.TransactionFilterDto;
 import com.pagepal.capstone.entities.postgre.Customer;
 import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.Setting;
 import com.pagepal.capstone.entities.postgre.Transaction;
 import com.pagepal.capstone.enums.TransactionTypeEnum;
 import com.pagepal.capstone.mappers.TransactionMapper;
@@ -226,5 +227,29 @@ public class TransactionServiceImpl implements TransactionService {
             settings.add(new SettingDto(s.getId(), s.getKey(), s.getValue()));
         }
         return settings;
+    }
+
+    @Override
+    public SettingDto createSetting(String key, String value) {
+        String settingKey = key.toUpperCase().trim().replace(" ", "_");
+        var existingSetting = settingRepository.findByKey(settingKey);
+        if (existingSetting.isPresent()) {
+            throw new IllegalArgumentException("Setting already exists");
+        } else {
+            var setting = new Setting();
+            setting.setId(null);
+            setting.setKey(settingKey);
+            setting.setValue(value.trim().replace(" ", "_"));
+            return new SettingDto(settingRepository.save(setting).getId(), setting.getKey(), setting.getValue());
+        }
+    }
+
+    @Override
+    public SettingDto updateSetting(SettingDto settingDto) {
+        var setting = settingRepository.findById(settingDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Setting not found"));
+        setting.setKey(settingDto.getKey().toUpperCase().trim().replace(" ", "_"));
+        setting.setValue(settingDto.getValue().trim().replace(" ", "_"));
+        return new SettingDto(settingRepository.save(setting).getId(), setting.getKey(), setting.getValue());
     }
 }
