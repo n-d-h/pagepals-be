@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ListSeminarDto {
-    private PagingDto pagination;
     private List<SeminarDto> list;
+    private PagingDto pagination;
 }

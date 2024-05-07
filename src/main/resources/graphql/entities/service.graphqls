@@ -47,6 +47,7 @@ input ServiceUpdate {
     price: Float
     description: String
     serviceTypeId: ID
+    imageUrl: String
 }
 
 extend type Mutation {

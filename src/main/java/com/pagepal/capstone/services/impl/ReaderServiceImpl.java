@@ -337,7 +337,7 @@ public class ReaderServiceImpl implements ReaderService {
             pagingDto.setCurrentPage(page.getNumber());
             pagingDto.setPageSize(page.getSize());
 
-            listReaderDto.setList(books);
+            listReaderDto.setList(books.stream().distinct().toList());
             listReaderDto.setPaging(pagingDto);
             return listReaderDto;
         } else {
@@ -359,12 +359,12 @@ public class ReaderServiceImpl implements ReaderService {
             reader = new Reader();
         }
 
-        if(Status.INACTIVE.equals(reader.getStatus())){
+        if (Status.INACTIVE.equals(reader.getStatus())) {
             throw new ValidationException("Reader is banned or deleted!");
         }
 
         List<Request> requests = reader.getRequests();
-        if(requests!= null && !requests.isEmpty()){
+        if (requests != null && !requests.isEmpty()) {
             for (var request : requests) {
                 if (request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)) {
                     throw new RuntimeException("You have send request already! Wait for response!");

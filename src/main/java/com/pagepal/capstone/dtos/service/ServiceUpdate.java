@@ -15,4 +15,5 @@ public class ServiceUpdate {
     private String description;
     private Integer price;
     private UUID serviceTypeId;
+    private String imageUrl;
 }
