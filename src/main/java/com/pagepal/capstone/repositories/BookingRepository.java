@@ -163,4 +163,6 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             AND b.state.name = 'COMPLETE'
             """)
     Double sumPriceByReaderId(UUID readerId, Date now);
+
+    List<Booking> findAllByEventId(UUID eventId);
 }
