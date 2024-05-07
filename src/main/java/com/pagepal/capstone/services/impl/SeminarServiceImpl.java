@@ -82,7 +82,7 @@ public class SeminarServiceImpl implements SeminarService {
         seminar.setReader(reader);
         seminar.setBook(book);
         seminar.setEvents(null);
-        seminar.setStatus(Status.INACTIVE);
+        seminar.setStatus(Status.ACTIVE);
 
         return SeminarMapper.INSTANCE.toDto(seminarRepository.save(seminar));
 
