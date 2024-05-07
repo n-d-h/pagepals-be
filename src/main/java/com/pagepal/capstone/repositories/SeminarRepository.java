@@ -15,14 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
-    Page<Seminar> findAllByStatus(SeminarStatus status, Pageable pageable);
-
-    Page<Seminar> findAllByReaderIdAndStatus(UUID readerId, SeminarStatus status, Pageable pageable);
-
-    Page<Seminar> findAllByReaderId(UUID readerId, Pageable pageable);
-
-    List<Seminar> findByReaderIdAndStatus(UUID reader_id, SeminarStatus status);
-
     @Query(""" 
             SELECT COUNT(s) FROM Seminar s
             WHERE s.reader.id = :readerId
@@ -34,5 +26,11 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
     )
     Long countByReaderIdAndCreatedAtBetween(UUID readerId, Date startDate, Date endDate);
 
+    Page<Seminar> findByStatus(Status status, Pageable pageable);
+
     Page<Seminar> findByStateAndStatus(SeminarStatus state, Status status, Pageable pageable);
+
+    Page<Seminar> findByStateAndStatusAndReader(SeminarStatus state, Status status, Reader reader, Pageable pageable);
+
+    Page<Seminar> findByStatusAndReader(Status status, Reader reader, Pageable pageable);
 }

@@ -16,14 +16,44 @@ import java.util.UUID;
 public class SeminarController {
     private final SeminarService seminarService;
 
-    @QueryMapping(name = "getAllSeminarsRequests")
+    @QueryMapping(name = "getAllSeminarRequests")
     public ListSeminarDto getAllSeminarRequests(
+            @Argument("page") Integer page,
+            @Argument("pageSize") Integer pageSize,
+            @Argument("sort") String sort
+    ) {
+        return seminarService.getAllSeminarRequests(page, pageSize, sort);
+    }
+
+    @QueryMapping(name = "getAllSeminarRequestsByState")
+    public ListSeminarDto getAllSeminarRequestsByState(
             @Argument("page") Integer page,
             @Argument("pageSize") Integer pageSize,
             @Argument("sort") String sort,
             @Argument("state") SeminarStatus state
     ) {
-        return seminarService.getAllSeminarRequests(page, pageSize, sort, state);
+        return seminarService.getAllSeminarRequestsByState(page, pageSize, sort, state);
+    }
+
+    @QueryMapping(name = "getAllSeminarRequestsByReaderId")
+    public ListSeminarDto getAllSeminarRequestsByReaderId(
+            @Argument("readerId") UUID readerId,
+            @Argument("page") Integer page,
+            @Argument("pageSize") Integer pageSize,
+            @Argument("sort") String sort
+    ) {
+        return seminarService.getAllSeminarRequestsByReaderId(readerId, page, pageSize, sort);
+    }
+
+    @QueryMapping(name = "getAllSeminarRequestsByReaderIdAndState")
+    public ListSeminarDto getAllSeminarRequestsByReaderIdAndState(
+            @Argument("readerId") UUID readerId,
+            @Argument("page") Integer page,
+            @Argument("pageSize") Integer pageSize,
+            @Argument("sort") String sort,
+            @Argument("state") SeminarStatus state
+    ) {
+        return seminarService.getAllSeminarRequestsByReaderIdAndState(readerId, page, pageSize, sort, state);
     }
 
     @QueryMapping(name = "getSeminarRequest")
