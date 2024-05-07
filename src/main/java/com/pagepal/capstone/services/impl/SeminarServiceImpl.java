@@ -50,7 +50,7 @@ public class SeminarServiceImpl implements SeminarService {
 
         long seminarsThisWeek = seminarRepository.countByReaderIdAndCreatedAtBetween(readerId, startOfWeekDate, nowDate);
 
-        return seminarsThisWeek <= MAX_SEMINARS_PER_WEEK;
+        return seminarsThisWeek < MAX_SEMINARS_PER_WEEK;
     }
 
     @Secured({"READER"})
