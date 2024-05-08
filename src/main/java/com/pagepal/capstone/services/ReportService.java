@@ -1,6 +1,5 @@
 package com.pagepal.capstone.services;
 
-import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.report.*;
 
 import java.util.List;

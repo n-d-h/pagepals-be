@@ -1,19 +1,14 @@
 package com.pagepal.capstone.dtos.interview;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.dtos.request.RequestDto;
-import com.pagepal.capstone.entities.postgre.Meeting;
-import com.pagepal.capstone.entities.postgre.Request;
 import com.pagepal.capstone.enums.InterviewResultEnum;
 import com.pagepal.capstone.enums.InterviewStateEnum;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Setter

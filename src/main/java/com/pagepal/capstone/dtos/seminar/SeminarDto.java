@@ -1,11 +1,8 @@
 package com.pagepal.capstone.dtos.seminar;
 
-import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.dtos.event.EventDto;
 import com.pagepal.capstone.entities.postgre.Book;
-import com.pagepal.capstone.entities.postgre.Meeting;
 import com.pagepal.capstone.entities.postgre.Reader;
-import com.pagepal.capstone.enums.SeminarStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

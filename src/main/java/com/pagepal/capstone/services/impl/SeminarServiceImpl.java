@@ -1,11 +1,19 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.dtos.seminar.*;
-import com.pagepal.capstone.entities.postgre.*;
-import com.pagepal.capstone.enums.*;
+import com.pagepal.capstone.dtos.seminar.ListSeminarDto;
+import com.pagepal.capstone.dtos.seminar.SeminarCreateDto;
+import com.pagepal.capstone.dtos.seminar.SeminarDto;
+import com.pagepal.capstone.dtos.seminar.SeminarUpdateDto;
+import com.pagepal.capstone.entities.postgre.Book;
+import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.entities.postgre.Seminar;
+import com.pagepal.capstone.enums.SeminarStatus;
+import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.SeminarMapper;
-import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.repositories.BookRepository;
+import com.pagepal.capstone.repositories.ReaderRepository;
+import com.pagepal.capstone.repositories.SeminarRepository;
 import com.pagepal.capstone.services.BookService;
 import com.pagepal.capstone.services.SeminarService;
 import com.pagepal.capstone.utils.DateUtils;
@@ -20,10 +28,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.time.*;
-import java.time.temporal.*;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.UUID;
 

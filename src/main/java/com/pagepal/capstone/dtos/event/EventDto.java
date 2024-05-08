@@ -1,16 +1,12 @@
 package com.pagepal.capstone.dtos.event;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.entities.postgre.Seminar;
 import com.pagepal.capstone.enums.EventStateEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @Setter
 @Getter

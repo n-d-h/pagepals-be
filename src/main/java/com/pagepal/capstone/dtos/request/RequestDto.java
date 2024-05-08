@@ -2,7 +2,6 @@ package com.pagepal.capstone.dtos.request;
 
 import com.pagepal.capstone.dtos.interview.InterviewDto;
 import com.pagepal.capstone.dtos.reader.ReaderDto;
-import com.pagepal.capstone.entities.postgre.Interview;
 import com.pagepal.capstone.enums.RequestStateEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

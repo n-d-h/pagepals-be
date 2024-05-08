@@ -3,7 +3,6 @@ package com.pagepal.capstone.services;
 import com.pagepal.capstone.dtos.interview.InterviewDto;
 import com.pagepal.capstone.dtos.request.RequestDto;
 import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
-import com.pagepal.capstone.entities.postgre.Request;
 import com.pagepal.capstone.enums.InterviewResultEnum;
 import com.pagepal.capstone.enums.InterviewStateEnum;
 
