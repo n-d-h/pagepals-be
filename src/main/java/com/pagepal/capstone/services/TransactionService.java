@@ -16,4 +16,6 @@ public interface TransactionService {
      TransactionDto getTransactionById(UUID id);
 
      List<SettingDto> getAllSettings();
+     SettingDto createSetting(String key, String value);
+     SettingDto updateSetting(SettingDto settingDto);
 }

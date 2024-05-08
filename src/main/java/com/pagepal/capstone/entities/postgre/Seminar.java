@@ -3,6 +3,7 @@ package com.pagepal.capstone.entities.postgre;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.SeminarStatus;
+import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -43,12 +44,9 @@ public class Seminar {
     @Column(name = "duration")
     private Integer duration;
 
-    @Column(name = "price")
-    private Integer price;
-
-    @Column(name = "status")
+    @Column(name = "state")
     @Enumerated(EnumType.STRING)
-    private SeminarStatus status;
+    private SeminarStatus state;
 
     @Column(name = "created_at")
     private Date createdAt;
@@ -69,4 +67,8 @@ public class Seminar {
     @OneToMany(mappedBy = "seminar")
     @JsonBackReference
     private List<Event> events;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

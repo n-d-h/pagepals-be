@@ -3,14 +3,14 @@ type Seminar {
     title: String
     description: String
     imageUrl: String
-    duration: Int
-    price: Int
     rejectReason: String
-    status: String
+    duration: Int
+    state: SeminarStatus
     createdAt: String
     updatedAt: String
     reader: Reader
     book: Book
+    events: [Event]
 }
 
 type SeminarBooking {
@@ -18,47 +18,38 @@ type SeminarBooking {
     booking: Booking
 }
 
-type ListSeminar{
+type ListSeminarRequests{
     list: [Seminar]
     pagination: Paging
 }
 
-input SeminarInput {
+input SeminarRequestCreateInput {
+    readerId: ID!
+    book: GoogleBookInput
     title: String
-    limitCustomer: Int
-    activeSlot: Int
     description: String
     imageUrl: String
     duration: Int
-    price: Int
-    startTime: String
-    readerId: ID
-    book: GoogleBookInput
 }
 
-input SeminarUpdateInput {
+input SeminarRequestUpdateInput {
+    id: ID!
     title: String
-    limitCustomer: Int
-    activeSlot: Int
     description: String
     imageUrl: String
     duration: Int
-    price: Int
-    startTime: String
 }
 
 extend type Query {
-    getSeminarById(id: ID!): Seminar
-    getAllSeminars(sort: String, page: Int, pageSize: Int, state: String): ListSeminar
-    getAllSeminarsByReaderId(readerId: ID, sort: String, page: Int, pageSize: Int, state: String, isCustomer: Boolean): ListSeminar
-    getAllSeminarsByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int): ListSeminar
-    getAllSeminarsNotJoinByCustomerId(customerId: ID, sort: String, page: Int, pageSize: Int, state: String): ListSeminar
+    getSeminarRequest(id: ID!): Seminar
+    getAllSeminarRequests(page: Int, pageSize: Int, sort: String): ListSeminarRequests
+    getAllSeminarRequestsByState(page: Int, pageSize: Int, sort: String, state: SeminarStatus!): ListSeminarRequests
+    getAllSeminarRequestsByReaderId(readerId: ID!, page: Int, pageSize: Int, sort: String): ListSeminarRequests
+    getAllSeminarRequestsByReaderIdAndState(readerId: ID!, page: Int, pageSize: Int, sort: String, state: SeminarStatus!): ListSeminarRequests
 }
 
 extend type Mutation {
-    createSeminar(seminar: SeminarInput): Seminar
-    updateSeminar(readerId: ID, id: ID!, seminar: SeminarUpdateInput): Seminar
-    deleteSeminar(id: ID!) : Seminar
-    joinSeminar(customerId: ID, seminarId: ID): SeminarBooking
-    completeSeminar(seminarId: ID): Seminar
+    createSeminarRequest(create: SeminarRequestCreateInput): Seminar
+    updateSeminarRequest(update: SeminarRequestUpdateInput): Seminar
+    deleteSeminarRequest(id: ID!) : Seminar
 }

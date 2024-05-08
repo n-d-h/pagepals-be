@@ -1,9 +1,11 @@
 package com.pagepal.capstone.dtos.seminar;
 
 import com.pagepal.capstone.dtos.booking.BookingDto;
+import com.pagepal.capstone.dtos.event.EventDto;
 import com.pagepal.capstone.entities.postgre.Book;
 import com.pagepal.capstone.entities.postgre.Meeting;
 import com.pagepal.capstone.entities.postgre.Reader;
+import com.pagepal.capstone.enums.SeminarStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,10 +25,10 @@ public class SeminarDto {
     private String imageUrl;
     private String rejectReason;
     private Integer duration;
-    private Integer price;
-    private String status;
+    private String state;
     private String createdAt;
     private String updatedAt;
     private Reader reader;
     private Book book;
+    private List<EventDto> events;
 }

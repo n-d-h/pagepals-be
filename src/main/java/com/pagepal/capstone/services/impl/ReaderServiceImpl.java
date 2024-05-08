@@ -301,7 +301,7 @@ public class ReaderServiceImpl implements ReaderService {
             pagingDto.setCurrentPage(page.getNumber());
             pagingDto.setPageSize(page.getSize());
 
-            listReaderDto.setList(books);
+            listReaderDto.setList(books.stream().distinct().toList());
             listReaderDto.setPaging(pagingDto);
             return listReaderDto;
         } else {
@@ -327,7 +327,7 @@ public class ReaderServiceImpl implements ReaderService {
             reader = readerRepository.save(reader);
         }
 
-        if(Status.INACTIVE.equals(reader.getStatus())){
+        if (Status.INACTIVE.equals(reader.getStatus())) {
             throw new ValidationException("Reader is banned or deleted!");
         }
 

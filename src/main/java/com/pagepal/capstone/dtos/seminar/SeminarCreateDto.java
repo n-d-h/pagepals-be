@@ -13,14 +13,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SeminarCreateDto {
+    private UUID readerId;
+    private GoogleBook book;
     private String title;
-    private Integer limitCustomer;
-    private Integer activeSlot;
     private String description;
     private String imageUrl;
     private Integer duration;
-    private Integer price;
-    private String startTime;
-    private UUID readerId;
-    private GoogleBook book;
 }
