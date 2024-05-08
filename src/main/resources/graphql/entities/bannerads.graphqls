@@ -1,0 +1,11 @@
+type BannerAds {
+    id: ID!
+    createdAt: String
+    startAt: String
+    status: Status
+    event: Event
+}
+
+extend type Query {
+    getAllBannerAds: [BannerAds]
+}
