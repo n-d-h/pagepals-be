@@ -71,12 +71,17 @@ public class SeminarServiceImpl implements SeminarService {
             throw new ValidationException("Reader exceeds the limit of creating seminar requests");
         }
 
-        Book book = bookRepository.findByExternalId(seminarCreateDto.getBook().getId()).orElse(null);
+        Book book;
+
+        if (seminarCreateDto.getBook().getId() != null || !seminarCreateDto.getBook().getId().isEmpty()) {
+            book = bookRepository.findByExternalId(seminarCreateDto.getBook().getId()).orElse(null);
+        }else{
+            book = bookRepository.findByTitle(seminarCreateDto.getBook().getVolumeInfo().getTitle()).orElse(null);
+        }
 
         if (book == null) {
             book = bookService.createNewBook(seminarCreateDto.getBook());
         }
-
 
         Seminar seminar = new Seminar();
         seminar.setTitle(seminarCreateDto.getTitle());

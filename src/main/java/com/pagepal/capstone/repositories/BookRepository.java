@@ -18,6 +18,8 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
 
     Optional<Book> findByExternalId(String externalId);
 
+    Optional<Book> findByTitle(String title);
+
     @Query("""
         SELECT DISTINCT b
         FROM Book b

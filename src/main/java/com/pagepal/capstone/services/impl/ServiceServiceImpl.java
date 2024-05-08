@@ -174,7 +174,13 @@ public class ServiceServiceImpl implements ServiceService {
         Reader reader = readerRepository.findById(writeServiceDto.getReaderId())
                 .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
-        Book book = bookRepository.findByExternalId(writeServiceDto.getBook().getId()).orElse(null);
+        Book book;
+
+        if (writeServiceDto.getBook().getId() != null || !writeServiceDto.getBook().getId().isEmpty()) {
+            book = bookRepository.findByExternalId(writeServiceDto.getBook().getId()).orElse(null);
+        }else{
+            book = bookRepository.findByTitle(writeServiceDto.getBook().getVolumeInfo().getTitle()).orElse(null);
+        }
 
         if (book == null) {
             book = bookService.createNewBook(writeServiceDto.getBook());

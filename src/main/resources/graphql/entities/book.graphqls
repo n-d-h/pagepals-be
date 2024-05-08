@@ -62,7 +62,7 @@ type ImageLinks{
 
 
 input GoogleBookInput{
-    id: ID!
+    id: ID
     volumeInfo: VolumeInfoInput
 }
 
