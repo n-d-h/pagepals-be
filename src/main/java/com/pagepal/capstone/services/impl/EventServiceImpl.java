@@ -161,6 +161,7 @@ public class EventServiceImpl implements EventService {
 						.event(event)
 						.startAt(advertiseStartAt)
 						.endAt(advertiseEndAt)
+						.status(Status.ACTIVE)
 						.createdAt(dateUtils.getCurrentVietnamDate())
 						.build();
 
