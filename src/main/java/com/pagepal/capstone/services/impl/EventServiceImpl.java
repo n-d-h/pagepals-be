@@ -1,5 +1,6 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.bannerads.BannerAdsDto;
 import com.pagepal.capstone.dtos.event.*;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
@@ -7,6 +8,7 @@ import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
+import com.pagepal.capstone.services.BannerAdsService;
 import com.pagepal.capstone.services.EventService;
 import com.pagepal.capstone.services.FirebaseMessagingService;
 import com.pagepal.capstone.services.NotificationService;
@@ -35,6 +37,7 @@ public class EventServiceImpl implements EventService {
 	private final SeminarRepository seminarRepository;
 	private final BookingRepository bookingRepository;
 	private final BannerAdsRepository bannerAdsRepository;
+	private final BannerAdsService bannerAdsService;
 	private final ReaderRepository readerRepository;
 	private final SettingRepository settingRepository;
 	private final CustomerRepository customerRepository;
@@ -48,7 +51,7 @@ public class EventServiceImpl implements EventService {
 
 	private final String pagePalLogoUrl = "https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2F1.png?alt=media&token=56384e72-69dc-4ab3-8ede-9401b6f2f121";
 
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@Override
 	public EventDto createEvent(EventCreateDto dto, UUID readerId) {
@@ -156,6 +159,11 @@ public class EventServiceImpl implements EventService {
 
 				Date advertiseStartAt = dateFormat.parse(dto.getAdvertiseStartAt());
 				Date advertiseEndAt = dateFormat.parse(dto.getAdvertiseEndAt());
+
+				List<BannerAdsDto> listBannerAds = bannerAdsService.getListBannerAds();
+				if(listBannerAds.size() >= 5) {
+					throw new ValidationException("Reader exceeds the limit of creating banner ads");
+				}
 
 				BannerAds bannerAds = BannerAds.builder()
 						.event(event)
