@@ -55,7 +55,7 @@ public class EventServiceImpl implements EventService {
 				throw new ValidationException("Seminar not found");
 			}
 
-			if(!SeminarStatus.ACCEPTED.equals(seminar.getStatus())) {
+			if(!SeminarStatus.ACCEPTED.equals(seminar.getState())) {
 				throw new ValidationException("Seminar is not accepted, cannot create event");
 			}
 
@@ -230,7 +230,7 @@ public class EventServiceImpl implements EventService {
 
 		List<Booking> bookings = event.getBookings();
 
-		if(bookings.size() >= 0) {
+		if(bookings != null && !bookings.isEmpty()) {
 			for(Booking booking : bookings) {
 				if(booking.getCustomer().getId().equals(customerId) && "PENDING".equals(booking.getState().getName())) {
 					throw new ValidationException("Customer already booked this seminar event");
@@ -341,7 +341,7 @@ public class EventServiceImpl implements EventService {
 		Page<Event> events = eventRepository.findBySeminarId(seminarId, pageable);
 		var listEventDto = new ListEventDto();
 
-		if(events != null) {
+		if(events == null) {
 			listEventDto.setList(Collections.emptyList());
 			listEventDto.setPagination(null);
 		} else {
@@ -365,7 +365,7 @@ public class EventServiceImpl implements EventService {
 		Page<Event> events = eventRepository.findByStateAndStartAtAfter(EventStateEnum.ACTIVE, currentDate, pageable);
 		var listEventDto = new ListEventDto();
 
-		if(events != null) {
+		if(events == null) {
 			listEventDto.setList(Collections.emptyList());
 			listEventDto.setPagination(null);
 		} else {
