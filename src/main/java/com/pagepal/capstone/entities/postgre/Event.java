@@ -63,4 +63,8 @@ public class Event {
     @JsonBackReference
     private List<BannerAds> bannerAds;
 
+    @OneToOne
+    @JoinColumn(name = "meeting_id")
+    @JsonManagedReference
+    private Meeting meeting;
 }

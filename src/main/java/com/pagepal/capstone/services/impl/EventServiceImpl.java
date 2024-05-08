@@ -1,12 +1,16 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.event.*;
+import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.EventService;
+import com.pagepal.capstone.services.FirebaseMessagingService;
+import com.pagepal.capstone.services.NotificationService;
+import com.pagepal.capstone.services.ZoomService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -21,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -35,7 +40,13 @@ public class EventServiceImpl implements EventService {
 	private final CustomerRepository customerRepository;
 	private final BookingStateRepository bookingStateRepository;
 	private final TransactionRepository transactionRepository;
+	private final NotificationService notificationService;
+	private final FirebaseMessagingService firebaseMessagingService;
+	private final ZoomService zoomService;
+	private final MeetingRepository meetingRepository;
 	private final DateUtils dateUtils;
+
+	private final String pagePalLogoUrl = "https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2F1.png?alt=media&token=56384e72-69dc-4ab3-8ede-9401b6f2f121";
 
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -62,11 +73,11 @@ public class EventServiceImpl implements EventService {
 			// if startAt of event is before current date more than 2 weeks, then throw exception
 			Date currentDate = new Date();
 			Date startAt = dateFormat.parse(dto.getStartAt());
-//			long diff = startAt.getTime() - currentDate.getTime();
-//			long diffDays = diff / (24 * 60 * 60 * 1000);
-//			if(diffDays > 14 || diffDays < 7) {
-//				throw new ValidationException("Event start date must be within [7 - 14] days");
-//			}
+			//			long diff = startAt.getTime() - currentDate.getTime();
+			//			long diffDays = diff / (24 * 60 * 60 * 1000);
+			//			if(diffDays > 14 || diffDays < 7) {
+			//				throw new ValidationException("Event start date must be within [7 - 14] days");
+			//			}
 
 			List<Event> listExistEvents = eventRepository.findBySeminarId(seminarId);
 			if(listExistEvents.size() > 0) {
@@ -94,6 +105,18 @@ public class EventServiceImpl implements EventService {
 				throw new ValidationException("Advertise date is required for featured event");
 			}
 
+			Meeting meeting = zoomService.createMeeting(
+					reader,
+					seminar.getTitle(),
+					seminar.getDuration(),
+					seminar.getBook().getTitle(),
+					startAt
+			);
+
+			if(meeting == null) {
+				throw new RuntimeException("Failed to create meeting");
+			}
+
 			Event event = Event.builder()
 					.startAt(startAt)
 					.createdAt(dateUtils.getCurrentVietnamDate())
@@ -101,6 +124,7 @@ public class EventServiceImpl implements EventService {
 					.activeSlot(dto.getLimitCustomer())
 					.isFeatured(dto.getIsFeatured())
 					.seminar(seminar)
+					.meeting(meeting)
 					.price(dto.getPrice())
 					.state(EventStateEnum.ACTIVE)
 					.build();
@@ -278,6 +302,73 @@ public class EventServiceImpl implements EventService {
 			transaction.setAmount(Double.valueOf(event.getPrice()));
 			transaction.setWallet(customer.getAccount().getWallet());
 			transactionRepository.save(transaction);
+
+			String readerContent =
+					"Event" + " - " + event.getSeminar().getTitle() + " has booked " + "by " + customer.getFullName();
+			String customerContent = "Event" + " - " + event.getSeminar().getTitle() + " has booked successfully.";
+
+			// Save notification to reader
+			NotificationCreateDto readerNotification = new NotificationCreateDto();
+			readerNotification.setAccountId(event.getSeminar().getReader().getAccount().getId());
+			readerNotification.setTitle("Event booking");
+			readerNotification.setContent(readerContent);
+			readerNotification.setNotificationRole(NotificationRoleEnum.READER);
+			notificationService.createNotification(readerNotification);
+
+			// Save notification to customer
+			NotificationCreateDto customerNotification = new NotificationCreateDto();
+			customerNotification.setAccountId(customer.getAccount().getId());
+			customerNotification.setTitle("Event booking");
+			customerNotification.setContent(customerContent);
+			customerNotification.setNotificationRole(NotificationRoleEnum.CUSTOMER);
+			notificationService.createNotification(customerNotification);
+
+			String readerFcmWebToken = event.getSeminar().getReader().getAccount().getFcmWebToken();
+			String customerFcmWebToken = customer.getAccount().getFcmWebToken();
+
+			if(customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty()) {
+				firebaseMessagingService.sendNotificationToDevice(
+						pagePalLogoUrl,
+						"Event booking",
+						customerContent,
+						Map.of("eventId", event.getId().toString(), "customerId", customer.getId().toString()),
+						customerFcmWebToken
+				);
+
+				if(readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty() && !readerFcmWebToken.equals(
+						customerFcmWebToken)) {
+					firebaseMessagingService.sendNotificationToDevice(
+							pagePalLogoUrl,
+							readerContent,
+							readerContent,
+							Map.of("eventId", event.getId().toString(), "customerId", customer.getId().toString()),
+							readerFcmWebToken
+					);
+				}
+			} else {
+				if(readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
+					firebaseMessagingService.sendNotificationToDevice(
+							pagePalLogoUrl,
+							readerContent,
+							readerContent,
+							Map.of("eventId", event.getId().toString(), "customerId", customer.getId().toString()),
+							readerFcmWebToken
+					);
+				}
+			}
+
+			// Send notification to mobile (reader/customer)
+			String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
+
+			if(customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty()) {
+				firebaseMessagingService.sendNotificationToDevice(
+						pagePalLogoUrl,
+						"Event booking",
+						customerContent,
+						Map.of("eventId", event.getId().toString(), "customerId", customer.getId().toString()),
+						customerFcmMobileToken
+				);
+			}
 		}
 
 		EventBookingDto eventBookingDto = new EventBookingDto();
