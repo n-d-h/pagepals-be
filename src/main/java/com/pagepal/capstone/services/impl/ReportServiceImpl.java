@@ -1,7 +1,6 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.dtos.reader.ReaderDto;
 import com.pagepal.capstone.dtos.report.*;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;

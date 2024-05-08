@@ -1,7 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.MeetingEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

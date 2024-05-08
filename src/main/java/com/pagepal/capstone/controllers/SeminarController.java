@@ -1,6 +1,9 @@
 package com.pagepal.capstone.controllers;
 
-import com.pagepal.capstone.dtos.seminar.*;
+import com.pagepal.capstone.dtos.seminar.ListSeminarDto;
+import com.pagepal.capstone.dtos.seminar.SeminarCreateDto;
+import com.pagepal.capstone.dtos.seminar.SeminarDto;
+import com.pagepal.capstone.dtos.seminar.SeminarUpdateDto;
 import com.pagepal.capstone.enums.SeminarStatus;
 import com.pagepal.capstone.services.SeminarService;
 import lombok.RequiredArgsConstructor;

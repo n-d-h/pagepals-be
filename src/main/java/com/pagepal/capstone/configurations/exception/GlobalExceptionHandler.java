@@ -10,6 +10,7 @@ import org.springframework.graphql.execution.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
+import java.text.ParseException;
 import java.util.Map;
 
 @ControllerAdvice
@@ -44,4 +45,12 @@ public class GlobalExceptionHandler {
         Map<String, Object> extensions = Map.of("status", HttpStatus.UNAUTHORIZED.value());
         return GraphQLError.newError().errorType(ErrorType.UNAUTHORIZED).extensions(extensions).message(ex.getMessage()).build();
     }
+
+    @GraphQlExceptionHandler
+    public GraphQLError handleParseException(ParseException ex) {
+        Map<String, Object> extensions = Map.of("status", HttpStatus.BAD_REQUEST.value());
+        return GraphQLError.newError().errorType(ErrorType.BAD_REQUEST).extensions(extensions).message(ex.getMessage()).build();
+    }
+
+
 }

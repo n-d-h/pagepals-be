@@ -1,12 +1,7 @@
 package com.pagepal.capstone.services;
 
-import com.pagepal.capstone.dtos.event.EventBookingDto;
-import com.pagepal.capstone.dtos.event.EventCreateDto;
-import com.pagepal.capstone.dtos.event.EventDto;
-import com.pagepal.capstone.dtos.event.EventUpdateDto;
-import com.pagepal.capstone.dtos.event.ListEventDto;
+import com.pagepal.capstone.dtos.event.*;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface EventService {

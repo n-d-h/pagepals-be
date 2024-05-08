@@ -11,7 +11,6 @@ import com.pagepal.capstone.dtos.workingtime.WorkingTimeListRead;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.EventStateEnum;
 import com.pagepal.capstone.enums.RequestStateEnum;
-import com.pagepal.capstone.enums.SeminarStatus;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.*;
 import com.pagepal.capstone.repositories.*;
@@ -21,7 +20,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -255,42 +257,6 @@ public class ReaderServiceImpl implements ReaderService {
         return list;
     }
 
-//    @Secured("READER")
-//    @Override
-//    public WorkingTimeListRead getReaderWorkingTimes(UUID id, String date) {
-//        ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
-//        LocalDate selectedDate = LocalDate.parse(date);
-//
-//        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-//        List<Seminar> seminars = seminarRepository.findByReaderAndStartDate(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
-//        List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndDateOrderByStartTimeAsc(reader, Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
-//
-//        List<WorkingTimeDto> result = new ArrayList<>();
-//
-//        WorkingTimeListRead list = new WorkingTimeListRead();
-//        if (workingTimes != null) {
-//            for (WorkingTime workingTime : workingTimes) {
-//                result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));
-//            }
-//            if (seminars != null && !seminars.isEmpty()) {
-//                for (Seminar seminar : seminars) {
-//                    LocalDateTime endDate = seminar.getStartTime().toInstant().atZone(vietnamTimeZone).toLocalDateTime().plusMinutes(seminar.getDuration());
-//
-//                    WorkingTimeDto workingTimeDto = new WorkingTimeDto();
-//                    workingTimeDto.setId(null);
-//                    workingTimeDto.setDate(Date.from(selectedDate.atStartOfDay(vietnamTimeZone).toInstant()));
-//                    workingTimeDto.setStartTime(seminar.getStartTime());
-//                    workingTimeDto.setEndTime(Date.from(endDate.atZone(vietnamTimeZone).toInstant()));
-//                    workingTimeDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
-//
-//                    result.add(workingTimeDto);
-//                }
-//            }
-//            list = divideWorkingTimes(result);
-//        }
-//        return list;
-//    }
-
     @Override
     public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
         Reader reader = readerRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
@@ -357,36 +323,46 @@ public class ReaderServiceImpl implements ReaderService {
         Reader reader = account.getReader();
         if (reader == null) {
             reader = new Reader();
+            reader.setCreatedAt(dateUtils.getCurrentVietnamDate());
+            reader.setAccount(account);
+            reader.setStatus(Status.ACTIVE);
+            reader = readerRepository.save(reader);
         }
 
         if (Status.INACTIVE.equals(reader.getStatus())) {
             throw new ValidationException("Reader is banned or deleted!");
         }
 
-        List<Request> requests = reader.getRequests();
-        if (requests != null && !requests.isEmpty()) {
+        List<Reader> requests = reader.getReaderRequests();
+        if(requests != null && !requests.isEmpty()){
             for (var request : requests) {
-                if (request.getState().equals(RequestStateEnum.ANSWER_CHECKING) || request.getState().equals(RequestStateEnum.INTERVIEW_PENDING)) {
+                if (RequestStateEnum.ANSWER_CHECKING.equals(request.getRequest().getState()) || RequestStateEnum.INTERVIEW_PENDING.equals(request.getRequest().getState())) {
                     throw new RuntimeException("You have send request already! Wait for response!");
                 }
             }
         }
-        reader.setNickname(requestInputDto.getInformation().getNickname());
-        reader.setGenre(requestInputDto.getInformation().getGenres().toString().replaceAll("\\[|\\]", ""));
-        reader.setLanguage(requestInputDto.getInformation().getLanguages().toString().replaceAll("\\[|\\]", ""));
-        reader.setAvatarUrl(requestInputDto.getInformation().getAvatarUrl());
-        reader.setCountryAccent(requestInputDto.getInformation().getCountryAccent());
-        reader.setDescription(requestInputDto.getInformation().getDescription());
-        reader.setIntroductionVideoUrl(requestInputDto.getInformation().getIntroductionVideoUrl());
-        reader.setAudioDescriptionUrl(requestInputDto.getInformation().getAudioDescriptionUrl());
-        reader.setTotalOfReviews(0);
-        reader.setTotalOfBookings(0);
-        reader.setRating(0);
-        reader.setStatus(Status.ACTIVE);
-        reader.setAccount(account);
 
-        reader = readerRepository.save(reader);
-        if (reader != null) {
+        Reader readerRequest = new Reader();
+
+        readerRequest.setNickname(requestInputDto.getInformation().getNickname());
+        readerRequest.setGenre(requestInputDto.getInformation().getGenres().toString().replaceAll("\\[|\\]", ""));
+        readerRequest.setLanguage(requestInputDto.getInformation().getLanguages().toString().replaceAll("\\[|\\]", ""));
+        readerRequest.setAvatarUrl(requestInputDto.getInformation().getAvatarUrl());
+        readerRequest.setCountryAccent(requestInputDto.getInformation().getCountryAccent());
+        readerRequest.setDescription(requestInputDto.getInformation().getDescription());
+        readerRequest.setIntroductionVideoUrl(requestInputDto.getInformation().getIntroductionVideoUrl());
+        readerRequest.setAudioDescriptionUrl(requestInputDto.getInformation().getAudioDescriptionUrl());
+        readerRequest.setThumbnailUrl(requestInputDto.getInformation().getThumbnailUrl());
+        readerRequest.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        readerRequest.setTotalOfReviews(0);
+        readerRequest.setTotalOfBookings(0);
+        readerRequest.setRating(0);
+        readerRequest.setStatus(Status.ACTIVE);
+        readerRequest.setReaderRequestReference(reader);
+
+        readerRequest = readerRepository.save(readerRequest);
+
+        if (readerRequest != null) {
             account.setAccountState(accountStateRepository
                     .findByNameAndStatus(readerPending, Status.ACTIVE)
                     .orElseThrow(() -> new EntityNotFoundException("Account State not found")));
@@ -395,7 +371,7 @@ public class ReaderServiceImpl implements ReaderService {
             Request request = new Request();
             request.setCreatedAt(dateUtils.getCurrentVietnamDate());
             request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
-            request.setReader(reader);
+            request.setReader(readerRequest);
             request.setState(RequestStateEnum.ANSWER_CHECKING);
             request = requestRepository.save(request);
 
@@ -409,7 +385,7 @@ public class ReaderServiceImpl implements ReaderService {
                 a.setRequest(request);
                 answerRepository.save(a);
             }
-            return ReaderMapper.INSTANCE.toDto(reader);
+            return ReaderMapper.INSTANCE.toDto(readerRequest);
         }
 
         return null;
@@ -418,33 +394,23 @@ public class ReaderServiceImpl implements ReaderService {
     @Secured({"READER", "STAFF", "ADMIN"})
     @Override
     public String updateReaderProfile(UUID id, ReaderRequestInputDto readerUpdateDto) {
-//        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-//        Reader isReaderUpdate = readerRepository.findByReaderUpdateReferenceId(id).orElse(null);
-//        if (isReaderUpdate != null) throw new RuntimeException("Reader is updating");
-//        reader.setIsUpdating(true);
-//
-//        Reader readerUpdate = new Reader();
-//
-//        readerUpdate.setNickname(readerUpdateDto.getNickname());
-//        readerUpdate.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
-//        readerUpdate.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
-//        readerUpdate.setCountryAccent(readerUpdateDto.getCountryAccent());
-//        readerUpdate.setDescription(readerUpdateDto.getDescription());
-//        readerUpdate.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
-//        readerUpdate.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
-//        readerUpdate.setAvatarUrl(readerUpdateDto.getAvatarUrl());
-//        readerUpdate.setUpdatedAt(dateUtils.getCurrentVietnamDate());
-//        readerUpdate.setIsUpdating(true);
-//        readerUpdate.setReaderUpdateReferenceId(reader.getId());
-//
-//        readerUpdate = readerRepository.save(readerUpdate);
-//
-//        if (readerUpdate != null) {
-//            reader = readerRepository.save(reader);
-//            return reader != null ? "Request update success!" : "Fail!";
-//        }
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
-        return "Fail!";
+        reader.setNickname(readerUpdateDto.getNickname());
+        reader.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
+        reader.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
+        reader.setCountryAccent(readerUpdateDto.getCountryAccent());
+        reader.setDescription(readerUpdateDto.getDescription());
+        reader.setIntroductionVideoUrl(readerUpdateDto.getIntroductionVideoUrl());
+        reader.setAudioDescriptionUrl(readerUpdateDto.getAudioDescriptionUrl());
+        reader.setThumbnailUrl(readerUpdateDto.getThumbnailUrl());
+        reader.setAvatarUrl(readerUpdateDto.getAvatarUrl());
+        reader.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        reader.setIsUpdating(true);
+
+        reader = readerRepository.save(reader);
+
+        return reader != null ? "Update success!" : "Fail!";
     }
 
     @Override

@@ -20,4 +20,6 @@ public interface RequestRepository extends JpaRepository<Request, UUID>{
             AND r.state IN :state
             """)
     Optional<Request> findByReaderIdAndStates(UUID readerId, List<RequestStateEnum> state);
+
+    List<Request> findByStaffIdAndState(UUID staffId, RequestStateEnum state);
 }

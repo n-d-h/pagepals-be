@@ -42,11 +42,16 @@ extend type Query {
     getListRequest: [Request]
     getRequestById(requestId: ID!): Request
     getRequestByReaderId(readerId: ID!): Request
+    getWorkingTimeListByStaffId(staffId: ID!): WorkingTimeList
+    getListRequestByReaderId(readerId: ID!): [Request]
 }
 
 extend type Mutation {
     updateRequestInterview(staffId : ID!, requestId: ID!, interviewAt: String!, description: String): Request
+    updateRequestToScheduling(staffId : ID!, requestId: ID!, description: String): Request
     rejectRequest(staffId: ID!, requestId: ID!, description: String): Request
     acceptRequest(staffId: ID!, requestId: ID!, description: String): Request
+    updateInterviewTime(requestId: ID!, interviewAt: String!): Interview
+    updateInterview(interviewId: ID!, state: InterviewStateEnum ,result: InterviewResultEnum, note: String): Interview
 }
 

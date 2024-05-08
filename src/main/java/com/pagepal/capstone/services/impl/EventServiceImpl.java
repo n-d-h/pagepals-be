@@ -1,12 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
-import com.pagepal.capstone.dtos.event.EventBookingDto;
-import com.pagepal.capstone.dtos.event.EventCreateDto;
-import com.pagepal.capstone.dtos.event.EventDto;
-import com.pagepal.capstone.dtos.event.EventUpdateDto;
-import com.pagepal.capstone.dtos.event.ListEventDto;
+import com.pagepal.capstone.dtos.event.*;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
-import com.pagepal.capstone.dtos.seminar.SeminarBookingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
