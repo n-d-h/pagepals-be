@@ -93,6 +93,10 @@ public class Reader implements Serializable {
     @JsonManagedReference
     private Reader readerRequestReference;
 
+    @OneToMany(mappedBy = "readerRequestReference", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Reader> readerRequests;
+
     @OneToOne
     @JoinColumn(name = "account_id")
     @JsonManagedReference
@@ -106,9 +110,9 @@ public class Reader implements Serializable {
     @JsonBackReference
     private List<Service> services;
 
-    @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "reader")
     @JsonBackReference
-    private List<Request> requests;
+    private Request request;
 
     @OneToMany(mappedBy = "reader", fetch = FetchType.LAZY)
     @JsonBackReference

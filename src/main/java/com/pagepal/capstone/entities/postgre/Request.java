@@ -57,7 +57,7 @@ public class Request implements Serializable {
     @JsonManagedReference
     private List<Answer> answers;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "reader_id")
     @JsonManagedReference
     private Reader reader;
