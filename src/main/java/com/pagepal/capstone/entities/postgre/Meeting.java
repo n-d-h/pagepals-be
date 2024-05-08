@@ -57,4 +57,8 @@ public class Meeting implements Serializable {
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<MeetingTimeline> meetingTimelines;
+
+    @OneToOne(mappedBy = "meeting", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Event event;
 }
