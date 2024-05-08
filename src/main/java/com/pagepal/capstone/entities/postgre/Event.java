@@ -4,16 +4,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.EventStateEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Where;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Builder
 @Setter
 @Getter
 @AllArgsConstructor
@@ -39,6 +38,9 @@ public class Event {
     @Column(name = "limit_customer")
     private Integer limitCustomer;
 
+    @Column(name = "price")
+    private Integer price;
+
     @Column(name = "active_slot")
     private Integer activeSlot;
 
@@ -46,6 +48,7 @@ public class Event {
     private Boolean isFeatured;
 
     @Column(name = "state")
+    @Enumerated(EnumType.STRING)
     private EventStateEnum state;
 
     @ManyToOne

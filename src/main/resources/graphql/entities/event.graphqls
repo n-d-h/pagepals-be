@@ -10,7 +10,47 @@ type Event {
     bookings: [Booking]
 }
 
+type ListEvent {
+    list: [Event]
+    pagination: Paging
+}
+
+type EventBooking {
+    event: Event
+    booking: Booking
+}
+
 enum EventStateEnum {
     ACTIVE
     INACTIVE
+}
+
+input CreateEventInput {
+    seminarId: ID!
+    startAt: String
+    limitCustomer: Int
+    price: Int
+    isFeatured: Boolean
+    advertiseStartAt: String
+    advertiseEndAt: String
+}
+
+input UpdateEventInput {
+    startAt: String
+    limitCustomer: Int
+    price: Int
+}
+
+extend type Query {
+    getEventById(id: ID!): Event
+    getAllEvents(page: Int, pageSize: Int, sort: String): ListEvent
+    getAllEventBySeminarId(seminarId: ID, page: Int, pageSize: Int, sort: String): ListEvent
+}
+
+extend type Mutation {
+    createEvent(input: CreateEventInput!, readerId: ID): Event
+    updateEvent(input: UpdateEventInput!, id: ID): Event
+    deleteEvent(id: ID!): Event
+    bookEvent(eventId: ID!, readerId: ID!): EventBooking
+    advertiseEvent(eventId: ID!, readerId: ID!, advertiseAt: String): Event
 }
