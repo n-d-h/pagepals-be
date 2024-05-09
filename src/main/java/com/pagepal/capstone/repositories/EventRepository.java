@@ -55,4 +55,12 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             WHERE :customerId NOT IN (SELECT c.id FROM b.customer c)
             """)
     Page<Event> findAllEventNotJoinByCustomer(UUID customerId, Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Event e
+            WHERE e.state = :state
+            AND e.startAt > :startAt
+            """)
+    Page<Event> findAllActiveEvent(EventStateEnum state, Date startAt, Pageable pageable);
 }

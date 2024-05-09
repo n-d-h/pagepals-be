@@ -16,4 +16,5 @@ public interface EventService {
     ListEventDto getAllEventNotJoinByCustomer(UUID customerId, Integer page, Integer pageSize, String sort);
     ListEventDto getAllEventByReader(UUID readerId, Integer page, Integer pageSize, String sort);
     ListEventDto getAllActiveEventByReader(UUID readerId, Integer page, Integer pageSize, String sort);
+    ListEventDto getAllActiveEvent(Integer page, Integer pageSize, String sort);
 }

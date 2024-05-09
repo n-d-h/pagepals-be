@@ -49,6 +49,7 @@ extend type Query {
     getAllEventsNotJoinByCustomer(customerId: ID, page: Int, pageSize: Int, sort: String): ListEvent
     getAllEventsByReader(readerId: ID, page: Int, pageSize: Int, sort: String): ListEvent
     getAllActiveEventsByReader(readerId: ID, page: Int, pageSize: Int, sort: String): ListEvent
+    getAllActiveEvents(page: Int, pageSize: Int, sort: String): ListEvent
 }
 
 extend type Mutation {

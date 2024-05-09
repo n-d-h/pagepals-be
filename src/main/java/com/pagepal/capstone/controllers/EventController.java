@@ -64,6 +64,14 @@ public class EventController {
 		return eventService.getAllActiveEventByReader(readerId, page, pageSize, sort);
 	}
 
+	@QueryMapping("getAllActiveEvents")
+	public ListEventDto getAllActiveEvents(
+			@Argument(name = "page") Integer page,
+			@Argument(name = "pageSize") Integer pageSize,
+			@Argument(name = "sort") String sort) {
+		return eventService.getAllActiveEvent(page, pageSize, sort);
+	}
+
 	@MutationMapping("createEvent")
 	public EventDto createEvent(
 			@Argument(name = "input") EventCreateDto eventDto,
