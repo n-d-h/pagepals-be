@@ -37,6 +37,33 @@ public class EventController {
 		return eventService.getAllEventBySeminarId(seminarId, page, pageSize, sort);
 	}
 
+	@QueryMapping("getAllEventsNotJoinByCustomer")
+	public ListEventDto getAllEventsNotJoinByCustomer(
+			@Argument(name = "customerId") UUID customerId,
+			@Argument(name = "page") Integer page,
+			@Argument(name = "pageSize") Integer pageSize,
+			@Argument(name = "sort") String sort) {
+		return eventService.getAllEventNotJoinByCustomer(customerId, page, pageSize, sort);
+	}
+
+	@QueryMapping("getAllEventsByReader")
+	public ListEventDto getAllEventsByReader(
+			@Argument(name = "readerId") UUID readerId,
+			@Argument(name = "page") Integer page,
+			@Argument(name = "pageSize") Integer pageSize,
+			@Argument(name = "sort") String sort) {
+		return eventService.getAllEventByReader(readerId, page, pageSize, sort);
+	}
+
+	@QueryMapping("getAllActiveEventsByReader")
+	public ListEventDto getAllActiveEventsByReader(
+			@Argument(name = "readerId") UUID readerId,
+			@Argument(name = "page") Integer page,
+			@Argument(name = "pageSize") Integer pageSize,
+			@Argument(name = "sort") String sort) {
+		return eventService.getAllActiveEventByReader(readerId, page, pageSize, sort);
+	}
+
 	@MutationMapping("createEvent")
 	public EventDto createEvent(
 			@Argument(name = "input") EventCreateDto eventDto,
