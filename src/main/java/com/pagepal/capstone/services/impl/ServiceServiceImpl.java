@@ -39,7 +39,6 @@ public class ServiceServiceImpl implements ServiceService {
     private final BookService bookService;
     private final DateUtils dateUtils;
 
-    @Secured({"ADMIN", "STAFF", "READER", "CUSTOMER"})
     @Override
     public ServiceDto serviceById(UUID id) {
         return ServiceMapper.INSTANCE.toDto(serviceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Service not found")));

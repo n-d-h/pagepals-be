@@ -1,5 +1,6 @@
 enum RequestStateEnum {
     ANSWER_CHECKING
+    INTERVIEW_SCHEDULING
     INTERVIEW_PENDING
     PASS
     REJECT
