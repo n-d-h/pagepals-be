@@ -16,4 +16,5 @@ public class TimeSlot {
     private String startTime;
     private String endTime;
     private Boolean isSeminar;
+    private Boolean isBooked;
 }

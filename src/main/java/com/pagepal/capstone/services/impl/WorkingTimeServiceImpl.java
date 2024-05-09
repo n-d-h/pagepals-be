@@ -49,7 +49,7 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
 
                 while (startDate.isBefore(LocalDate.now(vietnamTimeZone).plusMonths(3))) {
                     // Create working time slot for the current week
-                    createWorkingTimeSlot(startDate, endDate, startTime, endTime, reader);
+                    createWorkingTimeSlot(startDate, startTime, endTime, reader);
 
                     // Move to the next week
                     startTime = startTime.plusWeeks(1);
@@ -59,7 +59,7 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
                 }
             } else {
                 // Create working time slot for a single occurrence
-                createWorkingTimeSlot(startDate, startDate.plusDays(1), startTime, endTime, reader);
+                createWorkingTimeSlot(startDate, startTime, endTime, reader);
             }
         }
 
@@ -77,15 +77,16 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
         return true;
     }
 
-    private void createWorkingTimeSlot(LocalDate date, LocalDate endDate, LocalDateTime startTime, LocalDateTime endTime, Reader reader) {
+    private void createWorkingTimeSlot(LocalDate date, LocalDateTime startTime, LocalDateTime endTime, Reader reader) {
         WorkingTime workingTime = new WorkingTime();
         workingTime.setStartTime(Date.from(startTime.atZone(java.time.ZoneId.systemDefault()).toInstant()));
         workingTime.setEndTime(Date.from(endTime.atZone(java.time.ZoneId.systemDefault()).toInstant()));
         workingTime.setDate(Date.from(date.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant()));
         workingTime.setReader(reader);
         Boolean isExist = workingTimeRepository.existsByStartTimeAndEndTimeAndReaderId(workingTime.getStartTime(), workingTime.getEndTime(), reader.getId());
-        if(!isExist){
+        if(Boolean.FALSE.equals(isExist)){
             workingTimeRepository.save(workingTime);
         }
+        throw new ValidationException("Working time slot is already exist");
     }
 }
