@@ -4,6 +4,7 @@ type WorkingTime {
     startTime: String
     endTime: String
     reader: Reader
+    isBooked: Boolean
 }
 
 input WorkingTimeCreateInput {
@@ -32,6 +33,7 @@ type TimeSlot {
     startTime: String
     endTime: String
     isSeminar: Boolean
+    isBooked: Boolean
 }
 
 extend type Query {

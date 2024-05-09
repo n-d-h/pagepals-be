@@ -6,6 +6,7 @@ type Event {
     activeSlot: Int
     isFeatured: Boolean
     state: EventStateEnum
+    price: Int
     seminar: Seminar
     bookings: [Booking]
 }

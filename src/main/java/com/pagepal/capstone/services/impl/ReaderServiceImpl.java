@@ -247,6 +247,7 @@ public class ReaderServiceImpl implements ReaderService {
                     workingTimeDto.setDate(Date.from(startLocalDate.atZone(vietnamTimeZone).toInstant()));
                     workingTimeDto.setStartTime(event.getStartAt());
                     workingTimeDto.setEndTime(Date.from(endLocalDate.atZone(vietnamTimeZone).toInstant()));
+                    workingTimeDto.setIsBooked(event.getBookings() != null && !event.getBookings().isEmpty());
                     workingTimeDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
 
                     result.add(workingTimeDto);
@@ -334,7 +335,7 @@ public class ReaderServiceImpl implements ReaderService {
         }
 
         List<Reader> requests = reader.getReaderRequests();
-        if(requests != null && !requests.isEmpty()){
+        if (requests != null && !requests.isEmpty()) {
             for (var request : requests) {
                 if (RequestStateEnum.ANSWER_CHECKING.equals(request.getRequest().getState()) || RequestStateEnum.INTERVIEW_PENDING.equals(request.getRequest().getState())) {
                     throw new RuntimeException("You have send request already! Wait for response!");
@@ -463,7 +464,6 @@ public class ReaderServiceImpl implements ReaderService {
         // Group the working times by date
         Map<Date, List<WorkingTimeDto>> groupedWorkingTimes = workingTimes.stream()
                 .collect(Collectors.groupingBy(WorkingTimeDto::getDate));
-
         // Create WorkingTimeListRead object
         WorkingTimeListRead workingTimeListRead = new WorkingTimeListRead();
         workingTimeListRead.setWorkingDates(new ArrayList<>());
@@ -489,6 +489,7 @@ public class ReaderServiceImpl implements ReaderService {
                 timeSlot.setStartTime(getTime(workingTimeDto.getStartTime()));
                 timeSlot.setEndTime(getTime(workingTimeDto.getEndTime()));
                 timeSlot.setIsSeminar(workingTimeDto.getId() == null);
+                timeSlot.setIsBooked(workingTimeDto.getIsBooked());
                 workingDate.getTimeSlots().add(timeSlot);
             }
 
