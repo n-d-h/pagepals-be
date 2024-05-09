@@ -2,6 +2,7 @@ package com.pagepal.capstone.repositories;
 
 import com.pagepal.capstone.entities.postgre.Event;
 import com.pagepal.capstone.enums.EventStateEnum;
+import com.pagepal.capstone.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +31,28 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     Page<Event> findByStateAndStartAtAfter(EventStateEnum state, Date startAt, Pageable pageable);
 
     Page<Event> findBySeminarId(UUID seminarId, Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Event e
+            WHERE e.seminar.reader.id = :readerId
+            """)
+    Page<Event> findAllByReaderId(UUID readerId, Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Event e
+            WHERE e.seminar.reader.id = :readerId
+            AND e.state = :state
+            AND e.startAt > :startTime
+            """)
+    Page<Event> findAllEventActiveByReaderId(UUID readerId, EventStateEnum state, Date startTime, Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Event e
+            JOIN e.bookings b
+            WHERE :customerId NOT IN (SELECT c.id FROM b.customer c)
+            """)
+    Page<Event> findAllEventNotJoinByCustomer(UUID customerId, Pageable pageable);
 }

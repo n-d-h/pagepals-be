@@ -13,4 +13,7 @@ public interface EventService {
     EventDto advertiseEvent(UUID eventId, UUID readerId, String advertiseAt);
     ListEventDto getAllEventBySeminarId(UUID seminarId, Integer page, Integer pageSize, String sort);
     ListEventDto getAllEvent(Integer page, Integer pageSize, String sort);
+    ListEventDto getAllEventNotJoinByCustomer(UUID customerId, Integer page, Integer pageSize, String sort);
+    ListEventDto getAllEventByReader(UUID readerId, Integer page, Integer pageSize, String sort);
+    ListEventDto getAllActiveEventByReader(UUID readerId, Integer page, Integer pageSize, String sort);
 }
