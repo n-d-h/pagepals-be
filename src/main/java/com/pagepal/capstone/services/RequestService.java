@@ -17,7 +17,7 @@ public interface RequestService {
 
     RequestDto updateRequestInterview(UUID staffId, UUID requestId, String interviewAt, String description) throws ParseException;
 
-    RequestDto rejectRequest(UUID staffId, UUID requestId, String description);
+    RequestDto rejectRequest(UUID staffId, UUID requestId, String reason, String description);
 
     RequestDto acceptRequest(UUID staffId, UUID requestId, String description);
 

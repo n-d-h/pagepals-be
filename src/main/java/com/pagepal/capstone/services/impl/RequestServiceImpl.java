@@ -173,7 +173,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Secured("STAFF")
     @Override
-    public RequestDto rejectRequest(UUID staffId, UUID requestId, String description) {
+    public RequestDto rejectRequest(UUID staffId, UUID requestId, String reason, String description) {
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EntityNotFoundException("Request not found")
         );
@@ -184,6 +184,7 @@ public class RequestServiceImpl implements RequestService {
         request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         request.setStaffId(account.getId());
         request.setStaffName(account.getFullName());
+        request.setRejectReason(reason);
         request.setDescription(description);
         request.setState(RequestStateEnum.REJECT);
         request = requestRepository.save(request);
@@ -206,7 +207,7 @@ public class RequestServiceImpl implements RequestService {
                         We regret to inform you that your recent request has been rejected by our staff. Please find the details below:
 
                         Request ID: %s
-                        Description: %s
+                        Reject Reason: %s
 
                         If you have any questions or need further clarification regarding this decision, please feel free to reach out to us. We're here to assist you.
                         Our website: %s
@@ -215,7 +216,7 @@ public class RequestServiceImpl implements RequestService {
 
                         Best regards,
                         The PagePals Team
-                        """.formatted(reader.getAccount().getUsername(), requestId.toString(), description, website);
+                        """.formatted(reader.getAccount().getUsername(), requestId.toString(), reason, website);
 
                 emailService.sendSimpleEmail(email, subject, body);
 

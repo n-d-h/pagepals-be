@@ -43,15 +43,16 @@ public class RequestController {
     @MutationMapping
     public RequestDto rejectRequest(@Argument("staffId") UUID staffId,
                                     @Argument("requestId") UUID requestId,
+                                    @Argument("reason") String reason,
                                     @Argument("description") String description) {
-        return requestService.rejectRequest(staffId, requestId,description);
+        return requestService.rejectRequest(staffId, requestId, reason, description);
     }
 
     @MutationMapping
     public RequestDto acceptRequest(@Argument("staffId") UUID staffId,
                                     @Argument("requestId") UUID requestId,
                                     @Argument("description") String description) {
-        return requestService.acceptRequest(staffId, requestId,description);
+        return requestService.acceptRequest(staffId, requestId, description);
     }
 
     @QueryMapping
