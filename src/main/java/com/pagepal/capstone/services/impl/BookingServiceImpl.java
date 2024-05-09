@@ -166,7 +166,7 @@ public class BookingServiceImpl implements BookingService {
         WorkingTime wt = workingTimeRepository
                 .findById(bookingDto.getWorkingTimeId())
                 .orElseThrow(() -> new EntityNotFoundException("Working time not found"));
-//        String startTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(wt.getStartTime());
+        //        String startTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(wt.getStartTime());
         var service = serviceRepository.findById(bookingDto.getServiceId())
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
 

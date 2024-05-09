@@ -19,4 +19,5 @@ public class WorkingTimeDto {
     private Date startTime;
     private Date endTime;
     private ReaderDto reader;
+    private Boolean isBooked;
 }
