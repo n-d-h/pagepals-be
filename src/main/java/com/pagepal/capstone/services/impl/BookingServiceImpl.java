@@ -117,6 +117,7 @@ public class BookingServiceImpl implements BookingService {
             queryDto.setPageSize(10);
 
         Pageable pageable;
+
         if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
             pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").descending());
         } else {
@@ -129,13 +130,26 @@ public class BookingServiceImpl implements BookingService {
                 .findById(cusId)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
 
+        String state = queryDto.getBookingState().toUpperCase();
+
         if (queryDto.getBookingState() == null || queryDto.getBookingState().isEmpty())
             bookings = bookingRepository.findByCustomer(customer, pageable);
         else {
-            bookings = bookingRepository
-                    .findAllByCustomerIdAndBookingState(cusId,
-                            queryDto.getBookingState().toUpperCase(),
-                            pageable);
+            Date currentTime = dateUtils.getCurrentVietnamDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentTime);
+            calendar.add(Calendar.HOUR_OF_DAY, -1);
+            Date modifiedTime = calendar.getTime();
+            if("PENDING".equals(state)){
+                bookings = bookingRepository.findByStatePendingAndCustomerId(cusId, modifiedTime, pageable);
+            }else if("PROCESSING".equals(state)){
+                bookings = bookingRepository.findByStateProcessingAndCustomerId(cusId, modifiedTime, pageable);
+            }else{
+                bookings = bookingRepository
+                        .findAllByCustomerIdAndBookingState(cusId,
+                                queryDto.getBookingState().toUpperCase(),
+                                pageable);
+            }
         }
 
         ListBookingDto listBookingDto = new ListBookingDto();

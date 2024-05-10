@@ -486,7 +486,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public ListEventDto getAllEventNotJoinByCustomer(UUID customerId, Integer page, Integer pageSize, String sort) {
 		Pageable pageable = createPageable(page, pageSize, sort);
-		Page<Event> events = eventRepository.findAllEventNotJoinByCustomer(customerId, pageable);
+		Page<Event> events = eventRepository.findAllEventNotJoinByCustomer(customerId, EventStateEnum.ACTIVE, dateUtils.getCurrentVietnamDate(), pageable);
 		var listEventDto = new ListEventDto();
 
 		if(events == null) {
