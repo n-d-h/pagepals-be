@@ -66,11 +66,11 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
         return "Working time created successfully";
     }
 
-    public Boolean deleteReaderWorkingTime(UUID id){
+    public Boolean deleteReaderWorkingTime(UUID id) {
         WorkingTime wt = workingTimeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Working time not found"));
         List<Booking> workingTimeBookings = wt.getBookings();
-        if(workingTimeBookings != null && workingTimeBookings.size() > 0){
+        if (workingTimeBookings != null && workingTimeBookings.size() > 0) {
             throw new ValidationException("Working time have booking, cannot delete");
         }
         workingTimeRepository.delete(wt);
@@ -84,9 +84,10 @@ public class WorkingTimeServiceImpl implements WorkingTimeService {
         workingTime.setDate(Date.from(date.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant()));
         workingTime.setReader(reader);
         Boolean isExist = workingTimeRepository.existsByStartTimeAndEndTimeAndReaderId(workingTime.getStartTime(), workingTime.getEndTime(), reader.getId());
-        if(Boolean.FALSE.equals(isExist)){
+        if (Boolean.FALSE.equals(isExist)) {
             workingTimeRepository.save(workingTime);
+        } else {
+            throw new ValidationException("Working time slot is already exist");
         }
-        throw new ValidationException("Working time slot is already exist");
     }
 }
