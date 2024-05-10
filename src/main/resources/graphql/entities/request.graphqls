@@ -1,5 +1,5 @@
 type Request {
-    id: ID!
+    id: ID
     description: String
     state: RequestStateEnum
     createdAt: String
@@ -14,13 +14,12 @@ type Request {
 }
 
 type Interview {
-    id: ID!
+    id: ID
     note: String
     interviewAt: String
     state: InterviewStateEnum
     result: InterviewResultEnum
     meeting: Meeting
-    request: Request
 }
 
 enum InterviewStateEnum{

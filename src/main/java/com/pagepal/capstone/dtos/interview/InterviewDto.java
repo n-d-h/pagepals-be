@@ -29,5 +29,4 @@ public class InterviewDto {
 
     private MeetingDto meeting;
 
-    private RequestDto request;
 }

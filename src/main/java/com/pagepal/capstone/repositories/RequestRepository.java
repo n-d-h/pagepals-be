@@ -27,9 +27,8 @@ public interface RequestRepository extends JpaRepository<Request, UUID> {
             SELECT r
             FROM Request r
             WHERE r.reader.readerRequestReference.id = :readerReferenceId
-            AND r.state NOT IN :states
             AND r.id <> :requestId
             """)
-    List<Request> findByReaderReferenceIdAndStateNotInExcludingRequest(
-            UUID readerReferenceId, List<RequestStateEnum> states, UUID requestId);
+    List<Request> findByReaderReferenceIdExcludingRequest(
+            UUID readerReferenceId, UUID requestId);
 }

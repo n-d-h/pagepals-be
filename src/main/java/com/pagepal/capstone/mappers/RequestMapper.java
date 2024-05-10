@@ -15,6 +15,7 @@ public interface RequestMapper {
 
     RequestMapper INSTANCE = Mappers.getMapper(RequestMapper.class);
 
+    @Mapping(target = "lastRequests", ignore = true)
     @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "toDateFormat")
     @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "toDateFormat")
     RequestDto toDto(Request request);

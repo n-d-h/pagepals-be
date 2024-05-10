@@ -60,14 +60,13 @@ public class RequestServiceImpl implements RequestService {
         return requests.stream().map(RequestMapper.INSTANCE::toDto).toList();
     }
 
-    @Secured("STAFF")
     @Override
     public RequestDto getRequestById(UUID requestId) {
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EntityNotFoundException("Request not found")
         );
 
-        return getRequestWithLastRequest(request);
+        return getRequestWithLastRequest2(request);
     }
 
     @Secured("STAFF")
@@ -253,7 +252,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
             }
-            return getRequestWithLastRequest(request);
+            return getRequestWithLastRequest2(request);
         }
 
         return null;
@@ -344,7 +343,7 @@ public class RequestServiceImpl implements RequestService {
                         );
                     }
                 }
-                return getRequestWithLastRequest(request);
+                return getRequestWithLastRequest2(request);
             }
         }
 
@@ -445,7 +444,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
             }
-            return getRequestWithLastRequest(request);
+            return getRequestWithLastRequest2(request);
         }
 
         return null;
@@ -598,11 +597,10 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private RequestDto getRequestWithLastRequest(Request request) {
-        List<RequestStateEnum> listState = Arrays.asList(RequestStateEnum.PASS, RequestStateEnum.REJECT);
+
         List<Request> requests = requestRepository
-                .findByReaderReferenceIdAndStateNotInExcludingRequest(
+                .findByReaderReferenceIdExcludingRequest(
                         request.getReader().getReaderRequestReference().getId(),
-                        listState,
                         request.getId()
                 );
         RequestDto requestDto = RequestMapper.INSTANCE.toDto(request);
