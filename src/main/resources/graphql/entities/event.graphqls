@@ -46,6 +46,10 @@ extend type Query {
     getEventById(id: ID!): Event
     getAllEvents(page: Int, pageSize: Int, sort: String): ListEvent
     getAllEventBySeminarId(seminarId: ID, page: Int, pageSize: Int, sort: String): ListEvent
+    getAllEventsNotJoinByCustomer(customerId: ID, page: Int, pageSize: Int, sort: String): ListEvent
+    getAllEventsByReader(readerId: ID, page: Int, pageSize: Int, sort: String): ListEvent
+    getAllActiveEventsByReader(readerId: ID, page: Int, pageSize: Int, sort: String): ListEvent
+    getAllActiveEvents(page: Int, pageSize: Int, sort: String): ListEvent
 }
 
 extend type Mutation {

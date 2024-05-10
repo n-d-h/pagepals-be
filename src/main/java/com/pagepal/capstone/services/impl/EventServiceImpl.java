@@ -483,6 +483,106 @@ public class EventServiceImpl implements EventService {
 		return listEventDto;
 	}
 
+	@Override
+	public ListEventDto getAllEventNotJoinByCustomer(UUID customerId, Integer page, Integer pageSize, String sort) {
+		Pageable pageable = createPageable(page, pageSize, sort);
+		Page<Event> events = eventRepository.findAllEventNotJoinByCustomer(customerId, pageable);
+		var listEventDto = new ListEventDto();
+
+		if(events == null) {
+			listEventDto.setList(Collections.emptyList());
+			listEventDto.setPagination(null);
+		} else {
+			var pagingDto = new PagingDto();
+			pagingDto.setTotalOfPages(events.getTotalPages());
+			pagingDto.setTotalOfElements(events.getTotalElements());
+			pagingDto.setSort(events.getSort().toString());
+			pagingDto.setCurrentPage(events.getNumber());
+			pagingDto.setPageSize(events.getSize());
+
+			listEventDto.setList(events.map(this::convertToDto).getContent());
+			listEventDto.setPagination(pagingDto);
+		}
+
+		return listEventDto;
+	}
+
+	@Override
+	public ListEventDto getAllEventByReader(UUID readerId, Integer page, Integer pageSize, String sort) {
+		Pageable pageable = createPageable(page, pageSize, sort);
+		Page<Event> events = eventRepository.findAllByReaderId(readerId, pageable);
+		var listEventDto = new ListEventDto();
+
+		if(events == null) {
+			listEventDto.setList(Collections.emptyList());
+			listEventDto.setPagination(null);
+		} else {
+			var pagingDto = new PagingDto();
+			pagingDto.setTotalOfPages(events.getTotalPages());
+			pagingDto.setTotalOfElements(events.getTotalElements());
+			pagingDto.setSort(events.getSort().toString());
+			pagingDto.setCurrentPage(events.getNumber());
+			pagingDto.setPageSize(events.getSize());
+
+			listEventDto.setList(events.map(this::convertToDto).getContent());
+			listEventDto.setPagination(pagingDto);
+		}
+
+
+		return listEventDto;
+	}
+
+	@Override
+	public ListEventDto getAllActiveEventByReader(UUID readerId, Integer page, Integer pageSize, String sort) {
+		Pageable pageable = createPageable(page, pageSize, sort);
+		Date currentDate = new Date();
+		Page<Event> events = eventRepository.findAllEventActiveByReaderId(readerId, EventStateEnum.ACTIVE, currentDate,
+				pageable);
+		var listEventDto = new ListEventDto();
+
+		if(events == null) {
+			listEventDto.setList(Collections.emptyList());
+			listEventDto.setPagination(null);
+		} else {
+			var pagingDto = new PagingDto();
+			pagingDto.setTotalOfPages(events.getTotalPages());
+			pagingDto.setTotalOfElements(events.getTotalElements());
+			pagingDto.setSort(events.getSort().toString());
+			pagingDto.setCurrentPage(events.getNumber());
+			pagingDto.setPageSize(events.getSize());
+
+			listEventDto.setList(events.map(this::convertToDto).getContent());
+			listEventDto.setPagination(pagingDto);
+		}
+
+		return listEventDto;
+	}
+
+	@Override
+	public ListEventDto getAllActiveEvent(Integer page, Integer pageSize, String sort) {
+		Pageable pageable = createPageable(page, pageSize, sort);
+		Date currentDate = new Date();
+		Page<Event> events = eventRepository.findAllActiveEvent(EventStateEnum.ACTIVE, currentDate, pageable);
+		var listEventDto = new ListEventDto();
+
+		if(events == null) {
+			listEventDto.setList(Collections.emptyList());
+			listEventDto.setPagination(null);
+		} else {
+			var pagingDto = new PagingDto();
+			pagingDto.setTotalOfPages(events.getTotalPages());
+			pagingDto.setTotalOfElements(events.getTotalElements());
+			pagingDto.setSort(events.getSort().toString());
+			pagingDto.setCurrentPage(events.getNumber());
+			pagingDto.setPageSize(events.getSize());
+
+			listEventDto.setList(events.map(this::convertToDto).getContent());
+			listEventDto.setPagination(pagingDto);
+		}
+
+		return listEventDto;
+	}
+
 	private EventDto convertToDto(Event event) {
 		if(event == null) {
 			return null;
