@@ -43,7 +43,7 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
     @Query("""
             SELECT s FROM Service s
             WHERE s.reader.id = :readerId
-            AND s.book.title LIKE %:title%
+            AND LOWER(s.book.title) LIKE LOWER(CONCAT('%', :title, '%'))
             AND (s.isDeleted IS NULL OR s.isDeleted = false)
             ORDER BY s.createdAt DESC
             """)
