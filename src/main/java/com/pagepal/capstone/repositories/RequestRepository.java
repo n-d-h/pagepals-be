@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface RequestRepository extends JpaRepository<Request, UUID>{
+public interface RequestRepository extends JpaRepository<Request, UUID> {
 
     @Query("""
             SELECT r
@@ -22,4 +22,14 @@ public interface RequestRepository extends JpaRepository<Request, UUID>{
     Optional<Request> findByReaderIdAndStates(UUID readerId, List<RequestStateEnum> state);
 
     List<Request> findByStaffIdAndState(UUID staffId, RequestStateEnum state);
+
+    @Query("""
+            SELECT r
+            FROM Request r
+            WHERE r.reader.readerRequestReference.id = :readerReferenceId
+            AND r.state NOT IN :states
+            AND r.id <> :requestId
+            """)
+    List<Request> findByReaderReferenceIdAndStateNotInExcludingRequest(
+            UUID readerReferenceId, List<RequestStateEnum> states, UUID requestId);
 }

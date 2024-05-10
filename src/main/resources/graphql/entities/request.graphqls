@@ -10,6 +10,7 @@ type Request {
     answers: [Answer]
     reader: ReaderRead
     interviews: [Interview]
+    lastRequests: [Request]
 }
 
 type Interview {

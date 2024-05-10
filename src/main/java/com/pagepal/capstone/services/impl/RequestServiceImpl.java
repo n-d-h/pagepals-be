@@ -63,9 +63,11 @@ public class RequestServiceImpl implements RequestService {
     @Secured("STAFF")
     @Override
     public RequestDto getRequestById(UUID requestId) {
-        return RequestMapper.INSTANCE.toDto(requestRepository.findById(requestId).orElseThrow(
+        Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EntityNotFoundException("Request not found")
-        ));
+        );
+
+        return getRequestWithLastRequest(request);
     }
 
     @Secured("STAFF")
@@ -142,7 +144,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
 
-
     private static String getUpdateRequestInterviewEmailBody(Reader reader) {
         String location = "https://pagepals-fe.vercel.app/main/become-a-reader";
         return """
@@ -151,7 +152,7 @@ public class RequestServiceImpl implements RequestService {
                 Thank you for your interest in our PagePals platform. I am happy to receive your application to become our reader.
                  
                 Regarding your inquiry, I'd like to suggest we have a quick conversation (10 - 30 minutes) so I can better understand what you are looking for and discuss more about how PagePals can help you with your needs.              
-               
+                               
                 The link below provides my calendar availability over the coming days. Feel free to select a time that works best for you.
                 %s
                                     
@@ -252,7 +253,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
             }
-            return RequestMapper.INSTANCE.toDto(request);
+            return getRequestWithLastRequest(request);
         }
 
         return null;
@@ -343,7 +344,7 @@ public class RequestServiceImpl implements RequestService {
                         );
                     }
                 }
-                return RequestMapper.INSTANCE.toDto(request);
+                return getRequestWithLastRequest(request);
             }
         }
 
@@ -352,9 +353,38 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestDto getRequestByReaderId(UUID readerId) {
-        List<RequestStateEnum> listState = Arrays.asList(RequestStateEnum.INTERVIEW_PENDING, RequestStateEnum.ANSWER_CHECKING);
-        Request request = requestRepository.findByReaderIdAndStates(readerId, listState).orElse(null);
-        return request == null ? null : RequestMapper.INSTANCE.toDto(request);
+//        List<RequestStateEnum> listState = Arrays.asList(RequestStateEnum.INTERVIEW_PENDING, RequestStateEnum.ANSWER_CHECKING);
+//        Request request = requestRepository.findByReaderIdAndStates(readerId, listState).orElse(null);
+
+        Reader reader = readerRepository.findById(readerId).orElseThrow(
+                () -> new EntityNotFoundException("Reader not found")
+        );
+
+        List<Request> requests = reader.getReaderRequests()
+                .stream()
+                .map(Reader::getRequest)
+                .toList();
+
+        Optional<Request> requestToRemove = requests.stream()
+                .filter(request -> !request.getState().equals(RequestStateEnum.PASS) && !request.getState().equals(RequestStateEnum.REJECT))
+                .findFirst();
+
+        List<Request> updatedRequests = requestToRemove
+                .map(request -> requests.stream().filter(r -> !r.equals(request)).toList())
+                .orElse(requests);
+
+        Request removedRequest = requestToRemove.orElse(null);
+
+        RequestDto request = new RequestDto();
+
+        if (removedRequest == null) {
+            request.setLastRequests(updatedRequests.stream().map(RequestMapper.INSTANCE::toDto).toList());
+        }else{
+            request = RequestMapper.INSTANCE.toDto(removedRequest);
+            request.setLastRequests(updatedRequests.stream().map(RequestMapper.INSTANCE::toDto).toList());
+        }
+
+        return request;
     }
 
     @Override
@@ -375,7 +405,7 @@ public class RequestServiceImpl implements RequestService {
         request.setState(RequestStateEnum.INTERVIEW_SCHEDULING);
         request = requestRepository.save(request);
 
-        if(request != null){
+        if (request != null) {
             Reader reader = request.getReader().getReaderRequestReference();
             String email = reader.getAccount().getEmail();
             String subject = "[PagePals]: Interview schedule";
@@ -415,7 +445,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
             }
-            return RequestMapper.INSTANCE.toDto(request);
+            return getRequestWithLastRequest(request);
         }
 
         return null;
@@ -428,15 +458,15 @@ public class RequestServiceImpl implements RequestService {
         );
 
         List<Request> requests = requestRepository.findByStaffIdAndState(staffId, RequestStateEnum.INTERVIEW_SCHEDULING);
-        if(requests == null || requests.isEmpty()){
+        if (requests == null || requests.isEmpty()) {
             return null;
         }
         List<Interview> interviews = new ArrayList<>();
-        for(Request request : requests){
+        for (Request request : requests) {
             request.getInterviews().stream().filter(interview1 -> InterviewStateEnum.PENDING.equals(interview1.getState())).findFirst().ifPresent(interviews::add);
         }
 
-        if(interviews.isEmpty()){
+        if (interviews.isEmpty()) {
             return null;
         }
 
@@ -448,12 +478,12 @@ public class RequestServiceImpl implements RequestService {
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new EntityNotFoundException("Request not found")
         );
-        if(request.getInterviews() != null || request.getInterviews().isEmpty()){
+        if (request.getInterviews() != null || request.getInterviews().isEmpty()) {
             request.getInterviews().stream()
                     .filter(interview ->
                             InterviewStateEnum.PENDING.equals(interview.getState())).findFirst().ifPresent(interview -> {
-                                throw new ValidationException("Interview is pending");
-                            });
+                        throw new ValidationException("Interview is pending");
+                    });
         }
         Date startDate = dateFormat.parse(interviewAt);
 
@@ -467,7 +497,7 @@ public class RequestServiceImpl implements RequestService {
         request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         request = requestRepository.save(request);
 
-        if(request != null){
+        if (request != null) {
             Interview interview = new Interview();
             interview.setInterviewAt(startDate);
             interview.setState(InterviewStateEnum.PENDING);
@@ -565,5 +595,32 @@ public class RequestServiceImpl implements RequestService {
         int second = calendar.get(Calendar.SECOND);
 
         return String.format("%02d:%02d:%02d", hour, minute, second); // Example start time
+    }
+
+    private RequestDto getRequestWithLastRequest(Request request) {
+        List<RequestStateEnum> listState = Arrays.asList(RequestStateEnum.PASS, RequestStateEnum.REJECT);
+        List<Request> requests = requestRepository
+                .findByReaderReferenceIdAndStateNotInExcludingRequest(
+                        request.getReader().getReaderRequestReference().getId(),
+                        listState,
+                        request.getId()
+                );
+        RequestDto requestDto = RequestMapper.INSTANCE.toDto(request);
+        requestDto.setLastRequests(requests.stream().map(RequestMapper.INSTANCE::toDto).toList());
+
+        return requestDto;
+    }
+
+    private RequestDto getRequestWithLastRequest2(Request request) {
+
+        List<Request> requests = new ArrayList<>(request.getReader().getReaderRequestReference().getReaderRequests()
+                .stream().map(Reader::getRequest).toList());
+
+        requests.remove(request);
+
+        RequestDto requestDto = RequestMapper.INSTANCE.toDto(request);
+        requestDto.setLastRequests(requests.stream().map(RequestMapper.INSTANCE::toDto).toList());
+
+        return requestDto;
     }
 }

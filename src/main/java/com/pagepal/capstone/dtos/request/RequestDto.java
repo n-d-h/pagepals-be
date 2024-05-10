@@ -27,4 +27,5 @@ public class RequestDto {
     private List<AnswerDto> answers;
     private List<InterviewDto> interviews;
     private ReaderDto reader;
+    private List<RequestDto> lastRequests;
 }
