@@ -1,5 +1,6 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.dtos.zoom.AuthZoomResponseDto;
 import com.pagepal.capstone.dtos.zoom.ZoomPlan;
@@ -18,9 +19,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Transactional
 @Service
@@ -152,8 +153,36 @@ public class ZoomServiceImpl implements ZoomService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (record == null) {
-            throw new EntityNotFoundException("Failed to get recording");
+        return record;
+    }
+
+    public MeetingRecordings getListRecordingByMeetingId(String meetingId) {
+        String accessToken = getZoomToken().getAccess_token();
+
+        LocalDate currentDate = LocalDate.now();
+        int currentYear = currentDate.getYear();
+
+        LocalDate firstDayOfYear = LocalDate.of(currentYear, 1, 1);
+        String formattedFirstDay = firstDayOfYear.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        LocalDate lastDayOfYear = LocalDate.of(currentYear, 12, 31);
+        String formattedLastDay = lastDayOfYear.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        MeetingRecordings record = null;
+        try {
+            record = webClientMeeting.get()
+                    .uri(UriBuilder -> UriBuilder
+                            .path("/users/me/recordings")
+                            .queryParam("meeting_id", meetingId)
+                            .queryParam("from", formattedFirstDay)
+                            .queryParam("to", formattedLastDay)
+                            .build())
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .retrieve()
+                    .bodyToMono(MeetingRecordings.class)
+                    .block();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return record;
     }

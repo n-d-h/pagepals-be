@@ -1,9 +1,12 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.bannerads.BannerAdsDto;
+import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.dtos.event.*;
+import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
@@ -600,7 +603,7 @@ public class EventServiceImpl implements EventService {
 				.bookings(
 						event.getBookings() == null
 								? Collections.emptyList()
-								: event.getBookings().stream().map(BookingMapper.INSTANCE::toDto).toList()
+								: event.getBookings().stream().map(this::toDtoIncludeRecording).toList()
 				)
 				.build();
 	}
@@ -619,5 +622,16 @@ public class EventServiceImpl implements EventService {
 		} else {
 			return PageRequest.of(page, pageSize, Sort.by("createdAt").ascending());
 		}
+	}
+
+	private BookingDto toDtoIncludeRecording(Booking booking) {
+		BookingDto bookingDto = BookingMapper.INSTANCE.toDto(booking);
+
+//		MeetingDto meeting = bookingDto.getMeeting();
+//
+//		MeetingRecordings recording = zoomService.getListRecordingByMeetingId(booking.getMeeting().getMeetingCode());
+//		meeting.setRecordings(recording);
+//		bookingDto.setMeeting(meeting);
+		return bookingDto;
 	}
 }

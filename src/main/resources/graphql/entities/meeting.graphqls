@@ -6,6 +6,7 @@ type Meeting {
     createAt: String
     state: MeetingEnum
     timelines: [MeetingTimeline]
+#    recordings: MeetingRecordings
 }
 
 type MeetingTimeline{
@@ -51,6 +52,16 @@ type Recording {
     download_access_token: String
 }
 
+type MeetingRecordings {
+    from: String
+    to: String
+    page_count: Int
+    page_size: Int
+    total_records: Int
+    next_page_token: String
+    meetings: [Recording]
+}
+
 type AuthZoom{
     access_token:String
     token_type: String
@@ -62,6 +73,7 @@ extend type Query {
     getRecording(roomId: String): Recording
     getMeetingById(roomId: String): Meeting
     getAuthZoom: AuthZoom
+    getMeetingRecordings(meetingId: String): MeetingRecordings
 }
 
 extend type Mutation {

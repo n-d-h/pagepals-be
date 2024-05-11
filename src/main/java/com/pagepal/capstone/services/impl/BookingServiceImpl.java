@@ -1,8 +1,10 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.booking.*;
+import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.CurrencyEnum;
@@ -101,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
             pagingDto.setCurrentPage(bookings.getNumber());
             pagingDto.setPageSize(bookings.getSize());
 
-            listBookingDto.setList(bookings.map(BookingMapper.INSTANCE::toDto).toList());
+            listBookingDto.setList(bookings.map(this::toDtoIncludeRecording).toList());
             listBookingDto.setPagination(pagingDto);
             return listBookingDto;
         }
@@ -165,7 +167,7 @@ public class BookingServiceImpl implements BookingService {
             pagingDto.setCurrentPage(bookings.getNumber());
             pagingDto.setPageSize(bookings.getSize());
 
-            listBookingDto.setList(bookings.map(BookingMapper.INSTANCE::toDto).toList());
+            listBookingDto.setList(bookings.map(this::toDtoIncludeRecording).toList());
             listBookingDto.setPagination(pagingDto);
             return listBookingDto;
         }
@@ -336,7 +338,7 @@ public class BookingServiceImpl implements BookingService {
                 }
             }
         }
-        return BookingMapper.INSTANCE.toDto(res);
+        return toDtoIncludeRecording(res);
     }
 
     @Override
@@ -485,7 +487,7 @@ public class BookingServiceImpl implements BookingService {
                 }
             }
         }
-        return BookingMapper.INSTANCE.toDto(booking);
+        return toDtoIncludeRecording(booking);
     }
 
     @Override
@@ -649,7 +651,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
-        return BookingMapper.INSTANCE.toDto(booking);
+        return toDtoIncludeRecording(booking);
     }
 
     private static int getDurationInMinutes(Date start, Date end) {
@@ -696,13 +698,13 @@ public class BookingServiceImpl implements BookingService {
         reader.setRating(newRating);
         readerRepository.save(reader);
 
-        return booking != null ? BookingMapper.INSTANCE.toDto(booking) : null;
+        return booking != null ? toDtoIncludeRecording(booking) : null;
     }
 
     @Override
     public BookingDto getBookingById(UUID id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-        return BookingMapper.INSTANCE.toDto(booking);
+        return toDtoIncludeRecording(booking);
     }
 
     private static String generateRoomId(int length) {
@@ -715,5 +717,16 @@ public class BookingServiceImpl implements BookingService {
             sb.append(randomChar);
         }
         return sb.toString();
+    }
+    
+    private BookingDto toDtoIncludeRecording(Booking booking) {
+        BookingDto bookingDto = BookingMapper.INSTANCE.toDto(booking);
+        
+//        MeetingDto meeting = bookingDto.getMeeting();
+//
+//        MeetingRecordings recording = zoomService.getListRecordingByMeetingId(booking.getMeeting().getMeetingCode());
+//        meeting.setRecordings(recording);
+//        bookingDto.setMeeting(meeting);
+        return bookingDto;
     }
 }

@@ -1,5 +1,6 @@
 package com.pagepal.capstone.dtos.booking;
 
+import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.entities.postgre.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class BookingDto {
     private String deleteAt;
     private String startAt;
     private Customer customer;
-    private Meeting meeting;
+    private MeetingDto meeting;
     private BookingState state;
     private WorkingTime workingTime;
     private Service service;

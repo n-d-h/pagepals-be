@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -10,9 +11,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -20,8 +19,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "RECORD")
-public class Record implements Serializable {
+@Table(name = "RECORD_FILE")
+public class RecordFile {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @GenericGenerator(
@@ -31,28 +30,33 @@ public class Record implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "recording_count")
-    private Integer recordingCount;
+    @Column(name = "download_url", columnDefinition = "text")
+    private String downloadUrl;
 
-    @Column(name = "start_time")
-    private Date startTime;
+    @Column(name = "play_url", columnDefinition = "text")
+    private String playUrl;
 
-    @Column(name = "duration")
-    private Integer duration;
+    @Column(name = "file_extention", columnDefinition = "text")
+    private String fileExtention;
 
-    @Column(name = "external_id")
-    private String externalId;
+    @Column(name = "file_type", columnDefinition = "text")
+    private String fileType;
+
+    @Column(name = "start_at")
+    private Date startAt;
+
+    @Column(name = "end_at")
+    private Date endAt;
+
+    @Column(name = "recording_type", columnDefinition = "text")
+    private String recordingType;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "meeting_id")
-    @JsonManagedReference
-    private Meeting meeting;
-
-    @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<RecordFile> recordFiles;
+    @JoinColumn(name = "record_id")
+    @JsonBackReference
+    private Record record;
 }
