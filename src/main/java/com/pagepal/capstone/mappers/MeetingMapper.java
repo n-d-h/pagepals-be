@@ -15,7 +15,6 @@ public interface MeetingMapper {
     MeetingMapper INSTANCE = Mappers.getMapper(MeetingMapper.class);
 
     
-    @Mapping(target = "recordings", ignore = true)
     @Mapping(target = "timelines", ignore = true)
     MeetingDto toDto(Meeting meeting);
 
