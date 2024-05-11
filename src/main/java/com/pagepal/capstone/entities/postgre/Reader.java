@@ -93,7 +93,7 @@ public class Reader implements Serializable {
     private Reader readerRequestReference;
 
     @OneToMany(mappedBy = "readerRequestReference", fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonBackReference
     private List<Reader> readerRequests;
 
     @OneToOne

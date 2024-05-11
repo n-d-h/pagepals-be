@@ -66,7 +66,7 @@ public class RequestServiceImpl implements RequestService {
                 () -> new EntityNotFoundException("Request not found")
         );
 
-        return getRequestWithLastRequest2(request);
+        return getRequestWithLastRequest(request);
     }
 
     @Secured("STAFF")
@@ -252,7 +252,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
             }
-            return getRequestWithLastRequest2(request);
+            return getRequestWithLastRequest(request);
         }
 
         return null;
@@ -343,7 +343,7 @@ public class RequestServiceImpl implements RequestService {
                         );
                     }
                 }
-                return getRequestWithLastRequest2(request);
+                return getRequestWithLastRequest(request);
             }
         }
 
@@ -444,7 +444,7 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
             }
-            return getRequestWithLastRequest2(request);
+            return getRequestWithLastRequest(request);
         }
 
         return null;
