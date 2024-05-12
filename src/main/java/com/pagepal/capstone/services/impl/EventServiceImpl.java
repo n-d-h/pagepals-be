@@ -291,6 +291,7 @@ public class EventServiceImpl implements EventService {
 		booking.setStartAt(event.getStartAt());
 		booking.setCustomer(customer);
 		booking.setEvent(event);
+		booking.setMeeting(event.getMeeting());
 		booking.setState(
 				bookingStateRepository
 						.findByName("PENDING")

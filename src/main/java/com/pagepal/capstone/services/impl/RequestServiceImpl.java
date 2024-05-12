@@ -456,14 +456,7 @@ public class RequestServiceImpl implements RequestService {
                 () -> new EntityNotFoundException("Staff not found")
         );
 
-        List<Request> requests = requestRepository.findByStaffIdAndState(staffId, RequestStateEnum.INTERVIEW_SCHEDULING);
-        if (requests == null || requests.isEmpty()) {
-            return null;
-        }
-        List<Interview> interviews = new ArrayList<>();
-        for (Request request : requests) {
-            request.getInterviews().stream().filter(interview1 -> InterviewStateEnum.PENDING.equals(interview1.getState())).findFirst().ifPresent(interviews::add);
-        }
+        List<Interview> interviews = interviewRepository.findByStaffIdAndState(staffId, InterviewStateEnum.PENDING);
 
         if (interviews.isEmpty()) {
             return null;
