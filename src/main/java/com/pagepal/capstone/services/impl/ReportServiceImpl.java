@@ -1,6 +1,9 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.booking.BookingDto;
+import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.dtos.report.*;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
@@ -10,6 +13,7 @@ import com.pagepal.capstone.mappers.ReportMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.EmailService;
 import com.pagepal.capstone.services.ReportService;
+import com.pagepal.capstone.services.ZoomService;
 import com.pagepal.capstone.utils.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -39,6 +43,7 @@ public class ReportServiceImpl implements ReportService {
     private final AccountRepository accountRepository;
     private final EmailService emailService;
     private final RoleRepository roleRepository;
+    private final ZoomService zoomService;
 
     @Override
     public ReportReadDto getReportById(UUID id) {
@@ -148,7 +153,7 @@ public class ReportServiceImpl implements ReportService {
                 ReportBookingDto reportReader = new ReportBookingDto();
                 Booking findBooking = bookingRepository.findById(report.getReportedId())
                         .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-                reportReader.setBooking(BookingMapper.INSTANCE.toDto(findBooking));
+                reportReader.setBooking(toDtoIncludeRecording(findBooking));
                 reportReader.setListReport(Collections.singletonList(ReportMapper.INSTANCE.toDto(report)));
                 list.add(reportReader);
             }
@@ -202,7 +207,7 @@ public class ReportServiceImpl implements ReportService {
             case BOOKING -> {
                 Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
                 Reader reader = booking.getWorkingTime().getReader();
-                reportGenericDto.setBooking(BookingMapper.INSTANCE.toDto(booking));
+                reportGenericDto.setBooking(toDtoIncludeRecording(booking));
                 List<ReportReadDto> reports = reportRepository
                         .findByTypeAndState(ReportTypeEnum.BOOKING, ReportStateEnum.PENDING)
                         .stream().map(ReportMapper.INSTANCE::toDto).toList();
@@ -356,6 +361,17 @@ public class ReportServiceImpl implements ReportService {
         }
 
         return false;
+    }
+
+    private BookingDto toDtoIncludeRecording(Booking booking) {
+        BookingDto bookingDto = BookingMapper.INSTANCE.toDto(booking);
+
+//        MeetingDto meeting = bookingDto.getMeeting();
+//
+//        MeetingRecordings recording = zoomService.getListRecordingByMeetingId(booking.getMeeting().getMeetingCode());
+//        meeting.setRecordings(recording);
+//        bookingDto.setMeeting(meeting);
+        return bookingDto;
     }
 
 

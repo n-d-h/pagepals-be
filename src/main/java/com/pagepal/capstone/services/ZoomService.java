@@ -1,5 +1,6 @@
 package com.pagepal.capstone.services;
 
+import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.dtos.zoom.AuthZoomResponseDto;
 import com.pagepal.capstone.dtos.zoom.ZoomPlan;
@@ -7,6 +8,7 @@ import com.pagepal.capstone.entities.postgre.Meeting;
 import com.pagepal.capstone.entities.postgre.Reader;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ZoomService {
 
@@ -17,4 +19,6 @@ public interface ZoomService {
     RecordingDto getRecording(String meetingId);
 
     ZoomPlan getZoomPlan();
+
+    MeetingRecordings getListRecordingByMeetingId(String meetingId);
 }

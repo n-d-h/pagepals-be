@@ -164,4 +164,20 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     Double sumPriceByReaderId(UUID readerId, Date now);
 
     List<Booking> findAllByEventId(UUID eventId);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE b.customer.id = :cusId
+            AND b.state.name = 'PENDING'
+            AND b.startAt < :currentTime
+            """)
+    Page<Booking> findByStateProcessingAndCustomerId(UUID cusId, Date currentTime, Pageable pageable);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE b.customer.id = :cusId
+            AND b.state.name = 'PENDING'
+            AND b.startAt >= :currentTime
+            """)
+    Page<Booking> findByStatePendingAndCustomerId(UUID cusId, Date currentTime, Pageable pageable);
 }

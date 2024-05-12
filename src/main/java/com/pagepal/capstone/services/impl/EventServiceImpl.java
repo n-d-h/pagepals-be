@@ -1,9 +1,12 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.bannerads.BannerAdsDto;
+import com.pagepal.capstone.dtos.booking.BookingDto;
 import com.pagepal.capstone.dtos.event.*;
+import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
+import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
@@ -288,6 +291,7 @@ public class EventServiceImpl implements EventService {
 		booking.setStartAt(event.getStartAt());
 		booking.setCustomer(customer);
 		booking.setEvent(event);
+		booking.setMeeting(event.getMeeting());
 		booking.setState(
 				bookingStateRepository
 						.findByName("PENDING")
@@ -486,7 +490,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public ListEventDto getAllEventNotJoinByCustomer(UUID customerId, Integer page, Integer pageSize, String sort) {
 		Pageable pageable = createPageable(page, pageSize, sort);
-		Page<Event> events = eventRepository.findAllEventNotJoinByCustomer(customerId, pageable);
+		Page<Event> events = eventRepository.findAllEventNotJoinByCustomer(customerId, EventStateEnum.ACTIVE, dateUtils.getCurrentVietnamDate(), pageable);
 		var listEventDto = new ListEventDto();
 
 		if(events == null) {
@@ -600,7 +604,7 @@ public class EventServiceImpl implements EventService {
 				.bookings(
 						event.getBookings() == null
 								? Collections.emptyList()
-								: event.getBookings().stream().map(BookingMapper.INSTANCE::toDto).toList()
+								: event.getBookings().stream().map(this::toDtoIncludeRecording).toList()
 				)
 				.build();
 	}
@@ -619,5 +623,16 @@ public class EventServiceImpl implements EventService {
 		} else {
 			return PageRequest.of(page, pageSize, Sort.by("createdAt").ascending());
 		}
+	}
+
+	private BookingDto toDtoIncludeRecording(Booking booking) {
+		BookingDto bookingDto = BookingMapper.INSTANCE.toDto(booking);
+
+//		MeetingDto meeting = bookingDto.getMeeting();
+//
+//		MeetingRecordings recording = zoomService.getListRecordingByMeetingId(booking.getMeeting().getMeetingCode());
+//		meeting.setRecordings(recording);
+//		bookingDto.setMeeting(meeting);
+		return bookingDto;
 	}
 }
