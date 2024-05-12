@@ -283,30 +283,23 @@ public class ReaderServiceImpl implements ReaderService {
         if (page != null) {
 
             for (var book : page.getContent()) {
-                var sumRating = 0;
-                var countRating = 0;
-                var ratingAvg = 0;
-                var services = book.getServices();
-                for (var service : services) {
-                    if (service.getRating() != null && service.getRating() > 0) {
-                        sumRating += service.getRating();
-                        countRating++;
-                    }
-                }
-                ratingAvg = countRating == 0 ? 0 : sumRating / countRating;
+                var ratings = serviceRepository.getAllRatingByReaderIdAndBookId(id, book.getId());
+                var ratingAvg = ratings.stream().mapToInt(Integer::intValue).average().orElse(0);
+                var servicesCount = serviceRepository.countActiveServicesByReaderIdAndBookId(id, book.getId());
 
                 String status = "ACTIVE";
-                if (services.isEmpty()) {
+                if (servicesCount == 0) {
                     status = "INACTIVE";
                 }
 
                 ReaderBookDto readerBookDto = new ReaderBookDto();
                 readerBookDto.setBook(BookMapper.INSTANCE.toDto(book));
-                readerBookDto.setServicesCount(book.getServices().size());
-                readerBookDto.setRatingAverage(ratingAvg);
-                readerBookDto.setTotalReview(countRating);
-                readerBookDto.setServiceMinPrice(services.stream().map(com.pagepal.capstone.entities.postgre.Service::getPrice).min(Integer::compareTo).orElse(0));
-                readerBookDto.setServiceMaxPrice(services.stream().map(com.pagepal.capstone.entities.postgre.Service::getPrice).max(Integer::compareTo).orElse(0));
+                readerBookDto.setServices(serviceRepository.findByReaderAndBook(reader, book).stream().map(ServiceMapper.INSTANCE::toDto).collect(Collectors.toList()));
+                readerBookDto.setServicesCount(servicesCount);
+                readerBookDto.setRatingAverage((int) ratingAvg);
+                readerBookDto.setTotalReview(ratings.size());
+                readerBookDto.setServiceMinPrice(serviceRepository.getMinPriceByReaderIdAndBookId(id, book.getId()));
+                readerBookDto.setServiceMaxPrice(serviceRepository.getMaxPriceByReaderIdAndBookId(id, book.getId()));
                 readerBookDto.setStatus(status);
                 books.add(readerBookDto);
             }

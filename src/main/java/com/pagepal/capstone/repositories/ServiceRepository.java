@@ -56,4 +56,43 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
             AND (s.isDeleted IS NULL OR s.isDeleted = false)
             """)
     Long countActiveServicesByReaderId(UUID readerId);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Service s
+            WHERE s.reader.id = :readerId
+            AND s.book.id = :bookId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    Integer countActiveServicesByReaderIdAndBookId(UUID readerId, UUID bookId);
+
+
+    @Query("""
+            SELECT MIN(s.price)
+            FROM Service s
+            WHERE s.reader.id = :readerId
+            AND s.book.id = :bookId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    Integer getMinPriceByReaderIdAndBookId(UUID readerId, UUID bookId);
+
+    @Query("""
+            SELECT MAX(s.price)
+            FROM Service s
+            WHERE s.reader.id = :readerId
+            AND s.book.id = :bookId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    Integer getMaxPriceByReaderIdAndBookId(UUID readerId, UUID bookId);
+
+    // get all rating of a book service
+    @Query("""
+            SELECT s.rating
+            FROM Service s
+            WHERE s.book.id = :bookId
+            AND s.reader.id = :readerId
+            AND (s.rating IS NOT NULL AND s.rating > 0)
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    List<Integer> getAllRatingByReaderIdAndBookId(UUID readerId, UUID bookId);
 }
