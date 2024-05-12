@@ -1,5 +1,6 @@
 package com.pagepal.capstone.services.impl;
 
+import com.pagepal.capstone.dtos.book.BookDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.reader.*;
 import com.pagepal.capstone.dtos.request.RequestInputDto;
@@ -271,31 +272,71 @@ public class ReaderServiceImpl implements ReaderService {
         Pageable pageable;
         pageable = PageRequest.of(filter.getPage(), filter.getPageSize());
 
-        Page<com.pagepal.capstone.entities.postgre.Service> page;
-
+        Page<Book> page;
         if (filter.getTitle() == null || filter.getTitle().isEmpty()) {
-            page = serviceRepository.findByReaderId(id, pageable);
+            page = bookRepository.findByReaderId(id, pageable);
         } else {
-            page = serviceRepository.findByReaderIdAndBookTitleContaining(id, filter.getTitle().toLowerCase(), pageable);
+            page = bookRepository.findByReaderIdAndTitleContaining(id, filter.getTitle().toLowerCase().trim(), pageable);
         }
 
         ReaderBookListDto listReaderDto = new ReaderBookListDto();
-
         if (page != null) {
-            Map<Book, List<ServiceDto>> bookServiceMap = new HashMap<>();
 
-            for (var service : page.getContent()) {
-                Book book = service.getBook();
-                List<ServiceDto> services = bookServiceMap.getOrDefault(book, new ArrayList<>());
-                services.add(ServiceMapper.INSTANCE.toDto(service));
-                bookServiceMap.put(book, services);
+            for (var book : page.getContent()) {
+                var sumRating = 0;
+                var countRating = 0;
+                var ratingAvg = 0;
+                var services = book.getServices();
+                for (var service : services) {
+                    if (service.getRating() != null && service.getRating() > 0) {
+                        sumRating += service.getRating();
+                        countRating++;
+                    }
+                }
+                ratingAvg = countRating == 0 ? 0 : sumRating / countRating;
+
+                String status = "ACTIVE";
+                if (services.isEmpty()) {
+                    status = "INACTIVE";
+                }
+
+                ReaderBookDto readerBookDto = new ReaderBookDto();
+                readerBookDto.setBook(BookMapper.INSTANCE.toDto(book));
+                readerBookDto.setServicesCount(book.getServices().size());
+                readerBookDto.setRatingAverage(ratingAvg);
+                readerBookDto.setTotalReview(countRating);
+                readerBookDto.setServiceMinPrice(services.stream().map(com.pagepal.capstone.entities.postgre.Service::getPrice).min(Integer::compareTo).orElse(0));
+                readerBookDto.setServiceMaxPrice(services.stream().map(com.pagepal.capstone.entities.postgre.Service::getPrice).max(Integer::compareTo).orElse(0));
+                readerBookDto.setStatus(status);
+                books.add(readerBookDto);
             }
 
-            for (Map.Entry<Book, List<ServiceDto>> entry : bookServiceMap.entrySet()) {
-                Book book = entry.getKey();
-                List<ServiceDto> services = entry.getValue();
-                books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(book), services));
-            }
+
+//        Page<com.pagepal.capstone.entities.postgre.Service> page;
+//
+//        if (filter.getTitle() == null || filter.getTitle().isEmpty()) {
+//            page = serviceRepository.findByReaderId(id, pageable);
+//        } else {
+//            page = serviceRepository.findByReaderIdAndBookTitleContaining(id, filter.getTitle().toLowerCase(), pageable);
+//        }
+//
+//        ReaderBookListDto listReaderDto = new ReaderBookListDto();
+//
+//        if (page != null) {
+//            Map<Book, List<ServiceDto>> bookServiceMap = new HashMap<>();
+//
+//            for (var service : page.getContent()) {
+//                Book book = service.getBook();
+//                List<ServiceDto> services = bookServiceMap.getOrDefault(book, new ArrayList<>());
+//                services.add(ServiceMapper.INSTANCE.toDto(service));
+//                bookServiceMap.put(book, services);
+//            }
+//
+//            for (Map.Entry<Book, List<ServiceDto>> entry : bookServiceMap.entrySet()) {
+//                Book book = entry.getKey();
+//                List<ServiceDto> services = entry.getValue();
+//                books.add(new ReaderBookDto(BookMapper.INSTANCE.toDto(book), services));
+//            }
 
             PagingDto pagingDto = new PagingDto();
             pagingDto.setTotalOfPages(page.getTotalPages());
@@ -304,7 +345,7 @@ public class ReaderServiceImpl implements ReaderService {
             pagingDto.setCurrentPage(page.getNumber());
             pagingDto.setPageSize(page.getSize());
 
-            listReaderDto.setList(books.stream().distinct().toList());
+            listReaderDto.setList(books);
             listReaderDto.setPaging(pagingDto);
             return listReaderDto;
         } else {
@@ -312,6 +353,7 @@ public class ReaderServiceImpl implements ReaderService {
             listReaderDto.setPaging(null);
             return listReaderDto;
         }
+
     }
 
 

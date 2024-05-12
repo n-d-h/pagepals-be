@@ -58,7 +58,12 @@ type listReader {
 
 type ReaderBook{
     book: Book
-    services: [Service]
+    servicesCount: Int
+    ratingAverage: Int
+    totalReview: Int
+    serviceMinPrice: Int
+    serviceMaxPrice: Int
+    status: String
 }
 
 input ReaderBookFilter{

@@ -25,7 +25,7 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
         FROM Book b
         JOIN b.authors a
         JOIN b.categories c
-        WHERE LOWER(b.title) LIKE %:title%
+        WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))
         AND (:author IS NULL OR a IN :author)
         AND (:category IS NULL OR c IN :category)
         """)
@@ -38,7 +38,7 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
         FROM Book b
         JOIN b.authors a
         JOIN b.categories c
-        WHERE LOWER(b.title) LIKE %:title%
+        WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))
         AND (:author IS NULL OR a IN :author)
         """)
     Page<Book> searchBooksByAuthorAndTitle(List<Author> author, String title, Pageable pageable);
@@ -54,11 +54,11 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     Page<Book> findByReaderId(UUID readerId, Pageable pageable);
 
     @Query("""
-        SELECT DISTINCT b
-        FROM Book b
-        JOIN b.services s
-        WHERE s.reader.id = :readerId
-        AND LOWER(b.title) LIKE %:title%
-        """)
+            SELECT DISTINCT b
+            FROM Book b
+            JOIN b.services s
+            WHERE s.reader.id = :readerId
+            AND LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))
+            """)
     Page<Book> findByReaderIdAndTitleContaining(UUID readerId,String title, Pageable pageable);
 }
