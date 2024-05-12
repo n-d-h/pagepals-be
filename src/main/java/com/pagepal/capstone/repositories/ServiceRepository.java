@@ -24,6 +24,9 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
     @Query("SELECT s FROM Service s WHERE s.book = ?1 AND s.book.title LIKE %?2% AND (s.isDeleted = false OR s.isDeleted IS NULL)")
     Page<Service> findAllByBookId(Book book, String title, Pageable pageable);
 
+    @Query("SELECT s FROM Service s WHERE s.reader = ?1 AND s.book = ?2 AND (s.isDeleted = false OR s.isDeleted IS NULL)")
+    Page<Service> findAllByReaderAndBook(Reader reader, Book book, Pageable pageable);
+
     long countByStatus(Status status);
 
     @Query("SELECT s FROM Service s WHERE s.serviceType = ?1 AND s.book = ?2 AND s.reader = ?3 AND (s.isDeleted = false OR s.isDeleted IS NULL)")

@@ -30,7 +30,7 @@ type ListService{
 extend type Query {
     serviceById(id: ID!): Service
     getServicesByReader(readerId: ID!, filter: QueryInput): ListService
-    getServicesByBook(bookId: ID!, filter: QueryInput): ListService
+    getServicesByBook(bookId: ID!, readerId: ID, filter: QueryInput): ListService
     getListServiceByServiceTypeAndBookAndReader(serviceTypeId: ID!, bookId: ID!, readerId: ID!): [Service]
 }
 

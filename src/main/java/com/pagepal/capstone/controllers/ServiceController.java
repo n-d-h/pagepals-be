@@ -30,9 +30,10 @@ public class ServiceController {
     @QueryMapping(name = "getServicesByBook")
     public ListService getServicesByBookId(
             @Argument(name = "bookId") UUID bookId,
+            @Argument(name = "readerId") UUID readerId,
             @Argument(name = "filter") QueryDto queryDto
     ) {
-        return serviceProvideService.getAllServicesByBookId(bookId, queryDto);
+        return serviceProvideService.getAllServicesByBookId(bookId, readerId, queryDto);
     }
 
     @QueryMapping(name = "serviceById")
