@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ReaderBookDto {
     private BookDto book;
-    //    private List<ServiceDto> services = new ArrayList<>();
+    private List<ServiceDto> services = new ArrayList<>();
     private Integer servicesCount;
     private Integer ratingAverage;
     private Integer totalReview;
