@@ -39,9 +39,9 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             SELECT e
             FROM Event e
             WHERE e.seminar.id = :seminarId
-            AND e.state = "ACTIVE"
+            AND e.state = :state
             """)
-    Page<Event> findBySeminarId(UUID seminarId, Pageable pageable);
+    Page<Event> findBySeminarId(UUID seminarId, EventStateEnum state, Pageable pageable);
 
     @Query("""
             SELECT e
