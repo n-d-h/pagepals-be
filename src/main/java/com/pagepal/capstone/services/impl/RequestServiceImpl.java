@@ -267,6 +267,16 @@ public class RequestServiceImpl implements RequestService {
         Account account = accountRepository.findById(staffId).orElseThrow(
                 () -> new EntityNotFoundException("Staff not found")
         );
+        List<Interview> interviews = request.getInterviews();
+
+        if (interviews != null) {
+            if (interviews.stream().noneMatch(interview -> interview.getState().equals(InterviewStateEnum.DONE))) {
+                throw new ValidationException("Request is not qualified to be accepted");
+            }
+            if(interviews.stream().anyMatch(interview -> interview.getState().equals(InterviewStateEnum.PENDING))){
+                throw new ValidationException("Interview is pending");
+            }
+        }
 
         request.setUpdatedAt(dateUtils.getCurrentVietnamDate());
         request.setStaffId(account.getId());
@@ -276,7 +286,27 @@ public class RequestServiceImpl implements RequestService {
         request = requestRepository.save(request);
 
         if (request != null) {
-            Account readerAccount = request.getReader().getAccount();
+            Reader reader = request.getReader().getReaderRequestReference();
+
+            reader.setThumbnailUrl(request.getReader().getThumbnailUrl());
+            reader.setRating(0);
+            reader.setAvatarUrl(request.getReader().getAvatarUrl());
+            reader.setCreatedAt(dateUtils.getCurrentVietnamDate());
+            reader.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+            reader.setStatus(Status.ACTIVE);
+            reader.setAudioDescriptionUrl(request.getReader().getAudioDescriptionUrl());
+            reader.setNickname(request.getReader().getNickname());
+            reader.setTotalOfBookings(0);
+            reader.setLanguage(request.getReader().getLanguage());
+            reader.setGenre(request.getReader().getGenre());
+            reader.setRating(0);
+            reader.setCountryAccent(request.getReader().getCountryAccent());
+            reader.setDescription(request.getReader().getDescription());
+            reader.setIntroductionVideoUrl(request.getReader().getIntroductionVideoUrl());
+            reader = readerRepository.save(reader);
+
+            Account readerAccount = reader.getAccount();
+
             AccountState accountState = accountStateRepository
                     .findByNameAndStatus(READER_STATE_ACTIVE, Status.ACTIVE)
                     .orElseThrow(() -> new EntityNotFoundException("Account state not found"));
@@ -378,7 +408,7 @@ public class RequestServiceImpl implements RequestService {
 
         if (removedRequest == null) {
             request.setLastRequests(updatedRequests.stream().map(RequestMapper.INSTANCE::toDto).toList());
-        }else{
+        } else {
             request = RequestMapper.INSTANCE.toDto(removedRequest);
             request.setLastRequests(updatedRequests.stream().map(RequestMapper.INSTANCE::toDto).toList());
         }

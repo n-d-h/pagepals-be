@@ -260,7 +260,11 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Override
     public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
-        Reader reader = readerRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
+        Reader reader = readerRepository
+                .findByIdAndStatus(id, Status.ACTIVE)
+                .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
         List<ReaderBookDto> books = new ArrayList<>();
 
         if (filter.getPage() == null || filter.getPage() < 0)
