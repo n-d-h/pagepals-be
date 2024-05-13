@@ -75,7 +75,7 @@ public class SeminarServiceImpl implements SeminarService {
 
         if (seminarCreateDto.getBook().getId() != null || !seminarCreateDto.getBook().getId().isEmpty()) {
             book = bookRepository.findByExternalId(seminarCreateDto.getBook().getId()).orElse(null);
-        }else{
+        } else {
             book = bookRepository.findByTitle(seminarCreateDto.getBook().getVolumeInfo().getTitle()).orElse(null);
         }
 
@@ -179,9 +179,7 @@ public class SeminarServiceImpl implements SeminarService {
     @Override
     public SeminarDto getSeminarRequest(UUID id) {
         var seminar = seminarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Seminar not found"));
-        if (seminar.getState() != SeminarStatus.PENDING) {
-            throw new ValidationException("Seminar is not available for view");
-        } else if (seminar.getStatus() == Status.INACTIVE) {
+        if (seminar.getStatus() == Status.INACTIVE) {
             throw new ValidationException("Seminar is already deleted");
         }
         return SeminarMapper.INSTANCE.toDto(seminar);
