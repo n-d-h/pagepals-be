@@ -261,7 +261,11 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Override
     public ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto filter) {
-        Reader reader = readerRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
+        Reader reader = readerRepository
+                .findByIdAndStatus(id, Status.ACTIVE)
+                .orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
         List<ReaderBookDto> books = new ArrayList<>();
 
         if (filter.getPage() == null || filter.getPage() < 0)
@@ -372,7 +376,10 @@ public class ReaderServiceImpl implements ReaderService {
         List<Reader> requests = reader.getReaderRequests();
         if (requests != null && !requests.isEmpty()) {
             for (var request : requests) {
-                if (RequestStateEnum.ANSWER_CHECKING.equals(request.getRequest().getState()) || RequestStateEnum.INTERVIEW_PENDING.equals(request.getRequest().getState())) {
+                if (RequestStateEnum.ANSWER_CHECKING.equals(request.getRequest().getState())
+                        || RequestStateEnum.INTERVIEW_PENDING.equals(request.getRequest().getState())
+                        || RequestStateEnum.INTERVIEW_SCHEDULING.equals(request.getRequest().getState())
+                ) {
                     throw new RuntimeException("You have send request already! Wait for response!");
                 }
             }
