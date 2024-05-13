@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface ServiceProvideService {
     ListService getAllServicesByReaderId(UUID readerId, QueryDto queryDto);
-    ListService getAllServicesByBookId(UUID bookId, QueryDto queryDto);
+
+    ListService getAllServicesByBookId(UUID bookId, UUID readerId, QueryDto queryDto);
 }

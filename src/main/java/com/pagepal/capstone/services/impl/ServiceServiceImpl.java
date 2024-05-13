@@ -41,7 +41,11 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ServiceDto serviceById(UUID id) {
-        return ServiceMapper.INSTANCE.toDto(serviceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Service not found")));
+        var service = serviceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Service not found"));
+        if (service.getStatus() == Status.INACTIVE || Boolean.TRUE.equals(service.getIsDeleted())) {
+            throw new EntityNotFoundException("Service not found");
+        }
+        return ServiceMapper.INSTANCE.toDto(service);
     }
 
     private Boolean checkServiceIsInPendingBooking(UUID serviceId) {
@@ -177,7 +181,7 @@ public class ServiceServiceImpl implements ServiceService {
 
         if (writeServiceDto.getBook().getId() != null || !writeServiceDto.getBook().getId().isEmpty()) {
             book = bookRepository.findByExternalId(writeServiceDto.getBook().getId()).orElse(null);
-        }else{
+        } else {
             book = bookRepository.findByTitle(writeServiceDto.getBook().getVolumeInfo().getTitle()).orElse(null);
         }
 

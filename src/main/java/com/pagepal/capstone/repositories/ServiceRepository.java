@@ -24,6 +24,9 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
     @Query("SELECT s FROM Service s WHERE s.book = ?1 AND s.book.title LIKE %?2% AND (s.isDeleted = false OR s.isDeleted IS NULL)")
     Page<Service> findAllByBookId(Book book, String title, Pageable pageable);
 
+    @Query("SELECT s FROM Service s WHERE s.reader = ?1 AND s.book = ?2 AND (s.isDeleted = false OR s.isDeleted IS NULL)")
+    Page<Service> findAllByReaderAndBook(Reader reader, Book book, Pageable pageable);
+
     long countByStatus(Status status);
 
     @Query("SELECT s FROM Service s WHERE s.serviceType = ?1 AND s.book = ?2 AND s.reader = ?3 AND (s.isDeleted = false OR s.isDeleted IS NULL)")
@@ -43,7 +46,7 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
     @Query("""
             SELECT s FROM Service s
             WHERE s.reader.id = :readerId
-            AND s.book.title LIKE %:title%
+            AND LOWER(s.book.title) LIKE LOWER(CONCAT('%', :title, '%'))
             AND (s.isDeleted IS NULL OR s.isDeleted = false)
             ORDER BY s.createdAt DESC
             """)
@@ -56,4 +59,43 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
             AND (s.isDeleted IS NULL OR s.isDeleted = false)
             """)
     Long countActiveServicesByReaderId(UUID readerId);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Service s
+            WHERE s.reader.id = :readerId
+            AND s.book.id = :bookId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    Integer countActiveServicesByReaderIdAndBookId(UUID readerId, UUID bookId);
+
+
+    @Query("""
+            SELECT MIN(s.price)
+            FROM Service s
+            WHERE s.reader.id = :readerId
+            AND s.book.id = :bookId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    Integer getMinPriceByReaderIdAndBookId(UUID readerId, UUID bookId);
+
+    @Query("""
+            SELECT MAX(s.price)
+            FROM Service s
+            WHERE s.reader.id = :readerId
+            AND s.book.id = :bookId
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    Integer getMaxPriceByReaderIdAndBookId(UUID readerId, UUID bookId);
+
+    // get all rating of a book service
+    @Query("""
+            SELECT s.rating
+            FROM Service s
+            WHERE s.book.id = :bookId
+            AND s.reader.id = :readerId
+            AND (s.rating IS NOT NULL AND s.rating > 0)
+            AND (s.isDeleted IS NULL OR s.isDeleted = false)
+            """)
+    List<Integer> getAllRatingByReaderIdAndBookId(UUID readerId, UUID bookId);
 }
