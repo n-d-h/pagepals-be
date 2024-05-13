@@ -26,10 +26,21 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             """)
     List<Event> findByReaderAndStatusAndStartTimeAfterOrderByStartTimeAsc(UUID readerId, EventStateEnum state, Date startTime);
 
+    @Query("""
+            SELECT e
+            FROM Event e
+            WHERE e.seminar.id = :seminarId
+            """)
     List<Event> findBySeminarId(UUID seminarId);
 
     Page<Event> findByStateAndStartAtAfter(EventStateEnum state, Date startAt, Pageable pageable);
 
+    @Query("""
+            SELECT e
+            FROM Event e
+            WHERE e.seminar.id = :seminarId
+            AND e.state = "ACTIVE"
+            """)
     Page<Event> findBySeminarId(UUID seminarId, Pageable pageable);
 
     @Query("""
