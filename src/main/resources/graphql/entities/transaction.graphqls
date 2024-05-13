@@ -35,6 +35,13 @@ input TransactionFilter {
     pageSize: Int
 }
 
+enum SettingEnum {
+    REVENUE_SHARE
+    TOKEN_PRICE
+    DOLLAR_EXCHANGE_RATE
+    ADVERTISE_PRICE
+}
+
 extend type Query {
     getListTransactionForCustomer(customerId: ID, filter: TransactionFilter): ListTransaction
     getListTransactionForReader(readerId: ID, filter: TransactionFilter): ListTransaction

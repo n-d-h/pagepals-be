@@ -248,8 +248,8 @@ public class TransactionServiceImpl implements TransactionService {
     public SettingDto updateSetting(SettingDto settingDto) {
         var setting = settingRepository.findById(settingDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Setting not found"));
-        setting.setKey(settingDto.getKey().toUpperCase().trim().replace(" ", "_"));
-        setting.setValue(settingDto.getValue().trim().replace(" ", "_"));
+        setting.setKey(settingDto.getKey());
+        setting.setValue(settingDto.getValue());
         return new SettingDto(settingRepository.save(setting).getId(), setting.getKey(), setting.getValue());
     }
 }

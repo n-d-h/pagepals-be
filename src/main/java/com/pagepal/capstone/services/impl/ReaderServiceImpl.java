@@ -376,7 +376,10 @@ public class ReaderServiceImpl implements ReaderService {
         List<Reader> requests = reader.getReaderRequests();
         if (requests != null && !requests.isEmpty()) {
             for (var request : requests) {
-                if (RequestStateEnum.ANSWER_CHECKING.equals(request.getRequest().getState()) || RequestStateEnum.INTERVIEW_PENDING.equals(request.getRequest().getState())) {
+                if (RequestStateEnum.ANSWER_CHECKING.equals(request.getRequest().getState())
+                        || RequestStateEnum.INTERVIEW_PENDING.equals(request.getRequest().getState())
+                        || RequestStateEnum.INTERVIEW_SCHEDULING.equals(request.getRequest().getState())
+                ) {
                     throw new RuntimeException("You have send request already! Wait for response!");
                 }
             }
