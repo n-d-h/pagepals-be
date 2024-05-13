@@ -28,7 +28,7 @@ public class EventController {
 		return eventService.getAllEvent(page, pageSize, sort);
 	}
 
-	@QueryMapping("getAllEventsBySeminarId")
+	@QueryMapping("getAllEventBySeminarId")
 	public ListEventDto getAllEventsBySeminarId(
 			@Argument(name = "seminarId") UUID seminarId,
 			@Argument(name = "page") Integer page,
