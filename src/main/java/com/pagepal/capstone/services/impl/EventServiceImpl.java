@@ -203,13 +203,11 @@ public class EventServiceImpl implements EventService {
             var eventBookingsNumber = event.getLimitCustomer() - event.getActiveSlot();
             var newActiveSlot = eventDto.getLimitCustomer() - eventBookingsNumber;
 
-            event.setStartAt(dateFormat.parse(eventDto.getStartAt()));
             event.setLimitCustomer(eventDto.getLimitCustomer());
             event.setActiveSlot(newActiveSlot);
             if (eventBookingsNumber == 0) {
+                event.setStartAt(dateFormat.parse(eventDto.getStartAt()));
                 event.setPrice(eventDto.getPrice());
-            } else {
-                event.setPrice(event.getPrice());
             }
 
             eventRepository.save(event);
