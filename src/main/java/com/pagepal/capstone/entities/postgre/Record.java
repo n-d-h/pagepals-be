@@ -1,5 +1,6 @@
 package com.pagepal.capstone.entities.postgre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.Status;
 import jakarta.persistence.*;
@@ -49,10 +50,10 @@ public class Record implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "meeting_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Meeting meeting;
 
-    @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "record", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<RecordFile> recordFiles;
 }

@@ -180,4 +180,6 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             AND b.startAt >= :currentTime
             """)
     Page<Booking> findByStatePendingAndCustomerId(UUID cusId, Date currentTime, Pageable pageable);
+
+    List<Booking> findByStartAtBetween(Date start, Date end);
 }

@@ -1,6 +1,7 @@
 package com.pagepal.capstone.entities.postgre;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pagepal.capstone.enums.MeetingEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -58,7 +59,11 @@ public class Meeting implements Serializable {
     @JsonBackReference
     private List<MeetingTimeline> meetingTimelines;
 
-    @OneToOne(mappedBy = "meeting", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "meeting")
     @JsonBackReference
     private Event event;
+
+    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Record> records;
 }

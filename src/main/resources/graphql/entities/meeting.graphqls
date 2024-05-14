@@ -5,8 +5,8 @@ type Meeting {
     startAt: String
     createAt: String
     state: MeetingEnum
-    timelines: [MeetingTimeline]
-#    recordings: MeetingRecordings
+    meetingTimelines: [MeetingTimeline]
+    records: [Record]
 }
 
 type MeetingTimeline{
@@ -14,10 +14,16 @@ type MeetingTimeline{
     userName: String
     action: String
     time: String
-    meeting: Meeting
 }
 
-type RecordFile {
+input TimelineCreate{
+    userName: String
+    action: String
+    time: String
+    meetingCode: String
+}
+
+type RecordingFile {
     id: String
     meeting_id: String
     recording_start: String
@@ -48,7 +54,7 @@ type Recording {
     share_url: String
     password: String
     recording_play_passcode: String
-    recording_files: [RecordFile]
+    recording_files: [RecordingFile]
     download_access_token: String
 }
 
@@ -78,4 +84,5 @@ extend type Query {
 
 extend type Mutation {
     sendStatusChange(userName: String, event: String): Boolean
+    createTimeline(input: TimelineCreate): MeetingTimeline
 }
