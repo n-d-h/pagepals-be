@@ -111,6 +111,10 @@ public class EventServiceImpl implements EventService {
                 throw new ValidationException("Advertise date is required for featured event");
             }
 
+            if (dto.getLimitCustomer() < 0) {
+                throw new ValidationException("Limit customer must be greater than 0");
+            }
+
             Meeting meeting = zoomService.createMeeting(
                     reader,
                     seminar.getTitle(),
@@ -200,17 +204,15 @@ public class EventServiceImpl implements EventService {
                 throw new ValidationException("Event not found");
             }
 
-            var eventBookingsNumber = event.getLimitCustomer() - event.getActiveSlot();
-            var newActiveSlot = eventDto.getLimitCustomer() - eventBookingsNumber;
 
-            event.setStartAt(dateFormat.parse(eventDto.getStartAt()));
-            event.setLimitCustomer(eventDto.getLimitCustomer());
-            event.setActiveSlot(newActiveSlot);
-            if (eventBookingsNumber == 0) {
-                event.setPrice(eventDto.getPrice());
-            } else {
-                event.setPrice(event.getPrice());
+            if (eventDto.getLimitCustomer() < 0) {
+                throw new ValidationException("Cannot set limit customer less than bookings number");
             }
+
+            event.setLimitCustomer(eventDto.getLimitCustomer());
+            event.setActiveSlot(eventDto.getLimitCustomer());
+            event.setStartAt(dateFormat.parse(eventDto.getStartAt()));
+            event.setPrice(eventDto.getPrice());
 
             eventRepository.save(event);
             return convertToDto(event);
