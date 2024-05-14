@@ -200,9 +200,17 @@ public class EventServiceImpl implements EventService {
                 throw new ValidationException("Event not found");
             }
 
+            var eventBookingsNumber = event.getLimitCustomer() - event.getActiveSlot();
+            var newActiveSlot = eventDto.getLimitCustomer() - eventBookingsNumber;
+
             event.setStartAt(dateFormat.parse(eventDto.getStartAt()));
             event.setLimitCustomer(eventDto.getLimitCustomer());
-            event.setPrice(eventDto.getPrice());
+            event.setActiveSlot(newActiveSlot);
+            if (eventBookingsNumber == 0) {
+                event.setPrice(eventDto.getPrice());
+            } else {
+                event.setPrice(event.getPrice());
+            }
 
             eventRepository.save(event);
             return convertToDto(event);
