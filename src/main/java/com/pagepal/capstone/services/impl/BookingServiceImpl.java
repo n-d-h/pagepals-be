@@ -7,10 +7,8 @@ import com.pagepal.capstone.dtos.pagination.PagingDto;
 import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
 import com.pagepal.capstone.entities.postgre.*;
-import com.pagepal.capstone.enums.CurrencyEnum;
-import com.pagepal.capstone.enums.NotificationRoleEnum;
-import com.pagepal.capstone.enums.TransactionStatusEnum;
-import com.pagepal.capstone.enums.TransactionTypeEnum;
+import com.pagepal.capstone.entities.postgre.Record;
+import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.*;
@@ -59,6 +57,8 @@ public class BookingServiceImpl implements BookingService {
     private final String revenueString = "REVENUE_SHARE";
     private final String tokenPriceString = "TOKEN_PRICE";
     private final String dollarExchangeString = "DOLLAR_EXCHANGE_RATE";
+    private final RecordRepository recordRepository;
+    private final RecordFileRepository recordFileRepository;
 
 
     @Secured("READER")
@@ -142,11 +142,11 @@ public class BookingServiceImpl implements BookingService {
             calendar.setTime(currentTime);
             calendar.add(Calendar.HOUR_OF_DAY, -1);
             Date modifiedTime = calendar.getTime();
-            if("PENDING".equals(state)){
+            if ("PENDING".equals(state)) {
                 bookings = bookingRepository.findByStatePendingAndCustomerId(cusId, modifiedTime, pageable);
-            }else if("PROCESSING".equals(state)){
+            } else if ("PROCESSING".equals(state)) {
                 bookings = bookingRepository.findByStateProcessingAndCustomerId(cusId, modifiedTime, pageable);
-            }else{
+            } else {
                 bookings = bookingRepository
                         .findAllByCustomerIdAndBookingState(cusId,
                                 queryDto.getBookingState().toUpperCase(),
@@ -274,7 +274,7 @@ public class BookingServiceImpl implements BookingService {
             String readerFcmWebToken = wt.getReader().getAccount().getFcmWebToken();
             String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
-            if(customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty()) {
+            if (customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty()) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         title,
@@ -283,7 +283,7 @@ public class BookingServiceImpl implements BookingService {
                         customerFcmWebToken
                 );
 
-                if(readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty() && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty() && !readerFcmWebToken.equals(customerFcmWebToken)) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -292,8 +292,8 @@ public class BookingServiceImpl implements BookingService {
                             readerFcmWebToken
                     );
                 }
-            }else{
-                if(readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty() ) {
+            } else {
+                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -308,7 +308,7 @@ public class BookingServiceImpl implements BookingService {
             String readerFcmMobileToken = wt.getReader().getAccount().getFcmMobileToken();
             String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
 
-            if(customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty()) {
+            if (customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty()) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         title,
@@ -317,7 +317,7 @@ public class BookingServiceImpl implements BookingService {
                         customerFcmMobileToken
                 );
 
-                if(readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty() && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty() && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -326,8 +326,8 @@ public class BookingServiceImpl implements BookingService {
                             readerFcmMobileToken
                     );
                 }
-            }else{
-                if(readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
+            } else {
+                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -423,7 +423,7 @@ public class BookingServiceImpl implements BookingService {
             String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
 
-            if(customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty()) {
+            if (customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty()) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         title,
@@ -432,7 +432,7 @@ public class BookingServiceImpl implements BookingService {
                         customerFcmWebToken
                 );
 
-                if(readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty() && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty() && !readerFcmWebToken.equals(customerFcmWebToken)) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -441,8 +441,8 @@ public class BookingServiceImpl implements BookingService {
                             readerFcmWebToken
                     );
                 }
-            }else{
-                if(readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
+            } else {
+                if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -457,7 +457,7 @@ public class BookingServiceImpl implements BookingService {
             String readerFcmMobileToken = wt.getReader().getAccount().getFcmMobileToken();
             String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
 
-            if(customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty()) {
+            if (customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty()) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         title,
@@ -466,7 +466,7 @@ public class BookingServiceImpl implements BookingService {
                         customerFcmMobileToken
                 );
 
-                if(readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty() &&  !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty() && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -475,8 +475,8 @@ public class BookingServiceImpl implements BookingService {
                             readerFcmMobileToken
                     );
                 }
-            }else{
-                if(readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
+            } else {
+                if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             readerContent,
@@ -588,7 +588,7 @@ public class BookingServiceImpl implements BookingService {
             String customerFcmWebToken = customer.getAccount().getFcmWebToken();
 
 
-            if(readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
+            if (readerFcmWebToken != null && !readerFcmWebToken.trim().isEmpty()) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         readerContent,
@@ -596,7 +596,7 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
                         readerFcmWebToken
                 );
-                if(customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty() && !readerFcmWebToken.equals(customerFcmWebToken)) {
+                if (customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty() && !readerFcmWebToken.equals(customerFcmWebToken)) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             title,
@@ -605,8 +605,8 @@ public class BookingServiceImpl implements BookingService {
                             customerFcmWebToken
                     );
                 }
-            }else {
-                if(customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty()) {
+            } else {
+                if (customerFcmWebToken != null && !customerFcmWebToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             title,
@@ -621,7 +621,7 @@ public class BookingServiceImpl implements BookingService {
             String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
             String customerFcmMobileToken = customer.getAccount().getFcmMobileToken();
 
-            if(readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
+            if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
                 firebaseMessagingService.sendNotificationToDevice(
                         pagePalLogoUrl,
                         readerContent,
@@ -629,7 +629,7 @@ public class BookingServiceImpl implements BookingService {
                         Map.of("bookingId", booking.getId().toString(), "customerId", customer.getId().toString()),
                         readerFcmMobileToken
                 );
-                if(customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty() && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
+                if (customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty() && !readerFcmMobileToken.equals(customerFcmMobileToken)) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             title,
@@ -638,8 +638,8 @@ public class BookingServiceImpl implements BookingService {
                             customerFcmMobileToken
                     );
                 }
-            }else {
-                if(customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty()) {
+            } else {
+                if (customerFcmMobileToken != null && !customerFcmMobileToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
                             pagePalLogoUrl,
                             title,
@@ -681,14 +681,14 @@ public class BookingServiceImpl implements BookingService {
         booking = bookingRepository.save(booking);
         var service = booking.getService();
         Reader reader = null;
-        if(service != null) {
+        if (service != null) {
             reader = service.getReader();
             int serviceRating = (service.getRating() * service.getTotalOfReview());
             service.setTotalOfReview(service.getTotalOfReview() + 1);
             int newServiceRating = Math.round((serviceRating + review.getRating()) / (service.getTotalOfReview()));
             service.setRating(newServiceRating);
             serviceRepository.save(service);
-        }else{
+        } else {
             reader = booking.getEvent().getSeminar().getReader();
         }
 
@@ -704,7 +704,77 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBookingById(UUID id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+        Date endTime;
+        if (booking.getService() != null) {
+            endTime = new Date(booking.getStartAt().getTime() + 60 * 60 * 1000);
+        } else {
+            Integer duration = booking.getEvent().getSeminar().getDuration();
+            endTime = new Date(booking.getStartAt().getTime() + duration * 60 * 1000);
+        }
+        Date currentTime = dateUtils.getCurrentVietnamDate();
+
+        long timeDifferenceMillis = currentTime.getTime() - endTime.getTime();
+
+        if (timeDifferenceMillis  >= 0 && timeDifferenceMillis <= 3600000) {
+            booking = updateBookingRecord(booking);
+        }
+
         return toDtoIncludeRecording(booking);
+    }
+
+    @Override
+    public Booking updateBookingRecord(Booking booking) {
+
+        Meeting meeting = booking.getMeeting();
+
+        MeetingRecordings recording = zoomService.getListRecordingByMeetingId(booking.getMeeting().getMeetingCode());
+
+        List<RecordingDto> recordingList = recording.getMeetings();
+
+        if (recordingList == null || recordingList.isEmpty()) {
+            return booking;
+        }
+
+        List<Record> listRecord = new ArrayList<>();
+
+        for (var recordDto : recordingList) {
+            if(recordRepository.findByExternalId(recordDto.getUuid()).isPresent()){
+                continue;
+            }
+
+            Record record = new Record();
+            record.setRecordingCount(recordDto.getRecording_count());
+            record.setStatus(Status.ACTIVE);
+            record.setDuration(recordDto.getDuration());
+            record.setExternalId(recordDto.getUuid());
+            record.setStartTime(recordDto.getStart_time());
+            record.setMeeting(meeting);
+
+            record = recordRepository.save(record);
+
+            Record finalRecord = record;
+            List<RecordFile> listRecordFile = recordDto.getRecording_files().stream().map(file -> {
+                return RecordFile
+                        .builder()
+                        .downloadUrl(file.getDownload_url())
+                        .playUrl(file.getPlay_url())
+                        .fileExtention(file.getFile_extension())
+                        .fileType(file.getFile_type())
+                        .startAt(file.getRecording_start())
+                        .endAt(file.getRecording_end())
+                        .recordingType(file.getRecording_type())
+                        .status(Status.ACTIVE)
+                        .record(finalRecord)
+                        .build();
+            }).toList();
+
+            listRecordFile = recordFileRepository.saveAll(listRecordFile);
+            record.setRecordFiles(listRecordFile);
+            listRecord.add(record);
+        }
+
+        return bookingRepository.findById(booking.getId()).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
     }
 
     private static String generateRoomId(int length) {
@@ -718,15 +788,14 @@ public class BookingServiceImpl implements BookingService {
         }
         return sb.toString();
     }
-    
+
     private BookingDto toDtoIncludeRecording(Booking booking) {
-        BookingDto bookingDto = BookingMapper.INSTANCE.toDto(booking);
-        
+
 //        MeetingDto meeting = bookingDto.getMeeting();
 //
 //        MeetingRecordings recording = zoomService.getListRecordingByMeetingId(booking.getMeeting().getMeetingCode());
 //        meeting.setRecordings(recording);
 //        bookingDto.setMeeting(meeting);
-        return bookingDto;
+        return BookingMapper.INSTANCE.toDto(booking);
     }
 }

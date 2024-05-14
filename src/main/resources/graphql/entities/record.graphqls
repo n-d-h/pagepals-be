@@ -1,11 +1,21 @@
 type Record {
     id: ID!
-    title: String
-    recordUrl: String
-    date: String
-    capacity: Float
-    description: String
-    duration: Float
+    recordingCount: Int
+    startTime: String
+    duration: Int
+    externalId: String
     status: Status
-    booking: Booking
+    recordFiles: [RecordFile]
+}
+
+type RecordFile {
+    id: ID!
+    downloadUrl: String
+    playUrl: String
+    fileExtention: String
+    fileType: String
+    startAt: String
+    endAt: String
+    recordingType: String
+    status: Status
 }

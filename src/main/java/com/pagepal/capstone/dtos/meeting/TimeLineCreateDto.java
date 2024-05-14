@@ -11,8 +11,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MeetingTimelineDto {
-    private UUID id;
+public class TimeLineCreateDto {
 
     private String userName;
 
@@ -20,4 +19,5 @@ public class MeetingTimelineDto {
 
     private String time;
 
+    private String meetingCode;
 }

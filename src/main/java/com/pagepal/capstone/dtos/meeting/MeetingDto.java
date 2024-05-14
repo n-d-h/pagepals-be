@@ -1,6 +1,7 @@
 package com.pagepal.capstone.dtos.meeting;
 
 import com.pagepal.capstone.dtos.recording.MeetingRecordings;
+import com.pagepal.capstone.entities.postgre.Record;
 import com.pagepal.capstone.enums.MeetingEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +29,8 @@ public class MeetingDto {
 
     private MeetingEnum state;
 
-    private List<MeetingTimelineDto> timelines;
+    private List<MeetingTimelineDto> meetingTimelines;
 
-//    private MeetingRecordings recordings;
+    private List<RecordDto> records;
 
 }
