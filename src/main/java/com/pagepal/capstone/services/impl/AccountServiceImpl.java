@@ -353,7 +353,13 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto updateAccount(UUID id, AccountUpdateDto accountUpdateDto) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
-        checkExits(accountUpdateDto.getUsername(), accountUpdateDto.getEmail());
+        if(!accountUpdateDto.getUsername().equals(account.getUsername()) && accountRepository.findByUsername(accountUpdateDto.getUsername()).isPresent()){
+            throw new RuntimeException("Username is already existed");
+        }
+
+        if(!accountUpdateDto.getEmail().equals(account.getEmail()) && accountRepository.findByEmail(accountUpdateDto.getEmail()).isPresent()){
+            throw new RuntimeException("Email is already existed");
+        }
 
         if (accountUpdateDto.getUsername() != null) {
             account.setUsername(accountUpdateDto.getUsername());
