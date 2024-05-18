@@ -268,10 +268,9 @@ public class EventServiceImpl implements EventService {
 
         Date currentTime = dateUtils.getCurrentVietnamDate();
         Date eventStartAt = event.getStartAt();
-        Date eventStartAtBefore24h = new Date(eventStartAt.getTime() - 24 * 60 * 60 * 1000);
 
-        if (currentTime.after(eventStartAtBefore24h)) {
-            throw new ValidationException("Cannot book event within 24 hours before event start time");
+        if (currentTime.after(eventStartAt)) {
+            throw new ValidationException("Cannot book event before event start time");
         }
 
         List<Booking> bookings = event.getBookings();
