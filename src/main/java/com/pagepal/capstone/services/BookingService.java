@@ -20,5 +20,7 @@ public interface BookingService {
 
     BookingDto getBookingById(UUID id);
 
+    Integer updateRecordByBookingId(UUID id);
+
     Booking updateBookingRecord(Booking booking);
 }

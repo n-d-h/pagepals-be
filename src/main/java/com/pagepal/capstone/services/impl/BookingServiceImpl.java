@@ -716,11 +716,84 @@ public class BookingServiceImpl implements BookingService {
 
         long timeDifferenceMillis = currentTime.getTime() - endTime.getTime();
 
-        if (timeDifferenceMillis  >= 0 && timeDifferenceMillis <= 3600000) {
+        if (timeDifferenceMillis >= 0 && timeDifferenceMillis <= 3600000) {
             booking = updateBookingRecord(booking);
         }
 
         return toDtoIncludeRecording(booking);
+    }
+
+    @Override
+    public Integer updateRecordByBookingId(UUID id) {
+
+        int count = 0;
+
+        List<Booking> bookings = bookingRepository
+                .findByStartAtBetween(
+                        new Date(dateUtils.getCurrentVietnamDate().getTime() - 20 * 24 * 60 * 60 * 1000),
+                        dateUtils.getCurrentVietnamDate());
+        for (var booking : bookings) {
+            boolean isUpdated = updateBookingRecord2(booking);
+            if(isUpdated) count++;
+        }
+
+        return count;
+    }
+
+    private boolean updateBookingRecord2(Booking booking) {
+
+        boolean isUpdated = false;
+
+        Meeting meeting = booking.getMeeting();
+
+        MeetingRecordings recording = zoomService.getListRecordingByMeetingId(booking.getMeeting().getMeetingCode());
+
+        List<RecordingDto> recordingList = recording.getMeetings();
+
+        if (recordingList == null || recordingList.isEmpty()) {
+            return false;
+        }
+
+        List<Record> listRecord = new ArrayList<>();
+
+        for (var recordDto : recordingList) {
+            if(recordRepository.findByExternalId(recordDto.getUuid()).isPresent()){
+                continue;
+            }
+
+            Record record = new Record();
+            record.setRecordingCount(recordDto.getRecording_count());
+            record.setStatus(Status.ACTIVE);
+            record.setDuration(recordDto.getDuration());
+            record.setExternalId(recordDto.getUuid());
+            record.setStartTime(recordDto.getStart_time());
+            record.setMeeting(meeting);
+
+            record = recordRepository.save(record);
+
+            Record finalRecord = record;
+            List<RecordFile> listRecordFile = recordDto.getRecording_files().stream().map(file -> {
+                return RecordFile
+                        .builder()
+                        .downloadUrl(file.getDownload_url())
+                        .playUrl(file.getPlay_url())
+                        .fileExtention(file.getFile_extension())
+                        .fileType(file.getFile_type())
+                        .startAt(file.getRecording_start())
+                        .endAt(file.getRecording_end())
+                        .recordingType(file.getRecording_type())
+                        .status(Status.ACTIVE)
+                        .record(finalRecord)
+                        .build();
+            }).toList();
+
+            listRecordFile = recordFileRepository.saveAll(listRecordFile);
+            record.setRecordFiles(listRecordFile);
+            listRecord.add(record);
+            isUpdated = true;
+        }
+
+        return isUpdated;
     }
 
     @Override
@@ -739,7 +812,7 @@ public class BookingServiceImpl implements BookingService {
         List<Record> listRecord = new ArrayList<>();
 
         for (var recordDto : recordingList) {
-            if(recordRepository.findByExternalId(recordDto.getUuid()).isPresent()){
+            if (recordRepository.findByExternalId(recordDto.getUuid()).isPresent()) {
                 continue;
             }
 

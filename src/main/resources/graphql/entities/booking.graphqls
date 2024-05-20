@@ -54,4 +54,5 @@ extend type Mutation {
     cancelBooking(bookingId: ID, reason: String): Booking
     completeBooking(bookingId: ID): Booking
     reviewBooking(bookingId: ID, review: ReviewBooking): Booking
+    updateRecordBooking(bookingId: ID): Int
 }

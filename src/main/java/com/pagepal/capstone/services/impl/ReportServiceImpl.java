@@ -59,8 +59,10 @@ public class ReportServiceImpl implements ReportService {
         Report reportPresent;
         switch (reportCreateDto.getType()) {
             case BOOKING -> {
-                bookingRepository.findById(reportCreateDto.getReportedId())
+                Booking booking = bookingRepository.findById(reportCreateDto.getReportedId())
                         .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                if ("CANCEL".equals(booking.getState().getName()))
+                    throw new RuntimeException("Booking has been cancelled");
                 reportPresent = reportRepository.findByReportedIdAndTypeAndCustomer(reportCreateDto.getReportedId(), ReportTypeEnum.BOOKING, customer)
                         .orElse(null);
                 if (reportPresent != null) throw new RuntimeException("Booking has been reported");
@@ -206,7 +208,14 @@ public class ReportServiceImpl implements ReportService {
         switch (type) {
             case BOOKING -> {
                 Booking booking = bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-                Reader reader = booking.getWorkingTime().getReader();
+
+                Reader reader;
+
+                if (booking.getService() == null) {
+                    reader = booking.getEvent().getSeminar().getReader();
+                } else {
+                    reader = booking.getWorkingTime().getReader();
+                }
                 reportGenericDto.setBooking(toDtoIncludeRecording(booking));
                 List<ReportReadDto> reports = reportRepository
                         .findByTypeAndState(ReportTypeEnum.BOOKING, ReportStateEnum.PENDING)
@@ -215,11 +224,17 @@ public class ReportServiceImpl implements ReportService {
                 for (ReportReadDto report : reports) {
                     Booking findBooking = bookingRepository.findById(report.getReportedId())
                             .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-                    if (findBooking.getWorkingTime().getReader().getId().equals(reader.getId())) {
+                    UUID readerFoundId;
+                    if (booking.getService() == null) {
+                        readerFoundId = findBooking.getEvent().getSeminar().getReader().getId();
+                    } else {
+                        readerFoundId = findBooking.getWorkingTime().getReader().getId();
+                    }
+                    if (readerFoundId.equals(reader.getId())) {
                         reportByReader.add(report);
                     }
+                    reportGenericDto.setListReport(reportByReader);
                 }
-                reportGenericDto.setListReport(reportByReader);
             }
             case READER -> {
                 Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
@@ -247,7 +262,8 @@ public class ReportServiceImpl implements ReportService {
                 .findByName("CANCEL")
                 .orElseThrow(() -> new EntityNotFoundException("Booking state not found"));
 
-        if (booking.getState().getId().equals(state.getId())) throw new RuntimeException("Booking has been cancelled");
+        if (booking.getState().getId().equals(state.getId()))
+            throw new RuntimeException("Booking has been cancelled");
 
         booking.setState(state);
         booking.setUpdateAt(dateUtils.getCurrentVietnamDate());

@@ -56,4 +56,9 @@ public class BookingController {
         return bookingService.getBookingById(id);
     }
 
+    @MutationMapping
+    public Integer updateRecordBooking(@Argument(name = "bookingId") UUID id) {
+        return bookingService.updateRecordByBookingId(id);
+    }
+
 }
