@@ -27,6 +27,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -56,6 +62,20 @@ public class EventServiceImpl implements EventService {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    public boolean canCreateEvent(UUID readerId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
+        LocalDateTime startOfWeek = startOfDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        // convert to date
+        Date nowDate = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+        Date startOfWeekDate = Date.from(startOfWeek.atZone(ZoneId.systemDefault()).toInstant());
+
+        long eventsThisWeek = eventRepository.countByCreatedAtBetweenAndState(startOfWeekDate, nowDate, readerId, EventStateEnum.ACTIVE);
+
+        return eventsThisWeek < 2;
+    }
+
     @Override
     public EventDto createEvent(EventCreateDto dto, UUID readerId) {
         try {
@@ -76,34 +96,41 @@ public class EventServiceImpl implements EventService {
                 throw new ValidationException("Seminar is not accepted, cannot create event");
             }
 
-            // if startAt of event is before current date more than 2 weeks, then throw exception
-            Date currentDate = new Date();
-            Date startAt = dateFormat.parse(dto.getStartAt());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime start = LocalDateTime.parse(dto.getStartAt(), formatter);
+            LocalDateTime end = start.plusMinutes(seminar.getDuration());
+            Date startAt = Date.from(start.atZone(ZoneId.systemDefault()).toInstant());
+            Date endAt = Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
             //			long diff = startAt.getTime() - currentDate.getTime();
             //			long diffDays = diff / (24 * 60 * 60 * 1000);
             //			if(diffDays > 14 || diffDays < 7) {
             //				throw new ValidationException("Event start date must be within [7 - 14] days");
             //			}
 
-            List<Event> listExistEvents = eventRepository.findBySeminarId(seminarId);
-            if (listExistEvents.size() > 0) {
-                int count = 0;
-                for (Event event : listExistEvents) {
-                    if (event.getState().equals(EventStateEnum.ACTIVE) || event.getStartAt().after(currentDate)) {
-                        count++;
-                    }
-
-                    if (event.getState().equals(EventStateEnum.ACTIVE) &&
-                            (event.getStartAt().after(startAt) || event.getStartAt().equals(startAt))) {
-                        throw new ValidationException(
-                                "Cannot create before active event or equal start date");
-                    }
-                }
-
-                if (count >= 2) {
-                    throw new ValidationException("Cannot create more than 2 active events for a seminar");
-                }
+            if (Boolean.FALSE.equals(canCreateEvent(reader.getId()))) {
+                throw new ValidationException("Reader exceeds the limit (2) of creating seminar events for this week");
             }
+
+            var countConflictingEvents = eventRepository.countConflictingEvents(readerId, startAt, endAt, String.valueOf(SeminarStatus.ACCEPTED),
+                    String.valueOf(EventStateEnum.ACTIVE));
+            if (countConflictingEvents > 0) {
+                throw new ValidationException("The time slot is conflicted with other events");
+            }
+//            List<Event> listExistEvents = eventRepository.findBySeminarId(seminarId);
+//            if (listExistEvents.size() > 0) {
+//                int count = 0;
+//                for (Event event : listExistEvents) {
+//                    if (event.getState().equals(EventStateEnum.ACTIVE) || event.getStartAt().after(currentDate)) {
+//                        count++;
+//                    }
+//
+//                    if (event.getState().equals(EventStateEnum.ACTIVE) &&
+//                            (event.getStartAt().after(startAt) || event.getStartAt().equals(startAt))) {
+//                        throw new ValidationException(
+//                                "Cannot create before active event or equal start date");
+//                    }
+//                }
+//            }
 
             if (dto.getIsFeatured() &&
                     (dto.getAdvertiseStartAt() == null || dto.getAdvertiseStartAt().isEmpty()) &&

@@ -68,7 +68,7 @@ public class SeminarServiceImpl implements SeminarService {
         Reader reader = readerRepository.findById(seminarCreateDto.getReaderId()).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
         if (Boolean.FALSE.equals(canCreateSeminar(reader.getId()))) {
-            throw new ValidationException("Reader exceeds the limit of creating seminar requests");
+            throw new ValidationException("Reader exceeds the limit (2) of creating seminar requests for this week");
         }
 
         Book book;
@@ -230,6 +230,21 @@ public class SeminarServiceImpl implements SeminarService {
 
         Page<Seminar> list = seminarRepository.findByStateAndStatusAndReader(state, Status.ACTIVE, reader, pageable);
         return getListSeminarDto(list);
+    }
+
+    @Secured({"ADMIN", "STAFF"})
+    @Override
+    public SeminarDto updateSeminarRequestState(UUID id, SeminarStatus state, String description, UUID staffId) {
+        var seminar = seminarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Seminar not found"));
+        if (seminar.getStatus() == Status.INACTIVE) {
+            throw new ValidationException("Seminar is already deleted");
+        } else if (seminar.getState() == SeminarStatus.ACCEPTED || seminar.getState() == SeminarStatus.REJECTED) {
+            throw new ValidationException("Seminar is already accepted or rejected");
+        }
+        seminar.setState(state);
+        seminar.setRejectReason(description);
+        seminar.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        return SeminarMapper.INSTANCE.toDto(seminarRepository.save(seminar));
     }
 
     private ListSeminarDto getListSeminarDto(Page<Seminar> list) {
