@@ -81,4 +81,19 @@ public class SeminarController {
             @Argument("id") UUID id) {
         return seminarService.deleteSeminarRequest(id);
     }
+
+    @MutationMapping(name = "acceptSeminarRequest")
+    public SeminarDto acceptSeminarRequest(
+            @Argument("requestId") UUID id,
+            @Argument("staffId") UUID staffId) {
+        return seminarService.updateSeminarRequestState(id, SeminarStatus.ACCEPTED, null, staffId);
+    }
+
+    @MutationMapping(name = "rejectSeminarRequest")
+    public SeminarDto rejectSeminarRequest(
+            @Argument("requestId") UUID id,
+            @Argument("reason") String reason,
+            @Argument("staffId") UUID staffId) {
+        return seminarService.updateSeminarRequestState(id, SeminarStatus.REJECTED, reason, staffId);
+    }
 }

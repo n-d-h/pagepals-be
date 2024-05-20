@@ -16,9 +16,7 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
     @Query(""" 
             SELECT COUNT(s) FROM Seminar s
             WHERE s.reader.id = :readerId
-            AND s.createdAt
-            BETWEEN :startDate
-            AND :endDate
+            AND (s.createdAt BETWEEN :startDate AND :endDate)
             AND s.status = 'ACTIVE'
             """
     )

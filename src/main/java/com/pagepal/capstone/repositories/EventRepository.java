@@ -2,11 +2,12 @@ package com.pagepal.capstone.repositories;
 
 import com.pagepal.capstone.entities.postgre.Event;
 import com.pagepal.capstone.enums.EventStateEnum;
-import com.pagepal.capstone.enums.Status;
+import com.pagepal.capstone.enums.SeminarStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -32,6 +33,38 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             WHERE e.seminar.id = :seminarId
             """)
     List<Event> findBySeminarId(UUID seminarId);
+
+//    @Query("""
+//            SELECT COUNT(e)
+//            FROM Event e
+//            JOIN e.seminar s
+//            WHERE e.state = :state
+//            AND s.state = :status
+//            AND s.status = :state
+//            AND e.startAt <= :end
+//            AND s.reader.id = :readerId
+//            AND (e.startAt + interval s.duration MINUTE) >= :start
+//            """)
+//    long countConflictingEvents(UUID readerId, Date start, Date end, SeminarStatus status, EventStateEnum state);
+
+
+    @Query(value = """
+            SELECT COUNT(e.id)
+            FROM event e
+            JOIN seminar s ON e.seminar_id = s.id
+            WHERE e.state = :state
+            AND s.state = :status
+            AND s.status = :state
+            AND e.start_at <= :end
+            AND s.reader_id = :readerId
+            AND (e.start_at + interval '1 minute' * s.duration) >= :start
+            """, nativeQuery = true)
+    long countConflictingEvents(@Param("readerId") UUID readerId,
+                                @Param("start") Date start,
+                                @Param("end") Date end,
+                                @Param("status") String status,
+                                @Param("state") String state);
+
 
     Page<Event> findByStateAndStartAtAfter(EventStateEnum state, Date startAt, Pageable pageable);
 
@@ -75,4 +108,14 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             AND e.startAt > :startAt
             """)
     Page<Event> findAllActiveEvent(EventStateEnum state, Date startAt, Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(e) FROM Event e
+            JOIN e.seminar s
+            WHERE s.reader.id = :readerId
+            AND e.state = :state
+            AND (e.createdAt BETWEEN :startDate AND :endDate)
+            """)
+    Long countByCreatedAtBetweenAndState(Date startDate, Date endDate, UUID readerId, EventStateEnum state);
+
 }
