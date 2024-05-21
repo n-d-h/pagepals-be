@@ -45,7 +45,7 @@ extend type Query {
     getAllSeminarRequests(page: Int, pageSize: Int, sort: String): ListSeminarRequests
     getAllSeminarRequestsByState(page: Int, pageSize: Int, sort: String, state: SeminarStatus!): ListSeminarRequests
     getAllSeminarRequestsByReaderId(readerId: ID!, page: Int, pageSize: Int, sort: String): ListSeminarRequests
-    getAllSeminarRequestsByReaderIdAndState(readerId: ID!, page: Int, pageSize: Int, sort: String, state: SeminarStatus!): ListSeminarRequests
+    getAllSeminarRequestsByReaderIdAndState(readerId: ID!, page: Int, pageSize: Int, sort: String, state: SeminarStatus!, search: String): ListSeminarRequests
 }
 
 extend type Mutation {

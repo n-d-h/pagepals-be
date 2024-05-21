@@ -54,9 +54,10 @@ public class SeminarController {
             @Argument("page") Integer page,
             @Argument("pageSize") Integer pageSize,
             @Argument("sort") String sort,
-            @Argument("state") SeminarStatus state
+            @Argument("state") SeminarStatus state,
+            @Argument("search") String search
     ) {
-        return seminarService.getAllSeminarRequestsByReaderIdAndState(readerId, page, pageSize, sort, state);
+        return seminarService.getAllSeminarRequestsByReaderIdAndState(readerId, page, pageSize, sort, state, search);
     }
 
     @QueryMapping(name = "getSeminarRequest")

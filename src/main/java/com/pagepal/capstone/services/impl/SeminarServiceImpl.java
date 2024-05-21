@@ -210,7 +210,7 @@ public class SeminarServiceImpl implements SeminarService {
 
 
     @Override
-    public ListSeminarDto getAllSeminarRequestsByReaderIdAndState(UUID readerId, Integer page, Integer pageSize, String sort, SeminarStatus state) {
+    public ListSeminarDto getAllSeminarRequestsByReaderIdAndState(UUID readerId, Integer page, Integer pageSize, String sort, SeminarStatus state, String search) {
         var reader = readerRepository.findById(readerId).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
         if (page == null) {
@@ -222,13 +222,16 @@ public class SeminarServiceImpl implements SeminarService {
         if (sort == null || sort.trim().isEmpty() || sort.trim().isBlank()) {
             sort = "asc";
         }
+        if (search == null || search.trim().isEmpty() || search.trim().isBlank()) {
+            search = "";
+        }
 
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").ascending());
         if (sort.equals("desc")) {
             pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
         }
 
-        Page<Seminar> list = seminarRepository.findByStateAndStatusAndReader(state, Status.ACTIVE, reader, pageable);
+        Page<Seminar> list = seminarRepository.findByStateAndStatusAndReaderAndTitleContainingIgnoreCase(state, Status.ACTIVE, reader, search, pageable);
         return getListSeminarDto(list);
     }
 

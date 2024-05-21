@@ -24,6 +24,14 @@ public class BookingController {
         return bookingService.getListBookingByReader(UUID.fromString(readerId), queryDto);
     }
 
+    @QueryMapping(name = "getListEventBookingByReader")
+    public ListBookingDto getListEventBookingByReader(
+            @Argument(name = "readerId") String readerId,
+            @Argument(name = "filter") QueryDto queryDto
+    ) {
+        return bookingService.getListEventBookingByReader(UUID.fromString(readerId), queryDto);
+    }
+
     @QueryMapping
     public ListBookingDto getListBookingByCustomer(@Argument(name = "customerId") String id, @Argument(name = "filter") QueryDto queryDto) {
         return bookingService.getListBookingByCustomer(UUID.fromString(id), queryDto);
