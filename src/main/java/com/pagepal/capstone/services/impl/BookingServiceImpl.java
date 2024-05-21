@@ -81,13 +81,27 @@ public class BookingServiceImpl implements BookingService {
 
         Page<Booking> bookings;
 
+        String state = queryDto.getBookingState().toUpperCase();
+
         if (queryDto.getBookingState() == null || queryDto.getBookingState().isEmpty())
             bookings = bookingRepository.findAllByReaderIdAndServiceIsNotNull(readerId, pageable);
         else {
-            bookings = bookingRepository
-                    .findAllByReaderIdAndBookingStateAndServiceIsNotNull(readerId,
-                            queryDto.getBookingState().toUpperCase(),
-                            pageable);
+            Date currentTime = dateUtils.getCurrentVietnamDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentTime);
+            calendar.add(Calendar.HOUR_OF_DAY, -1);
+            Date modifiedTime = calendar.getTime();
+            if ("PENDING".equals(state)) {
+                bookings = bookingRepository.findAllByReaderIdAndBookingStatePendingAndServiceIsNotNull(readerId, modifiedTime, pageable);
+            } else if ("PROCESSING".equals(state)) {
+                bookings = bookingRepository.findByStateProcessingAndCustomerId(readerId, modifiedTime, pageable);
+            } else {
+                bookings = bookingRepository
+                        .findAllByReaderIdAndBookingStateAndServiceIsNotNull(readerId,
+                                queryDto.getBookingState().toUpperCase(),
+                                pageable);
+            }
+
         }
 
         ListBookingDto listBookingDto = new ListBookingDto();

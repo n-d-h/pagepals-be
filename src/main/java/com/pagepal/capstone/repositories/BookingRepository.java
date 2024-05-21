@@ -182,4 +182,26 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     Page<Booking> findByStatePendingAndCustomerId(UUID cusId, Date currentTime, Pageable pageable);
 
     List<Booking> findByStartAtBetween(Date start, Date end);
+
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.workingTime.reader.id = :readerId
+            AND b.workingTime.reader.status = 'ACTIVE'
+            AND b.state.name = 'PENDING'
+            AND b.service IS NOT NULL
+            AND b.startAt >= :currentTime
+            """)
+    Page<Booking> findAllByReaderIdAndBookingStatePendingAndServiceIsNotNull(UUID readerId, Date currentTime, Pageable pageable);
+
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.workingTime.reader.id = :readerId
+            AND b.workingTime.reader.status = 'ACTIVE'
+            AND b.state.name = 'PENDING'
+            AND b.service IS NOT NULL
+            AND b.startAt < :currentTime
+            """)
+    Page<Booking> findAllByReaderIdAndBookingStateProcessingAndServiceIsNotNull(UUID readerId, Date currentTime, Pageable pageable);
 }
