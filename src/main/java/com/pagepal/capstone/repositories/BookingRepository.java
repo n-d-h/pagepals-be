@@ -35,6 +35,16 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     @Query("""
             SELECT b
             FROM Booking b
+            WHERE b.event.seminar.reader.id = :readerId
+            AND b.event.seminar.reader.status = 'ACTIVE'
+            AND b.service IS NULL
+            AND b.event IS NOT NULL
+            """)
+    Page<Booking> findAllByReaderIdAndServiceIsNullAndEventIsNotNull(UUID readerId, Pageable pageable);
+
+    @Query("""
+            SELECT b
+            FROM Booking b
             WHERE b.workingTime.reader.id = :readerId
             AND b.workingTime.reader.status = 'ACTIVE'
             AND b.state.name = :state
@@ -50,6 +60,17 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             AND b.service IS NOT NULL
             """)
     Page<Booking> findAllByReaderIdAndBookingStateAndServiceIsNotNull(UUID readerId, String state, Pageable pageable);
+
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.event.seminar.reader.id = :readerId
+            AND b.event.seminar.reader.status = 'ACTIVE'
+            AND b.state.name = :state
+            AND b.service IS NULL
+            AND b.event IS NOT NULL
+            """)
+    Page<Booking> findAllByReaderIdAndBookingStateAndServiceIsNullAndEventIsNotNull(UUID readerId, String state, Pageable pageable);
 
     @Query("""
             SELECT b
@@ -175,6 +196,27 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     @Query("""
             SELECT b FROM Booking b
+            WHERE b.service IS NOT NULL
+            AND b.state.name = 'PENDING'
+            AND b.startAt < :currentTime
+            AND b.service.reader.id = :readerId
+            AND b.service.reader.status = 'ACTIVE'
+            """)
+    Page<Booking> findByServiceStateProcessingAndReaderId(UUID readerId, Date currentTime, Pageable pageable);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE b.state.name = 'PENDING'
+            AND b.event IS NOT NULL
+            AND b.service IS NULL
+            AND b.startAt < :currentTime
+            AND b.event.seminar.reader.id = :readerId
+            AND b.event.seminar.reader.status = 'ACTIVE'
+            """)
+    Page<Booking> findByEventStateProcessingAndReaderId(UUID readerId, Date currentTime, Pageable pageable);
+
+    @Query("""
+            SELECT b FROM Booking b
             WHERE b.customer.id = :cusId
             AND b.state.name = 'PENDING'
             AND b.startAt >= :currentTime
@@ -193,6 +235,18 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             AND b.startAt >= :currentTime
             """)
     Page<Booking> findAllByReaderIdAndBookingStatePendingAndServiceIsNotNull(UUID readerId, Date currentTime, Pageable pageable);
+
+    @Query("""
+            SELECT b
+            FROM Booking b
+            WHERE b.event.seminar.reader.id = :readerId
+            AND b.event.seminar.reader.status = 'ACTIVE'
+            AND b.state.name = 'PENDING'
+            AND b.service IS NULL
+            AND b.event IS NOT NULL
+            AND b.startAt >= :currentTime
+            """)
+    Page<Booking> findAllByReaderIdAndBookingStatePendingAndServiceIsNullAndEventIsNotNull(UUID readerId, Date currentTime, Pageable pageable);
 
     @Query("""
             SELECT b

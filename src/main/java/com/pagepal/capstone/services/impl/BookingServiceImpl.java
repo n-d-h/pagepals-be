@@ -94,10 +94,70 @@ public class BookingServiceImpl implements BookingService {
             if ("PENDING".equals(state)) {
                 bookings = bookingRepository.findAllByReaderIdAndBookingStatePendingAndServiceIsNotNull(readerId, modifiedTime, pageable);
             } else if ("PROCESSING".equals(state)) {
-                bookings = bookingRepository.findByStateProcessingAndCustomerId(readerId, modifiedTime, pageable);
+                bookings = bookingRepository.findByServiceStateProcessingAndReaderId(readerId, modifiedTime, pageable);
             } else {
                 bookings = bookingRepository
                         .findAllByReaderIdAndBookingStateAndServiceIsNotNull(readerId,
+                                queryDto.getBookingState().toUpperCase(),
+                                pageable);
+            }
+
+        }
+
+        ListBookingDto listBookingDto = new ListBookingDto();
+
+        if (bookings == null) {
+            listBookingDto.setList(Collections.emptyList());
+            listBookingDto.setPagination(null);
+            return listBookingDto;
+        } else {
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(bookings.getTotalPages());
+            pagingDto.setTotalOfElements(bookings.getTotalElements());
+            pagingDto.setSort(bookings.getSort().toString());
+            pagingDto.setCurrentPage(bookings.getNumber());
+            pagingDto.setPageSize(bookings.getSize());
+
+            listBookingDto.setList(bookings.map(this::toDtoIncludeRecording).toList());
+            listBookingDto.setPagination(pagingDto);
+            return listBookingDto;
+        }
+    }
+
+    @Override
+    public ListBookingDto getListEventBookingByReader(UUID readerId, QueryDto queryDto) {
+        if (queryDto.getPage() == null || queryDto.getPage() < 0)
+            queryDto.setPage(0);
+        if (queryDto.getPageSize() == null || queryDto.getPageSize() < 0)
+            queryDto.setPageSize(10);
+
+        Pageable pageable;
+        if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").descending());
+        } else {
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").ascending());
+        }
+
+
+        Page<Booking> bookings;
+
+        String state = queryDto.getBookingState().toUpperCase();
+
+        if (queryDto.getBookingState() == null || queryDto.getBookingState().isEmpty())
+            bookings = bookingRepository.findAllByReaderIdAndServiceIsNullAndEventIsNotNull(readerId, pageable);
+        else {
+            Date currentTime = dateUtils.getCurrentVietnamDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentTime);
+            calendar.add(Calendar.HOUR_OF_DAY, -1);
+            Date modifiedTime = calendar.getTime();
+            if ("PENDING".equals(state)) {
+                bookings = bookingRepository.findAllByReaderIdAndBookingStatePendingAndServiceIsNullAndEventIsNotNull(readerId, modifiedTime, pageable);
+            } else if ("PROCESSING".equals(state)) {
+                bookings = bookingRepository.findByEventStateProcessingAndReaderId(readerId, modifiedTime, pageable);
+            } else {
+                bookings = bookingRepository
+                        .findAllByReaderIdAndBookingStateAndServiceIsNullAndEventIsNotNull(readerId,
                                 queryDto.getBookingState().toUpperCase(),
                                 pageable);
             }
@@ -756,7 +816,7 @@ public class BookingServiceImpl implements BookingService {
                         dateUtils.getCurrentVietnamDate());
         for (var booking : bookings) {
             boolean isUpdated = updateBookingRecord2(booking);
-            if(isUpdated) count++;
+            if (isUpdated) count++;
         }
 
         return count;
@@ -779,7 +839,7 @@ public class BookingServiceImpl implements BookingService {
         List<Record> listRecord = new ArrayList<>();
 
         for (var recordDto : recordingList) {
-            if(recordRepository.findByExternalId(recordDto.getUuid()).isPresent()){
+            if (recordRepository.findByExternalId(recordDto.getUuid()).isPresent()) {
                 continue;
             }
 

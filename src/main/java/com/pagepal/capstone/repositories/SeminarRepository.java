@@ -26,7 +26,7 @@ public interface SeminarRepository extends JpaRepository<Seminar, UUID> {
 
     Page<Seminar> findByStateAndStatus(SeminarStatus state, Status status, Pageable pageable);
 
-    Page<Seminar> findByStateAndStatusAndReader(SeminarStatus state, Status status, Reader reader, Pageable pageable);
+    Page<Seminar> findByStateAndStatusAndReaderAndTitleContainingIgnoreCase(SeminarStatus state, Status status, Reader reader, String title, Pageable pageable);
 
     Page<Seminar> findByStatusAndReader(Status status, Reader reader, Pageable pageable);
 }
