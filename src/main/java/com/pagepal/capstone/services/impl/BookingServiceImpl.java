@@ -59,6 +59,7 @@ public class BookingServiceImpl implements BookingService {
     private final String dollarExchangeString = "DOLLAR_EXCHANGE_RATE";
     private final RecordRepository recordRepository;
     private final RecordFileRepository recordFileRepository;
+    private final ReportRepository reportRepository;
 
 
     @Secured("READER")
@@ -720,7 +721,14 @@ public class BookingServiceImpl implements BookingService {
             booking = updateBookingRecord(booking);
         }
 
-        return toDtoIncludeRecording(booking);
+        return toDtoIncludeRecording2(booking);
+    }
+
+    private BookingDto toDtoIncludeRecording2(Booking booking) {
+        BookingDto bookingDto = BookingMapper.INSTANCE.toDto(booking);
+        boolean isReported = reportRepository.findByReportedIdAndType(booking.getId(), ReportTypeEnum.BOOKING).isEmpty();
+        bookingDto.setIsReported(!isReported);
+        return bookingDto;
     }
 
     @Override
@@ -863,6 +871,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private BookingDto toDtoIncludeRecording(Booking booking) {
+
 
 //        MeetingDto meeting = bookingDto.getMeeting();
 //

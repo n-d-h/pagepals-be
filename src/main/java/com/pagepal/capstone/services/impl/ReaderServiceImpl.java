@@ -188,11 +188,17 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public WorkingTimeListRead getWorkingTimesAvailableByReader(UUID id) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
-        List<WorkingTime> workingTimes = reader.getWorkingTimes();
+//        List<WorkingTime> workingTimes = reader.getWorkingTimes();
+
+        Date now = dateUtils.getCurrentVietnamDate();
+        //get time after now 1 day
+        Date tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+        List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndStartTimeAfter(reader, tomorrow);
+
         List<WorkingTimeDto> result = new ArrayList<>();
         WorkingTimeListRead list = new WorkingTimeListRead();
         if (workingTimes != null) {
-            Date now = dateUtils.getCurrentVietnamDate();
             for (WorkingTime workingTime : workingTimes) {
                 if (workingTime.getStartTime().after(now) && workingTime.getBookings() == null) {
                     result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));

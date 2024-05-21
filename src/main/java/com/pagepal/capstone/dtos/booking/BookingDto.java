@@ -33,4 +33,5 @@ public class BookingDto {
     private Service service;
     private Event event;
     private List<Transaction> transactions;
+    private Boolean isReported;
 }

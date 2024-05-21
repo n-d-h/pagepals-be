@@ -16,5 +16,8 @@ public interface WorkingTimeRepository extends JpaRepository<WorkingTime, UUID> 
 
     List<WorkingTime> findByReaderAndStartTimeAfterOrderByStartTimeAsc(Reader reader, Date startDate);
 
+    List<WorkingTime> findByReaderAndStartTimeAfter(Reader reader, Date startDate);
+
+
     Boolean existsByStartTimeAndEndTimeAndReaderId(Date startTime, Date endTime, UUID readerId);
 }

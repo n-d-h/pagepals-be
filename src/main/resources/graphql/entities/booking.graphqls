@@ -16,6 +16,7 @@ type Booking {
     service: Service
     event: Event
     transactions: [Transaction]
+    isReported: Boolean
 }
 
 type ListBooking{
