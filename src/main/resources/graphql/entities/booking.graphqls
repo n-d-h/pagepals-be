@@ -47,6 +47,7 @@ input ReviewBooking {
 extend type Query {
     getListBookingByCustomer(customerId: ID!, filter: filterBooking): ListBooking
     getListBookingByReader(readerId: ID!, filter: filterBooking): ListBooking
+    getListEventBookingByReader(readerId: ID!, filter: filterBooking): ListBooking
     getBookingById(bookingId: ID!): Booking
 }
 

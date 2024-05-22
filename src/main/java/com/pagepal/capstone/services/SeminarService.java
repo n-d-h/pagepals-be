@@ -23,7 +23,7 @@ public interface SeminarService {
 
     ListSeminarDto getAllSeminarRequestsByReaderId(UUID readerId, Integer page, Integer pageSize, String sort);
 
-    ListSeminarDto getAllSeminarRequestsByReaderIdAndState(UUID readerId, Integer page, Integer pageSize, String sort, SeminarStatus state);
+    ListSeminarDto getAllSeminarRequestsByReaderIdAndState(UUID readerId, Integer page, Integer pageSize, String sort, SeminarStatus state, String search);
 
     SeminarDto updateSeminarRequestState(UUID id, SeminarStatus state, String description, UUID staffId);
 }
