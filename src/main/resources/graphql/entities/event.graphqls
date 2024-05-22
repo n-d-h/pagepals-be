@@ -58,4 +58,5 @@ extend type Mutation {
     deleteEvent(id: ID!): Event
     bookEvent(eventId: ID!, customerId: ID!): EventBooking
     advertiseEvent(eventId: ID!, readerId: ID!, advertiseAt: String): Event
+    completeEventBooking(eventId: ID!): Event
 }
