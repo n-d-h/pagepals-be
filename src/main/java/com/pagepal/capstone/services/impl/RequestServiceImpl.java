@@ -190,14 +190,13 @@ public class RequestServiceImpl implements RequestService {
         request = requestRepository.save(request);
 
         if (request != null) {
-            Account readerAccount = request.getReader().getAccount();
+            Account readerAccount = request.getReader().getReaderRequestReference().getAccount();
             readerAccount.setAccountState(accountStateRepository
                     .findByNameAndStatus(CUSTOMER_STATE_ACTIVE, Status.ACTIVE)
                     .orElseThrow(() -> new EntityNotFoundException("Account state not found")));
             accountRepository.save(readerAccount);
 
-            Reader reader = request.getReader();
-            String email = reader.getAccount().getEmail();
+            String email = readerAccount.getEmail();
             String website = "https://pagepals-fe.vercel.app";
             if (email != null && !email.isEmpty()) {
                 String subject = "[PagePals]: Request rejected";
@@ -216,12 +215,12 @@ public class RequestServiceImpl implements RequestService {
 
                         Best regards,
                         The PagePals Team
-                        """.formatted(reader.getAccount().getUsername(), requestId.toString(), reason, website);
+                        """.formatted(readerAccount.getUsername(), requestId.toString(), reason, website);
 
                 emailService.sendSimpleEmail(email, subject, body);
 
                 NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
-                        .accountId(reader.getAccount().getId())
+                        .accountId(readerAccount.getId())
                         .content("Your request has been rejected by our staff. Please check your request on our website.")
                         .title("Request rejected")
                         .notificationRole(NotificationRoleEnum.CUSTOMER)
@@ -229,8 +228,8 @@ public class RequestServiceImpl implements RequestService {
 
                 notificationService.createNotification(notificationCreateDto);
 
-                String readerFcmMobileToken = reader.getAccount().getFcmMobileToken();
-                String readerFcmWebToken = reader.getAccount().getFcmWebToken();
+                String readerFcmMobileToken = readerAccount.getFcmMobileToken();
+                String readerFcmWebToken = readerAccount.getFcmWebToken();
 
                 if (readerFcmMobileToken != null && !readerFcmMobileToken.trim().isEmpty()) {
                     firebaseMessagingService.sendNotificationToDevice(
