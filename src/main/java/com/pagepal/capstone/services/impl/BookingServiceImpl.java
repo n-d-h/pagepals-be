@@ -1,6 +1,7 @@
 package com.pagepal.capstone.services.impl;
 
 import com.pagepal.capstone.dtos.booking.*;
+import com.pagepal.capstone.dtos.event.EventDto;
 import com.pagepal.capstone.dtos.meeting.MeetingDto;
 import com.pagepal.capstone.dtos.notification.NotificationCreateDto;
 import com.pagepal.capstone.dtos.pagination.PagingDto;
@@ -10,6 +11,7 @@ import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.entities.postgre.Record;
 import com.pagepal.capstone.enums.*;
 import com.pagepal.capstone.mappers.BookingMapper;
+import com.pagepal.capstone.mappers.SeminarMapper;
 import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.*;
 import com.pagepal.capstone.utils.DateUtils;
@@ -60,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
     private final RecordRepository recordRepository;
     private final RecordFileRepository recordFileRepository;
     private final ReportRepository reportRepository;
+    private final EventRepository eventRepository;
 
 
     @Secured("READER")
@@ -109,7 +112,6 @@ public class BookingServiceImpl implements BookingService {
         if (bookings == null) {
             listBookingDto.setList(Collections.emptyList());
             listBookingDto.setPagination(null);
-            return listBookingDto;
         } else {
             PagingDto pagingDto = new PagingDto();
             pagingDto.setTotalOfPages(bookings.getTotalPages());
@@ -120,8 +122,8 @@ public class BookingServiceImpl implements BookingService {
 
             listBookingDto.setList(bookings.map(this::toDtoIncludeRecording).toList());
             listBookingDto.setPagination(pagingDto);
-            return listBookingDto;
         }
+        return listBookingDto;
     }
 
     @Override
@@ -139,49 +141,52 @@ public class BookingServiceImpl implements BookingService {
         }
 
 
-        Page<Booking> bookings;
+        Page<Event> events;
+        List<Booking> bookings = new ArrayList<>();
 
         String state = queryDto.getBookingState().toUpperCase();
 
-        if (queryDto.getBookingState() == null || queryDto.getBookingState().isEmpty())
-            bookings = bookingRepository.findAllByReaderIdAndServiceIsNullAndEventIsNotNull(readerId, pageable);
-        else {
-            Date currentTime = dateUtils.getCurrentVietnamDate();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(currentTime);
-            calendar.add(Calendar.HOUR_OF_DAY, -1);
-            Date modifiedTime = calendar.getTime();
-            if ("PENDING".equals(state)) {
-                bookings = bookingRepository.findAllByReaderIdAndBookingStatePendingAndServiceIsNullAndEventIsNotNull(readerId, modifiedTime, pageable);
-            } else if ("PROCESSING".equals(state)) {
-                bookings = bookingRepository.findByEventStateProcessingAndReaderId(readerId, modifiedTime, pageable);
-            } else {
-                bookings = bookingRepository
-                        .findAllByReaderIdAndBookingStateAndServiceIsNullAndEventIsNotNull(readerId,
-                                queryDto.getBookingState().toUpperCase(),
-                                pageable);
-            }
 
+        Date currentTime = dateUtils.getCurrentVietnamDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentTime);
+        calendar.add(Calendar.HOUR_OF_DAY, -1);
+        Date modifiedTime = calendar.getTime();
+        if ("PENDING".equals(state)) {
+            events = eventRepository.findAllEventActiveByReaderId(readerId, EventStateEnum.ACTIVE, modifiedTime, pageable);
+        } else if ("PROCESSING".equals(state)) {
+            events = eventRepository.findAllEventProcessingByReaderId(readerId, EventStateEnum.ACTIVE, modifiedTime, pageable);
+        } else {
+            events = eventRepository.findAllEventCompletedByReaderId(readerId, EventStateEnum.ACTIVE, modifiedTime, pageable);
         }
 
         ListBookingDto listBookingDto = new ListBookingDto();
 
-        if (bookings == null) {
+        if (events == null || events.isEmpty()) {
             listBookingDto.setList(Collections.emptyList());
             listBookingDto.setPagination(null);
-            return listBookingDto;
         } else {
-            PagingDto pagingDto = new PagingDto();
-            pagingDto.setTotalOfPages(bookings.getTotalPages());
-            pagingDto.setTotalOfElements(bookings.getTotalElements());
-            pagingDto.setSort(bookings.getSort().toString());
-            pagingDto.setCurrentPage(bookings.getNumber());
-            pagingDto.setPageSize(bookings.getSize());
 
-            listBookingDto.setList(bookings.map(this::toDtoIncludeRecording).toList());
+            for (var event : events.getContent()) {
+                var booking = bookingRepository.findFirstByEventOrderByCreateAtDesc(event);
+                if (booking == null) {
+                    booking = new Booking();
+                    booking.setEvent(event);
+                }
+                bookings.add(booking);
+            }
+
+            PagingDto pagingDto = new PagingDto();
+            pagingDto.setTotalOfPages(events.getTotalPages());
+            pagingDto.setTotalOfElements(events.getTotalElements());
+            pagingDto.setSort(events.getSort().toString());
+            pagingDto.setCurrentPage(events.getNumber());
+            pagingDto.setPageSize(events.getSize());
+
+            listBookingDto.setList(bookings.stream().map(this::toDtoIncludeRecording).toList());
             listBookingDto.setPagination(pagingDto);
-            return listBookingDto;
         }
+        return listBookingDto;
     }
 
     @Secured({"CUSTOMER", "READER"})
@@ -727,6 +732,76 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return toDtoIncludeRecording(booking);
+    }
+
+    @Override
+    public EventDto completeEventBooking(UUID id) {
+        Event event = eventRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
+
+        if (event.getState() == EventStateEnum.INACTIVE) {
+            throw new ValidationException("Event is already deleted!");
+        }
+
+        BookingState state = bookingStateRepository
+                .findByName(bookingPending)
+                .orElseThrow(() -> new EntityNotFoundException("State not found"));
+        List<Booking> bookings = bookingRepository.findByEventAndState(event, state);
+
+        if (bookings == null || bookings.isEmpty()) {
+            throw new ValidationException("Event has no booking!");
+        }
+
+        RecordingDto recording = zoomService.getRecording(bookings.get(0).getMeeting().getMeetingCode());
+
+        if (recording == null) {
+            throw new RuntimeException("Cannot complete booking, recording not found");
+        }
+
+        int durationInMinutes = getDurationInMinutes(recording.getRecording_files().get(0).getRecording_start(),
+                recording.getRecording_files().get(0).getRecording_end());
+
+        var requiredDuration = event.getSeminar().getDuration() * 0.8;
+
+        if (durationInMinutes < requiredDuration) {
+            throw new ValidationException("Cannot complete booking, recording duration less than 80% event duration");
+        }
+
+        Setting revenue = settingRepository.findByKey(revenueString).orElse(null);
+        Setting tokenPrice = settingRepository.findByKey(tokenPriceString).orElse(null);
+
+        if (revenue == null || tokenPrice == null) {
+            throw new EntityNotFoundException("Setting not found");
+        }
+
+        int totalPrice = event.getPrice() * bookings.size();
+        Float receiveCash = ((totalPrice * Float.parseFloat(tokenPrice.getValue()))
+                * (100 - Float.parseFloat(revenue.getValue()))) / 100;
+        Wallet wallet = event.getSeminar().getReader().getAccount().getWallet();
+        wallet.setCash(wallet.getCash() + receiveCash);
+        wallet = walletRepository.save(wallet);
+
+        if (wallet != null) {
+            Transaction transaction = new Transaction();
+            transaction.setStatus(TransactionStatusEnum.SUCCESS);
+            transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
+            transaction.setTransactionType(TransactionTypeEnum.BOOKING_DONE_RECEIVE);
+            transaction.setCurrency(CurrencyEnum.DOLLAR);
+            transaction.setAmount(Double.valueOf(receiveCash));
+            transaction.setWallet(event.getSeminar().getReader().getAccount().getWallet());
+            transactionRepository.save(transaction);
+            for (var booking : bookings) {
+                state = bookingStateRepository
+                        .findByName(bookingComplete)
+                        .orElseThrow(() -> new EntityNotFoundException("State not found"));
+                booking.setState(state);
+                booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+                bookingRepository.save(booking);
+            }
+        }
+
+        return SeminarMapper.INSTANCE.toEventDto(event);
     }
 
     private static int getDurationInMinutes(Date start, Date end) {

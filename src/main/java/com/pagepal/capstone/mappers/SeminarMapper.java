@@ -1,6 +1,8 @@
 package com.pagepal.capstone.mappers;
 
+import com.pagepal.capstone.dtos.event.EventDto;
 import com.pagepal.capstone.dtos.seminar.SeminarDto;
+import com.pagepal.capstone.entities.postgre.Event;
 import com.pagepal.capstone.entities.postgre.Seminar;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,6 +16,8 @@ import java.util.Date;
 public interface SeminarMapper {
     SeminarMapper INSTANCE = Mappers.getMapper(SeminarMapper.class);
 
+    EventDto toEventDto(Event event);
+
     @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "toDateFormat")
     @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "toDateFormat")
     SeminarDto toDto(Seminar seminar);
@@ -26,4 +30,5 @@ public interface SeminarMapper {
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return outputFormat.format(date);
     }
+
 }

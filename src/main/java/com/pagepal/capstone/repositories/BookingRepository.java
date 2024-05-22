@@ -1,7 +1,9 @@
 package com.pagepal.capstone.repositories;
 
 import com.pagepal.capstone.entities.postgre.Booking;
+import com.pagepal.capstone.entities.postgre.BookingState;
 import com.pagepal.capstone.entities.postgre.Customer;
+import com.pagepal.capstone.entities.postgre.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -186,6 +188,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     List<Booking> findAllByEventId(UUID eventId);
 
+    List<Booking> findByEventAndState(Event event, BookingState state);
+
     @Query("""
             SELECT b FROM Booking b
             WHERE b.customer.id = :cusId
@@ -235,6 +239,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             AND b.startAt >= :currentTime
             """)
     Page<Booking> findAllByReaderIdAndBookingStatePendingAndServiceIsNotNull(UUID readerId, Date currentTime, Pageable pageable);
+
+    Booking findFirstByEventOrderByCreateAtDesc(Event event);
 
     @Query("""
             SELECT b

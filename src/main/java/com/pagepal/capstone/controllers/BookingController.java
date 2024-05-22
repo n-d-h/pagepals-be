@@ -1,6 +1,7 @@
 package com.pagepal.capstone.controllers;
 
 import com.pagepal.capstone.dtos.booking.*;
+import com.pagepal.capstone.dtos.event.EventDto;
 import com.pagepal.capstone.services.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -69,4 +70,8 @@ public class BookingController {
         return bookingService.updateRecordByBookingId(id);
     }
 
+    @MutationMapping("completeEventBooking")
+    public EventDto completeEventBooking(@Argument(name = "eventId") UUID id) {
+        return bookingService.completeEventBooking(id);
+    }
 }

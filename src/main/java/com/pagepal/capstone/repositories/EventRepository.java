@@ -84,13 +84,50 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     Page<Event> findAllByReaderId(UUID readerId, Pageable pageable);
 
     @Query("""
+                SELECT e
+                FROM Event e
+                WHERE e.seminar.reader.id = :readerId
+                AND e.state = :state
+                AND e.startAt < :currentTime
+                AND (EXISTS (
+                        SELECT 1
+                        FROM Booking b
+                        WHERE b.event = e
+                        AND b.state.name = 'COMPLETE'
+                    )
+                    OR NOT EXISTS (
+                        SELECT 1
+                        FROM Booking b
+                        WHERE b.event = e
+                    )
+                )
+            """)
+    Page<Event> findAllEventCompletedByReaderId(UUID readerId, EventStateEnum state, Date currentTime, Pageable pageable);
+
+
+    @Query("""
+                SELECT e
+                FROM Event e
+                WHERE e.seminar.reader.id = :readerId
+                AND e.state = :state
+                AND e.startAt < :currentTime
+                AND EXISTS (
+                    SELECT 1
+                    FROM Booking b
+                    WHERE b.event = e
+                    AND b.state.name = 'PENDING'
+                )
+            """)
+    Page<Event> findAllEventProcessingByReaderId(UUID readerId, EventStateEnum state, Date currentTime, Pageable pageable);
+
+    @Query("""
             SELECT e
             FROM Event e
             WHERE e.seminar.reader.id = :readerId
             AND e.state = :state
-            AND e.startAt > :startTime
+            AND e.startAt > :currentTime
             """)
-    Page<Event> findAllEventActiveByReaderId(UUID readerId, EventStateEnum state, Date startTime, Pageable pageable);
+    Page<Event> findAllEventActiveByReaderId(UUID readerId, EventStateEnum state, Date currentTime, Pageable pageable);
 
     @Query("""
             SELECT e

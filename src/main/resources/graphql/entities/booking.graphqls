@@ -1,5 +1,5 @@
 type Booking {
-    id: ID!
+    id: ID
     totalPrice: Int
     promotionCode: String
     description: String
