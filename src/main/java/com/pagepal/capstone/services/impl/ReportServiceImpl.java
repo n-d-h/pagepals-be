@@ -214,7 +214,7 @@ public class ReportServiceImpl implements ReportService {
                 if (booking.getService() == null) {
                     reader = booking.getEvent().getSeminar().getReader();
                 } else {
-                    reader = booking.getWorkingTime().getReader();
+                    reader = booking.getService().getReader();
                 }
                 reportGenericDto.setBooking(toDtoIncludeRecording(booking));
                 List<ReportReadDto> reports = reportRepository
@@ -225,10 +225,10 @@ public class ReportServiceImpl implements ReportService {
                     Booking findBooking = bookingRepository.findById(report.getReportedId())
                             .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
                     UUID readerFoundId;
-                    if (booking.getService() == null) {
+                    if (findBooking.getService() == null) {
                         readerFoundId = findBooking.getEvent().getSeminar().getReader().getId();
                     } else {
-                        readerFoundId = findBooking.getWorkingTime().getReader().getId();
+                        readerFoundId = findBooking.getService().getReader().getId();
                     }
                     if (readerFoundId.equals(reader.getId())) {
                         reportByReader.add(report);
