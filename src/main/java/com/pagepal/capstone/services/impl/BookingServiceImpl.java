@@ -969,11 +969,8 @@ public class BookingServiceImpl implements BookingService {
         List<Record> listRecord = new ArrayList<>();
 
         for (var recordDto : recordingList) {
-            if (recordRepository.findByExternalId(recordDto.getUuid()).isPresent()) {
-                continue;
-            }
+            Record record = recordRepository.findByExternalId(recordDto.getUuid()).orElse(new Record());
 
-            Record record = new Record();
             record.setRecordingCount(recordDto.getRecording_count());
             record.setStatus(Status.ACTIVE);
             record.setDuration(recordDto.getDuration());
@@ -983,6 +980,10 @@ public class BookingServiceImpl implements BookingService {
 
             record = recordRepository.save(record);
 
+            List<RecordFile> recordFiles = record.getRecordFiles();
+            if (recordFiles != null && !recordFiles.isEmpty()) {
+                recordFileRepository.deleteAll(recordFiles);
+            }
             Record finalRecord = record;
             List<RecordFile> listRecordFile = recordDto.getRecording_files().stream().map(file -> {
                 return RecordFile
