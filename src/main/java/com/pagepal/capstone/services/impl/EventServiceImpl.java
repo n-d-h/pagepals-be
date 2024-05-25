@@ -655,9 +655,9 @@ public class EventServiceImpl implements EventService {
         }
 
         if (sort != null && sort.equals("desc")) {
-            return PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+            return PageRequest.of(page, pageSize, Sort.by("startAt").descending());
         } else {
-            return PageRequest.of(page, pageSize, Sort.by("createdAt").ascending());
+            return PageRequest.of(page, pageSize, Sort.by("startAt").ascending());
         }
     }
 
