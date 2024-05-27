@@ -61,6 +61,7 @@ public class EventServiceImpl implements EventService {
     private final String pagePalLogoUrl = "https://firebasestorage.googleapis.com/v0/b/authen-6cf1b.appspot.com/o/private_image%2F1.png?alt=media&token=56384e72-69dc-4ab3-8ede-9401b6f2f121";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final WorkingTimeRepository workingTimeRepository;
 
     public boolean canCreateEvent(UUID readerId) {
         LocalDateTime now = LocalDateTime.now();
@@ -106,15 +107,31 @@ public class EventServiceImpl implements EventService {
             //			if(diffDays > 14 || diffDays < 7) {
             //				throw new ValidationException("Event start date must be within [7 - 14] days");
             //			}
-
             if (Boolean.FALSE.equals(canCreateEvent(reader.getId()))) {
-                throw new ValidationException("Reader exceeds the limit (2) of creating seminar events for this week");
+                throw new ValidationException("Reader exceeds the limit (2) of creating seminar events in this week");
             }
 
-            var countConflictingEvents = eventRepository.countConflictingEvents(readerId, startAt, endAt, String.valueOf(SeminarStatus.ACCEPTED),
-                    String.valueOf(EventStateEnum.ACTIVE));
+            var countConflictWorkingTime = workingTimeRepository
+                    .countByReaderAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+                            reader,
+                            endAt,
+                            startAt
+                    );
+            if (countConflictWorkingTime > 0) {
+                throw new ValidationException("The time range is conflicted with other working time. Please check your calendar!");
+            }
+
+
+            var countConflictingEvents = eventRepository
+                    .countConflictingEvents(
+                            readerId,
+                            startAt,
+                            endAt,
+                            String.valueOf(SeminarStatus.ACCEPTED),
+                            String.valueOf(EventStateEnum.ACTIVE)
+                    );
             if (countConflictingEvents > 0) {
-                throw new ValidationException("The time slot is conflicted with other events");
+                throw new ValidationException("The time range is conflicted with other events. Please check your calendar!");
             }
 //            List<Event> listExistEvents = eventRepository.findBySeminarId(seminarId);
 //            if (listExistEvents.size() > 0) {

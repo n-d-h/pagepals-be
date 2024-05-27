@@ -68,7 +68,7 @@ public class SeminarServiceImpl implements SeminarService {
         Reader reader = readerRepository.findById(seminarCreateDto.getReaderId()).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
         if (Boolean.FALSE.equals(canCreateSeminar(reader.getId()))) {
-            throw new ValidationException("Reader exceeds the limit (2) of creating seminar requests for this week");
+            throw new ValidationException("Reader exceeds the limit (2) of creating seminar requests in this week");
         }
 
         Book book;
