@@ -32,7 +32,7 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
             FROM Service s
             WHERE s.reader = ?1
             AND s.book = ?2
-            AND LOWER(s.description) LIKE LOWER(CONCAT('%', ?3, '%'))
+            AND LOWER(s.shortDescription) LIKE LOWER(CONCAT('%', ?3, '%'))
             AND (s.isDeleted = false OR s.isDeleted IS NULL)
             """)
     Page<Service> findAllByReaderAndBookAndDescriptionContainsIgnoreCase(Reader reader, Book book, String title, Pageable pageable);

@@ -2,6 +2,7 @@ type Service {
     id: ID!
     price: Int
     createdAt: String
+    shortDescription: String
     description: String
     duration: Float
     totalOfReview: Int
@@ -36,6 +37,7 @@ extend type Query {
 
 input ServiceInput {
     price: Float
+    shortDescription: String
     description: String
     duration: Float
     readerId: ID!
@@ -46,6 +48,7 @@ input ServiceInput {
 
 input ServiceUpdate {
     price: Float
+    shortDescription: String
     description: String
     serviceTypeId: ID
     imageUrl: String

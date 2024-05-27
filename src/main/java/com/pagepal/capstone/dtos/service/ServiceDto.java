@@ -21,6 +21,7 @@ public class ServiceDto {
     private UUID id;
     private Integer price;
     private String createdAt;
+    private String shortDescription;
     private String description;
     private Float duration;
     private Integer totalOfReview;
