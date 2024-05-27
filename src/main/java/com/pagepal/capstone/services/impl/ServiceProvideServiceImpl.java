@@ -103,7 +103,7 @@ public class ServiceProvideServiceImpl implements ServiceProvideService {
             );
         }
         var services = readerId != null
-                ? serviceRepository.findAllByReaderAndBook(reader, book, pageable)
+                ? serviceRepository.findAllByReaderAndBookAndDescriptionContainsIgnoreCase(reader, book, queryDto.getSearch(), pageable)
                 : serviceRepository.findAllByBookId(book, queryDto.getSearch(), pageable);
         ListService list = new ListService();
         if (services == null) {

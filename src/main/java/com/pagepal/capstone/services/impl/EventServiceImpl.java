@@ -248,6 +248,39 @@ public class EventServiceImpl implements EventService {
                 throw new ValidationException("Event not found");
             }
 
+            var seminar = event.getSeminar();
+            var reader = event.getSeminar().getReader();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime start = LocalDateTime.parse(eventDto.getStartAt(), formatter);
+            LocalDateTime end = start.plusMinutes(seminar.getDuration());
+            Date startAt = Date.from(start.atZone(ZoneId.systemDefault()).toInstant());
+            Date endAt = Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
+
+
+            var countConflictWorkingTime = workingTimeRepository
+                    .countByReaderAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
+                            reader,
+                            endAt,
+                            startAt
+                    );
+            if (countConflictWorkingTime > 0) {
+                throw new ValidationException("The time range is conflicted with other working time. Please check your calendar!");
+            }
+
+
+            var countConflictingEvents = eventRepository
+                    .countConflictingEventsExceptEvent(
+                            reader.getId(),
+                            startAt,
+                            endAt,
+                            String.valueOf(SeminarStatus.ACCEPTED),
+                            String.valueOf(EventStateEnum.ACTIVE),
+                            event.getId()
+                    );
+            if (countConflictingEvents > 0) {
+                throw new ValidationException("The time range is conflicted with other events. Please check your calendar!");
+            }
 
             if (eventDto.getLimitCustomer() < 0) {
                 throw new ValidationException("Cannot set limit customer less than bookings number");
