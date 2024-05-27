@@ -12,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceUpdate {
+    private String shortDescription;
     private String description;
     private Integer price;
     private UUID serviceTypeId;
