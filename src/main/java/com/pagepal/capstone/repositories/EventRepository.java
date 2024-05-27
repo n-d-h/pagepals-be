@@ -65,6 +65,26 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
                                 @Param("status") String status,
                                 @Param("state") String state);
 
+    // count the number of events that overlap with the given time range and except the given event
+    @Query(value = """
+            SELECT COUNT(e.id)
+            FROM event e
+            JOIN seminar s ON e.seminar_id = s.id
+            WHERE e.state = :state
+            AND s.state = :status
+            AND s.status = :state
+            AND e.start_at <= :end
+            AND s.reader_id = :readerId
+            AND (e.start_at + interval '1 minute' * s.duration) >= :start
+            AND e.id != :eventId
+            """, nativeQuery = true)
+    long countConflictingEventsExceptEvent(@Param("readerId") UUID readerId,
+                                           @Param("start") Date start,
+                                           @Param("end") Date end,
+                                           @Param("status") String status,
+                                           @Param("state") String state,
+                                           @Param("eventId") UUID eventId);
+
 
     Page<Event> findByStateAndStartAtAfter(EventStateEnum state, Date startAt, Pageable pageable);
 
