@@ -864,9 +864,9 @@ public class BookingServiceImpl implements BookingService {
         }
         Date currentTime = dateUtils.getCurrentVietnamDate();
 
-        long timeDifferenceMillis = currentTime.getTime() - endTime.getTime();
+        long timeDifferenceMillis = currentTime.getTime() - booking.getStartAt().getTime();
 
-        if (timeDifferenceMillis >= 0 && timeDifferenceMillis <= 3600000) {
+        if (timeDifferenceMillis >= 0 && timeDifferenceMillis <= 7200000) {
             booking = updateBookingRecord(booking);
         }
 

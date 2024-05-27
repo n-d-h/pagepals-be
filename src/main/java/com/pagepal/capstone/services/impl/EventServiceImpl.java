@@ -290,7 +290,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (customer.getAccount().getId().equals(event.getSeminar().getReader().getAccount().getId())) {
-            throw new ValidationException("Cannot book this seminar event with reader account");
+            throw new ValidationException("Cannot book your own event");
         }
 
         Date currentTime = dateUtils.getCurrentVietnamDate();
