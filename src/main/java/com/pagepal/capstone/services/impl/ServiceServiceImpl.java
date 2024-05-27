@@ -71,6 +71,7 @@ public class ServiceServiceImpl implements ServiceService {
         if (Boolean.FALSE.equals(checkServiceIsInBooking(id))) {
             service.setId(id);
             service.setPrice(writeServiceDto.getPrice());
+            service.setShortDescription(writeServiceDto.getShortDescription());
             service.setDescription(writeServiceDto.getDescription());
             service.setImageUrl(writeServiceDto.getImageUrl());
         }
@@ -114,6 +115,7 @@ public class ServiceServiceImpl implements ServiceService {
     private ServiceDto createCloneService(ServiceUpdate writeServiceDto, com.pagepal.capstone.entities.postgre.Service existingService) {
         var service = new com.pagepal.capstone.entities.postgre.Service();
         service.setPrice(writeServiceDto.getPrice());
+        service.setShortDescription(writeServiceDto.getShortDescription());
         service.setDescription(writeServiceDto.getDescription());
         service.setImageUrl(writeServiceDto.getImageUrl());
         service.setDuration(existingService.getDuration());
@@ -190,6 +192,7 @@ public class ServiceServiceImpl implements ServiceService {
         }
         var service = new com.pagepal.capstone.entities.postgre.Service();
         service.setPrice(writeServiceDto.getPrice());
+        service.setShortDescription(writeServiceDto.getShortDescription());
         service.setDescription(writeServiceDto.getDescription());
         service.setDuration(writeServiceDto.getDuration());
         service.setServiceType(serviceType);

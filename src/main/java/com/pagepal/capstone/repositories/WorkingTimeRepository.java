@@ -18,6 +18,9 @@ public interface WorkingTimeRepository extends JpaRepository<WorkingTime, UUID> 
 
     List<WorkingTime> findByReaderAndStartTimeAfter(Reader reader, Date startDate);
 
-
     Boolean existsByStartTimeAndEndTimeAndReaderId(Date startTime, Date endTime, UUID readerId);
+
+    // count the number of working times that overlap with the given time range
+    long countByReaderAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Reader reader, Date end, Date start);
+
 }

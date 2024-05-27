@@ -19,6 +19,7 @@ public class ServiceCustomerDto {
     private UUID id;
     private Integer price;
     private String createdAt;
+    private String shortDescription;
     private String description;
     private Double duration;
     private Integer totalOfReview;

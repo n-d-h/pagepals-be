@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WriteServiceDto {
     private Integer price;
+    private String shortDescription;
     private String description;
     private Double duration;
     private UUID readerId;
