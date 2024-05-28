@@ -3,6 +3,7 @@ package com.pagepal.capstone.repositories;
 import com.pagepal.capstone.entities.postgre.Event;
 import com.pagepal.capstone.enums.EventStateEnum;
 import com.pagepal.capstone.enums.SeminarStatus;
+import com.pagepal.capstone.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -178,6 +179,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             AND e.seminar.state = :seminarState
             ORDER BY e.startAt ASC, e.seminar.reader.rating DESC
             """)
-    List<Event> findTop10ActiveEventsOrderByStartAtAscAndReaderRatingDesc(EventStateEnum state, Date currentTime, EventStateEnum seminarStatus, SeminarStatus seminarState);
+    List<Event> findTop10ActiveEventsOrderByStartAtAscAndReaderRatingDesc(EventStateEnum state, Date currentTime, Status seminarStatus, SeminarStatus seminarState);
 
 }
