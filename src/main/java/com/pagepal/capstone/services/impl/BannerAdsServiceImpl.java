@@ -36,29 +36,19 @@ public class BannerAdsServiceImpl implements BannerAdsService {
         Date modifiedTime = calendar.getTime();
         List<Event> events = eventRepository
                 .findTop10ActiveEventsOrderByStartAtAscAndReaderRatingDesc(
-                        EventStateEnum.ACTIVE, modifiedTime, EventStateEnum.ACTIVE, SeminarStatus.ACCEPTED);
-        List<BannerAds> bannerAdsList = new ArrayList<>();
+                        EventStateEnum.ACTIVE, modifiedTime);
+        List<BannerAdsDto> bannerAdsList = new ArrayList<>();
         for (Event event : events) {
             bannerAdsList.add(
-                    BannerAds.builder()
-                            .createdAt(event.getCreatedAt())
-                            .startAt(modifiedTime)
-                            .endAt(event.getStartAt())
+                    BannerAdsDto.builder()
+                            .id(event.getId())
+                            .createdAt(event.getCreatedAt().toString())
+                            .startAt(modifiedTime.toString())
+                            .endAt(event.getStartAt().toString())
                             .status(Status.ACTIVE)
                             .event(event)
                             .build());
         }
-        return bannerAdsList.stream().map(this::convertToDto).toList();
-    }
-
-    private BannerAdsDto convertToDto(BannerAds bannerAds) {
-        return BannerAdsDto.builder()
-                .id(bannerAds.getId())
-                .createdAt(bannerAds.getCreatedAt().toString())
-                .startAt(bannerAds.getStartAt().toString())
-                .endAt(bannerAds.getEndAt().toString())
-                .status(bannerAds.getStatus())
-                .event(bannerAds.getEvent())
-                .build();
+        return bannerAdsList;
     }
 }
