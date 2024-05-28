@@ -44,6 +44,7 @@ public class ReportServiceImpl implements ReportService {
     private final EmailService emailService;
     private final RoleRepository roleRepository;
     private final ZoomService zoomService;
+    private final ServiceRepository serviceRepository;
 
     @Override
     public ReportReadDto getReportById(UUID id) {
@@ -321,6 +322,13 @@ public class ReportServiceImpl implements ReportService {
         reader = readerRepository.save(reader);
 
         if (reader != null) {
+
+            List<com.pagepal.capstone.entities.postgre.Service> services = reader.getServices();
+            for (com.pagepal.capstone.entities.postgre.Service service : services) {
+                service.setStatus(Status.INACTIVE);
+                service.setIsDeleted(true);
+                serviceRepository.save(service);
+            }
 
             Account account = reader.getAccount();
             account.setAccountState(accountStateRepository

@@ -42,7 +42,7 @@ public class WithdrawRequestServiceImpl implements WithdrawRequestService {
 
     @Override
     public List<WithdrawRequestReadDto> getAllWithdrawRequests() {
-        List<WithdrawRequest> withdrawRequests = withdrawRequestRepository.findAll();
+        List<WithdrawRequest> withdrawRequests = withdrawRequestRepository.findByState(WithdrawRequestStateEnum.PENDING);
         return withdrawRequests.stream().map(WithdrawRequestMapper.INSTANCE::toDto).toList();
     }
 

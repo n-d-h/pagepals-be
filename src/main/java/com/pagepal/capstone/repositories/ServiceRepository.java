@@ -21,7 +21,7 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
     @Query("SELECT s FROM Service s WHERE s.reader = ?1 AND LOWER(s.book.title) LIKE %?2% AND (s.isDeleted = false OR s.isDeleted IS NULL)")
     Page<Service> findAllByReaderAndBookTitleContainsIgnoreCase(Reader reader, String title, Pageable pageable);
 
-    @Query("SELECT s FROM Service s WHERE s.book = ?1 AND s.book.title LIKE %?2% AND (s.isDeleted = false OR s.isDeleted IS NULL)")
+    @Query("SELECT s FROM Service s WHERE s.book = ?1 AND s.book.title LIKE %?2% AND s.reader.account.accountState.name = 'READER_ACTIVE' AND (s.isDeleted = false OR s.isDeleted IS NULL)")
     Page<Service> findAllByBookId(Book book, String title, Pageable pageable);
 
     @Query("SELECT s FROM Service s WHERE s.reader = ?1 AND s.book = ?2 AND (s.isDeleted = false OR s.isDeleted IS NULL)")
@@ -31,6 +31,7 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
             SELECT s
             FROM Service s
             WHERE s.reader = ?1
+            AND s.reader.account.accountState.name = 'READER_ACTIVE'
             AND s.book = ?2
             AND LOWER(s.shortDescription) LIKE LOWER(CONCAT('%', ?3, '%'))
             AND (s.isDeleted = false OR s.isDeleted IS NULL)
