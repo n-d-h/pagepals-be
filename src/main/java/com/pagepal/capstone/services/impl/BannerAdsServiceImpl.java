@@ -36,7 +36,7 @@ public class BannerAdsServiceImpl implements BannerAdsService {
         Date modifiedTime = calendar.getTime();
         List<Event> events = eventRepository
                 .findTop10ActiveEventsOrderByStartAtAscAndReaderRatingDesc(
-                        EventStateEnum.ACTIVE, modifiedTime, EventStateEnum.ACTIVE, SeminarStatus.ACCEPTED);
+                        EventStateEnum.ACTIVE, modifiedTime, Status.ACTIVE, SeminarStatus.ACCEPTED);
         List<BannerAds> bannerAdsList = new ArrayList<>();
         for (Event event : events) {
             bannerAdsList.add(
