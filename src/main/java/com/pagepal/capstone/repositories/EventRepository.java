@@ -175,6 +175,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             FROM Event e
             WHERE e.state = :state
             AND e.startAt > :currentTime
+            AND e.seminar.reader.account.accountState.name = 'READER_ACTIVE'
             ORDER BY e.startAt ASC, e.seminar.reader.rating DESC
             """)
     List<Event> findTop10ActiveEventsOrderByStartAtAscAndReaderRatingDesc(EventStateEnum state, Date currentTime);
