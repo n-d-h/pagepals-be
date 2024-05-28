@@ -6,12 +6,15 @@ import com.pagepal.capstone.dtos.seminar.SeminarCreateDto;
 import com.pagepal.capstone.dtos.seminar.SeminarDto;
 import com.pagepal.capstone.dtos.seminar.SeminarUpdateDto;
 import com.pagepal.capstone.entities.postgre.Book;
+import com.pagepal.capstone.entities.postgre.Event;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Seminar;
+import com.pagepal.capstone.enums.EventStateEnum;
 import com.pagepal.capstone.enums.SeminarStatus;
 import com.pagepal.capstone.enums.Status;
 import com.pagepal.capstone.mappers.SeminarMapper;
 import com.pagepal.capstone.repositories.BookRepository;
+import com.pagepal.capstone.repositories.EventRepository;
 import com.pagepal.capstone.repositories.ReaderRepository;
 import com.pagepal.capstone.repositories.SeminarRepository;
 import com.pagepal.capstone.services.BookService;
@@ -32,6 +35,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -45,6 +49,7 @@ public class SeminarServiceImpl implements SeminarService {
     private final DateUtils dateUtils;
     private final BookService bookService;
     private static final int MAX_SEMINARS_PER_WEEK = 2;
+    private final EventRepository eventRepository;
 
     // Check if creating a seminar exceeds the limit
     public boolean canCreateSeminar(UUID readerId) {
@@ -125,11 +130,28 @@ public class SeminarServiceImpl implements SeminarService {
     @Override
     public SeminarDto deleteSeminarRequest(UUID id) {
         Seminar seminar = seminarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Seminar not found"));
-        if (seminar.getState() != SeminarStatus.PENDING) {
-            throw new ValidationException("Seminar is not available for delete");
-        } else if (seminar.getStatus() == Status.INACTIVE) {
+        if (seminar.getStatus() == Status.INACTIVE) {
             throw new ValidationException("Seminar is already deleted");
         }
+
+        // check if there are any events related to this seminar
+        if (seminar.getState() == SeminarStatus.ACCEPTED) {
+            var events = seminar.getEvents();
+            if (events != null && !events.isEmpty()) {
+                Date currentTime = dateUtils.getCurrentVietnamDate();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(currentTime);
+                calendar.add(Calendar.HOUR_OF_DAY, -1);
+                Date modifiedTime = calendar.getTime();
+
+                var count = eventRepository
+                        .countAllEventActiveByReaderId(seminar.getReader().getId(), EventStateEnum.ACTIVE, modifiedTime);
+                if (count > 0) {
+                    throw new ValidationException("Seminar has pending events, cannot delete");
+                }
+            }
+        }
+
         seminar.setStatus(Status.INACTIVE);
         return SeminarMapper.INSTANCE.toDto(seminarRepository.save(seminar));
     }

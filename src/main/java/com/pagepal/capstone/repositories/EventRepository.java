@@ -34,20 +34,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             """)
     List<Event> findBySeminarId(UUID seminarId);
 
-//    @Query("""
-//            SELECT COUNT(e)
-//            FROM Event e
-//            JOIN e.seminar s
-//            WHERE e.state = :state
-//            AND s.state = :status
-//            AND s.status = :state
-//            AND e.startAt <= :end
-//            AND s.reader.id = :readerId
-//            AND (e.startAt + interval s.duration MINUTE) >= :start
-//            """)
-//    long countConflictingEvents(UUID readerId, Date start, Date end, SeminarStatus status, EventStateEnum state);
-
-
     @Query(value = """
             SELECT COUNT(e.id)
             FROM event e
@@ -65,7 +51,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
                                 @Param("status") String status,
                                 @Param("state") String state);
 
-    // count the number of events that overlap with the given time range and except the given event
+
     @Query(value = """
             SELECT COUNT(e.id)
             FROM event e
@@ -124,7 +110,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             """)
     Page<Event> findAllEventCompletedByReaderId(UUID readerId, EventStateEnum state, Date currentTime, Pageable pageable);
 
-
     @Query("""
                 SELECT e
                 FROM Event e
@@ -148,6 +133,15 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             AND e.startAt > :currentTime
             """)
     Page<Event> findAllEventActiveByReaderId(UUID readerId, EventStateEnum state, Date currentTime, Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(e)
+            FROM Event e
+            WHERE e.seminar.reader.id = :readerId
+            AND e.state = :state
+            AND e.startAt > :currentTime
+            """)
+    Long countAllEventActiveByReaderId(UUID readerId, EventStateEnum state, Date currentTime);
 
     @Query("""
             SELECT e
@@ -174,5 +168,16 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             AND (e.createdAt BETWEEN :startDate AND :endDate)
             """)
     Long countByCreatedAtBetweenAndState(Date startDate, Date endDate, UUID readerId, EventStateEnum state);
+
+    @Query("""
+            SELECT e
+            FROM Event e
+            WHERE e.state = :state
+            AND e.startAt > :currentTime
+            AND e.seminar.status = :seminarStatus
+            AND e.seminar.state = :seminarState
+            ORDER BY e.startAt ASC, e.seminar.reader.rating DESC
+            """)
+    List<Event> findTop10ActiveEventsOrderByStartAtAscAndReaderRatingDesc(EventStateEnum state, Date currentTime, EventStateEnum seminarStatus, SeminarStatus seminarState);
 
 }
