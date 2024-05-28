@@ -122,7 +122,7 @@ public class BookServiceImpl implements BookService {
         }
         newBook.setAuthors(authors);
         newBook.setCategories(categories);
-        newBook.setExternalId(book.getId());
+        newBook.setExternalId("".equals(book.getId().trim()) ? UUID.randomUUID().toString() : book.getId());
         newBook.setTitle(book.getVolumeInfo().getTitle());
         newBook.setPublisher(book.getVolumeInfo().getPublisher());
         newBook.setPublishedDate(book.getVolumeInfo().getPublishedDate());
