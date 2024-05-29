@@ -139,13 +139,8 @@ public class SeminarServiceImpl implements SeminarService {
             var events = seminar.getEvents();
             if (events != null && !events.isEmpty()) {
                 Date currentTime = dateUtils.getCurrentVietnamDate();
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(currentTime);
-                calendar.add(Calendar.HOUR_OF_DAY, -1);
-                Date modifiedTime = calendar.getTime();
-
                 var count = eventRepository
-                        .countAllEventActiveByReaderId(seminar.getReader().getId(), EventStateEnum.ACTIVE, modifiedTime);
+                        .countAllEventActiveByReaderId(seminar.getReader().getId(), EventStateEnum.ACTIVE, currentTime);
                 if (count > 0) {
                     throw new ValidationException("Seminar has pending events, cannot delete");
                 }

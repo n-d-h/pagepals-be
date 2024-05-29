@@ -149,7 +149,8 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             FROM Event e
             WHERE e.state = :state
             AND e.startAt > :startTime
-            AND NOT EXISTS (SELECT 1 FROM Booking b WHERE b.event = e AND b.customer.id = :customerId)
+            AND e.seminar.reader.account.accountState.name = 'READER_ACTIVE'
+            AND NOT EXISTS (SELECT 1 FROM Booking b WHERE b.event.id = e.id AND b.customer.id = :customerId)
             """)
     Page<Event> findAllEventNotJoinByCustomer(UUID customerId, EventStateEnum state, Date startTime, Pageable pageable);
 

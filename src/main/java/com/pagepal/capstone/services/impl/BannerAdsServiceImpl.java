@@ -30,20 +30,16 @@ public class BannerAdsServiceImpl implements BannerAdsService {
     @Override
     public List<BannerAdsDto> getListBannerAds() {
         Date currentTime = dateUtils.getCurrentVietnamDate();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentTime);
-        calendar.add(Calendar.HOUR_OF_DAY, -1);
-        Date modifiedTime = calendar.getTime();
         List<Event> events = eventRepository
                 .findTop10ActiveEventsOrderByStartAtAscAndReaderRatingDesc(
-                        EventStateEnum.ACTIVE, modifiedTime);
+                        EventStateEnum.ACTIVE, currentTime);
         List<BannerAdsDto> bannerAdsList = new ArrayList<>();
         for (Event event : events) {
             bannerAdsList.add(
                     BannerAdsDto.builder()
                             .id(event.getId())
                             .createdAt(event.getCreatedAt().toString())
-                            .startAt(modifiedTime.toString())
+                            .startAt(dateUtils.getCurrentVietnamDate().toString())
                             .endAt(event.getStartAt().toString())
                             .status(Status.ACTIVE)
                             .event(event)
