@@ -60,7 +60,7 @@ public class BookServiceImpl implements BookService {
 
         Page<Book> bookPage;
         if (categoryId == null)
-            if(authors == null || authors.isEmpty())
+            if (authors == null || authors.isEmpty())
                 bookPage = bookRepository.findByTitleContainingIgnoreCase(search, pageable);
             else
                 bookPage = bookRepository.searchBooksByAuthorAndTitle(authors, search, pageable);
@@ -120,9 +120,15 @@ public class BookServiceImpl implements BookService {
             }
             authors.add(newAuthor);
         }
+        var bookExtId = book.getId();
+        if (bookExtId == null) bookExtId = UUID.randomUUID().toString();
+        else if (bookExtId.isEmpty() || bookExtId.isBlank()) {
+            bookExtId = UUID.randomUUID().toString();
+        }
+
         newBook.setAuthors(authors);
         newBook.setCategories(categories);
-        newBook.setExternalId("".equals(book.getId().trim()) ? UUID.randomUUID().toString() : book.getId());
+        newBook.setExternalId(bookExtId);
         newBook.setTitle(book.getVolumeInfo().getTitle());
         newBook.setPublisher(book.getVolumeInfo().getPublisher());
         newBook.setPublishedDate(book.getVolumeInfo().getPublishedDate());
