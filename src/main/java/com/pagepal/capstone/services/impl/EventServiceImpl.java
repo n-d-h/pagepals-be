@@ -124,11 +124,12 @@ public class EventServiceImpl implements EventService {
 
             var countConflictingEvents = eventRepository
                     .countConflictingEvents(
+                            EventStateEnum.ACTIVE,
+                            SeminarStatus.ACCEPTED,
+                            Status.ACTIVE,
                             readerId,
                             startAt,
-                            endAt,
-                            String.valueOf(SeminarStatus.ACCEPTED),
-                            String.valueOf(EventStateEnum.ACTIVE)
+                            endAt
                     );
             if (countConflictingEvents > 0) {
                 throw new ValidationException("The time range is conflicted with other events. Please check your calendar!");
@@ -173,6 +174,7 @@ public class EventServiceImpl implements EventService {
 
             Event event = Event.builder()
                     .startAt(startAt)
+                    .endAt(endAt)
                     .createdAt(dateUtils.getCurrentVietnamDate())
                     .limitCustomer(dto.getLimitCustomer())
                     .activeSlot(dto.getLimitCustomer())
@@ -271,11 +273,12 @@ public class EventServiceImpl implements EventService {
 
             var countConflictingEvents = eventRepository
                     .countConflictingEventsExceptEvent(
+                            EventStateEnum.ACTIVE,
+                            SeminarStatus.ACCEPTED,
+                            Status.ACTIVE,
                             reader.getId(),
                             startAt,
                             endAt,
-                            String.valueOf(SeminarStatus.ACCEPTED),
-                            String.valueOf(EventStateEnum.ACTIVE),
                             event.getId()
                     );
             if (countConflictingEvents > 0) {
@@ -288,7 +291,8 @@ public class EventServiceImpl implements EventService {
 
             event.setLimitCustomer(eventDto.getLimitCustomer());
             event.setActiveSlot(eventDto.getLimitCustomer());
-            event.setStartAt(dateFormat.parse(eventDto.getStartAt()));
+            event.setStartAt(startAt);
+            event.setEndAt(endAt);
             event.setPrice(eventDto.getPrice());
 
             eventRepository.save(event);

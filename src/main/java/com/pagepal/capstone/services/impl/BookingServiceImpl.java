@@ -133,12 +133,12 @@ public class BookingServiceImpl implements BookingService {
         if (queryDto.getPageSize() == null || queryDto.getPageSize() < 0)
             queryDto.setPageSize(10);
 
-        Pageable pageable;
-        if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
-            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").descending());
-        } else {
-            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").ascending());
-        }
+        Pageable pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize());
+//        if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
+//            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").descending());
+//        } else {
+//            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").ascending());
+//        }
 
 
         Page<Event> events;

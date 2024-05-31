@@ -31,6 +31,9 @@ public class Event {
     @Column(name = "start_at")
     private Date startAt;
 
+    @Column(name = "end_at")
+    private Date endAt;
+
     @Column(name = "created_at")
     private Date createdAt;
 
