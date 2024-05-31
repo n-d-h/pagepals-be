@@ -90,14 +90,14 @@ public class BookingServiceImpl implements BookingService {
             bookings = bookingRepository.findAllByReaderIdAndServiceIsNotNull(readerId, pageable);
         else {
             Date currentTime = dateUtils.getCurrentVietnamDate();
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(currentTime);
-//            calendar.add(Calendar.HOUR_OF_DAY, -1);
-//            Date modifiedTime = calendar.getTime();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentTime);
+            calendar.add(Calendar.HOUR_OF_DAY, -1);
+            Date modifiedTime = calendar.getTime();
             if ("PENDING".equals(state)) {
-                bookings = bookingRepository.findAllByReaderIdAndBookingStatePendingAndServiceIsNotNull(readerId, currentTime, pageable);
+                bookings = bookingRepository.findAllByReaderIdAndBookingStatePendingAndServiceIsNotNull(readerId, modifiedTime, pageable);
             } else if ("PROCESSING".equals(state)) {
-                bookings = bookingRepository.findByServiceStateProcessingAndReaderId(readerId, currentTime, pageable);
+                bookings = bookingRepository.findByServiceStateProcessingAndReaderId(readerId, modifiedTime, pageable);
             } else {
                 bookings = bookingRepository
                         .findAllByReaderIdAndBookingStateAndServiceIsNotNull(readerId,
@@ -218,14 +218,14 @@ public class BookingServiceImpl implements BookingService {
             bookings = bookingRepository.findByCustomer(customer, pageable);
         else {
             Date currentTime = dateUtils.getCurrentVietnamDate();
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(currentTime);
-//            calendar.add(Calendar.HOUR_OF_DAY, -1);
-//            Date modifiedTime = calendar.getTime();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentTime);
+            calendar.add(Calendar.HOUR_OF_DAY, -1);
+            Date modifiedTime = calendar.getTime();
             if ("PENDING".equals(state)) {
-                bookings = bookingRepository.findByStatePendingAndCustomerId(cusId, currentTime, pageable);
+                bookings = bookingRepository.findByStatePendingAndCustomerId(cusId, modifiedTime, pageable);
             } else if ("PROCESSING".equals(state)) {
-                bookings = bookingRepository.findByStateProcessingAndCustomerId(cusId, currentTime, pageable);
+                bookings = bookingRepository.findByStateProcessingAndCustomerId(cusId, modifiedTime, pageable);
             } else {
                 bookings = bookingRepository
                         .findAllByCustomerIdAndBookingState(cusId,
