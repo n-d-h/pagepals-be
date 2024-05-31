@@ -133,12 +133,12 @@ public class BookingServiceImpl implements BookingService {
         if (queryDto.getPageSize() == null || queryDto.getPageSize() < 0)
             queryDto.setPageSize(10);
 
-        Pageable pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize());
-//        if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
-//            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").descending());
-//        } else {
-//            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").ascending());
-//        }
+        Pageable pageable;
+        if (queryDto.getSort() != null && queryDto.getSort().equals("desc")) {
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").descending());
+        } else {
+            pageable = PageRequest.of(queryDto.getPage(), queryDto.getPageSize(), Sort.by("startAt").ascending());
+        }
 
 
         Page<Event> events;
@@ -148,10 +148,6 @@ public class BookingServiceImpl implements BookingService {
 
 
         Date currentTime = dateUtils.getCurrentVietnamDate();
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(currentTime);
-//        calendar.add(Calendar.HOUR_OF_DAY, -1);
-//        Date modifiedTime = calendar.getTime();
         if ("PENDING".equals(state)) {
             events = eventRepository.findAllEventActiveByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
         } else if ("PROCESSING".equals(state)) {
