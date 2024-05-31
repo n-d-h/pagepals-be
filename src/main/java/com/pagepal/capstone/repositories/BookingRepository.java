@@ -230,6 +230,23 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     List<Booking> findByStartAtBetween(Date start, Date end);
 
     @Query("""
+            SELECT b FROM Booking b
+            WHERE b.service IS NOT NULL
+            AND b.state.name = 'PENDING'
+            AND b.startAt BETWEEN :start AND :end
+            """)
+    List<Booking> findByStartAtBetweenAndStatePending(Date start, Date end);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE b.service IS NULL
+            AND b.state.name = 'PENDING'
+            AND b.startAt BETWEEN :start AND :end
+            """)
+    List<Booking> findByStartAtBetweenAndStatePendingEvent(Date start, Date end);
+
+
+    @Query("""
             SELECT b
             FROM Booking b
             WHERE b.workingTime.reader.id = :readerId

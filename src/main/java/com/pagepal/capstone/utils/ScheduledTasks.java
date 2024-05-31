@@ -2,14 +2,10 @@ package com.pagepal.capstone.utils;
 
 import com.pagepal.capstone.dtos.recording.MeetingRecordings;
 import com.pagepal.capstone.dtos.recording.RecordingDto;
-import com.pagepal.capstone.entities.postgre.Booking;
-import com.pagepal.capstone.entities.postgre.Meeting;
+import com.pagepal.capstone.entities.postgre.*;
 import com.pagepal.capstone.entities.postgre.Record;
-import com.pagepal.capstone.entities.postgre.RecordFile;
-import com.pagepal.capstone.enums.Status;
-import com.pagepal.capstone.repositories.BookingRepository;
-import com.pagepal.capstone.repositories.RecordFileRepository;
-import com.pagepal.capstone.repositories.RecordRepository;
+import com.pagepal.capstone.enums.*;
+import com.pagepal.capstone.repositories.*;
 import com.pagepal.capstone.services.WebhookService;
 import com.pagepal.capstone.services.ZoomService;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,6 +29,11 @@ public class ScheduledTasks {
     private final ZoomService zoomService;
     private final RecordRepository recordRepository;
     private final RecordFileRepository recordFileRepository;
+    private final BookingStateRepository bookingStateRepository;
+    private final WalletRepository walletRepository;
+    private final TransactionRepository transactionRepository;
+    private final SettingRepository settingRepository;
+    private final EventRepository eventRepository;
 
     @Scheduled(fixedRate = 1800000)
     public void scheduleTaskWithFixedRate() {
@@ -70,6 +71,139 @@ public class ScheduledTasks {
         content.put("Number of booking start in last 3 hours", String.valueOf(bookings.size()));
         content.put("Number of booking updated", String.valueOf(count));
         webhookService.sendWebhookWithDataSchedule("UPDATE BOOKING RECORD", content, Boolean.FALSE);
+    }
+
+    @Scheduled(cron = "59 55 23 * * ?")
+//    @Scheduled(fixedRate = 1800000)
+    public void scheduleTaskToUpdateBookingState() {
+
+        Setting revenue = settingRepository.findByKey("REVENUE_SHARE").orElse(null);
+        Setting tokenPrice = settingRepository.findByKey("TOKEN_PRICE").orElse(null);
+
+        if (revenue == null || tokenPrice == null) {
+            throw new EntityNotFoundException("Setting not found");
+        }
+
+        Date currentTime = dateUtils.getCurrentVietnamDate();
+
+        Date startTime = new Date(currentTime.getTime() - (24 * 3600 * 1000) - 3600000);
+        Date endTime = new Date(currentTime.getTime() - 3600000);
+
+        BookingState completeState = bookingStateRepository.findByName("COMPLETE").orElseThrow(() -> new EntityNotFoundException("Booking state not found"));
+
+        BookingState pendingState = bookingStateRepository.findByName("PENDING").orElseThrow(() -> new EntityNotFoundException("Booking state not found"));
+
+        List<Booking> serviceBookings = bookingRepository.findByStartAtBetweenAndStatePending(startTime, endTime);
+
+        for (var booking : serviceBookings) {
+            List<Record> records = recordRepository.findByMeetingCode(booking.getMeeting().getMeetingCode());
+            if(records == null || records.isEmpty()){
+                refundForCustomer(booking);
+            }else{
+                int count = 0;
+                for (var record : records) {
+                    count += record.getDuration();
+                }
+                if(count < 40){
+                    refundForCustomer(booking);
+                }else {
+                    booking.setState(completeState);
+                    booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+                    bookingRepository.save(booking);
+
+                    Float receiveCash = ((booking.getTotalPrice() * Float.parseFloat(tokenPrice.getValue()))
+                            * (100 - Float.parseFloat(revenue.getValue()))) / 100;
+                    Wallet wallet = booking.getService().getReader().getAccount().getWallet();
+                    wallet.setCash(wallet.getCash() + receiveCash);
+                    wallet = walletRepository.save(wallet);
+
+                    Transaction transaction = new Transaction();
+                    transaction.setStatus(TransactionStatusEnum.SUCCESS);
+                    transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
+                    transaction.setTransactionType(TransactionTypeEnum.BOOKING_DONE_RECEIVE);
+                    transaction.setCurrency(CurrencyEnum.DOLLAR);
+                    transaction.setBooking(booking);
+                    transaction.setAmount(Double.valueOf(receiveCash));
+                    transaction.setWallet(wallet);
+                    transactionRepository.save(transaction);
+                }
+            }
+        }
+
+        List<Event> eventBookings = eventRepository.findByStartAtBetweenAndState(startTime, endTime, EventStateEnum.ACTIVE);
+
+        for (var event : eventBookings) {
+            List<Booking> bookings = bookingRepository.findByEventAndState(event, pendingState);
+            if (bookings == null || bookings.isEmpty()) {
+                continue;
+            }
+            List<Record> records = recordRepository.findByMeetingCode(bookings.get(0).getMeeting().getMeetingCode());
+            if (records == null || records.isEmpty()) {
+                for (var booking : bookings) {
+                    refundForCustomer(booking);
+                }
+            }else{
+                int count = 0;
+                for (var record : records) {
+                    count += record.getDuration();
+                }
+                if(count < event.getSeminar().getDuration() * 0.8){
+                    for (var booking : bookings) {
+                        refundForCustomer(booking);
+                    }
+                }else {
+                    int totalPrice = event.getPrice() * bookings.size();
+                    Float receiveCash = ((totalPrice * Float.parseFloat(tokenPrice.getValue()))
+                            * (100 - Float.parseFloat(revenue.getValue()))) / 100;
+                    Wallet wallet = event.getSeminar().getReader().getAccount().getWallet();
+                    wallet.setCash(wallet.getCash() + receiveCash);
+                    wallet = walletRepository.save(wallet);
+
+                    Transaction transaction = new Transaction();
+                    transaction.setStatus(TransactionStatusEnum.SUCCESS);
+                    transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
+                    transaction.setTransactionType(TransactionTypeEnum.BOOKING_DONE_RECEIVE);
+                    transaction.setCurrency(CurrencyEnum.DOLLAR);
+                    transaction.setAmount(Double.valueOf(receiveCash));
+                    transaction.setWallet(wallet);
+                    transactionRepository.save(transaction);
+
+                    for (var booking : bookings) {
+                        booking.setState(completeState);
+                        booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+                        bookingRepository.save(booking);
+                    }
+                }
+            }
+        }
+
+        // Your task logic goes here
+        Map<String, String> content = new HashMap<>();
+        content.put("Content", "Schedule task executed");
+        content.put("Job", "Update booking state");
+        content.put("Task executed at", dateUtils.getCurrentVietnamDate().toString());
+        webhookService.sendWebhookWithDataSchedule("UPDATE BOOKING STATE", content, Boolean.FALSE);
+    }
+
+    public void refundForCustomer(Booking booking) {
+        booking.setState(bookingStateRepository.findByName("CANCEL").orElseThrow(() -> new EntityNotFoundException("Booking state not found")));
+        booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+        bookingRepository.save(booking);
+
+        Wallet wallet = booking.getCustomer().getAccount().getWallet();
+        wallet.setTokenAmount(wallet.getTokenAmount() + booking.getTotalPrice());
+        wallet.setUpdatedAt(dateUtils.getCurrentVietnamDate());
+        walletRepository.save(wallet);
+
+        Transaction transaction = new Transaction();
+        transaction.setAmount((double) booking.getTotalPrice());
+        transaction.setTransactionType(TransactionTypeEnum.BOOKING_REFUND);
+        transaction.setWallet(wallet);
+        transaction.setCurrency(CurrencyEnum.TOKEN);
+        transaction.setStatus(TransactionStatusEnum.SUCCESS);
+        transaction.setBooking(booking);
+        transaction.setCreateAt(dateUtils.getCurrentVietnamDate());
+        transactionRepository.save(transaction);
     }
 
     public boolean updateBookingRecord(Booking booking) {

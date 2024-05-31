@@ -35,6 +35,8 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             """)
     List<Event> findBySeminarId(UUID seminarId);
 
+    List<Event> findByStartAtBetweenAndState(Date startAt, Date endAt, EventStateEnum state);
+
     //    @Query(value = """
 //            SELECT COUNT(e.id)
 //            FROM event e
