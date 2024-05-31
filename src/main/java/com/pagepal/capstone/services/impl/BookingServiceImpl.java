@@ -152,8 +152,10 @@ public class BookingServiceImpl implements BookingService {
             events = eventRepository.findAllEventActiveByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
         } else if ("PROCESSING".equals(state)) {
             events = eventRepository.findAllEventProcessingByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
-        } else {
+        } else if ("COMPLETE".equals(state)) {
             events = eventRepository.findAllEventCompletedByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
+        } else {
+            events = eventRepository.findAllEventCanceledByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
         }
 
         ListBookingDto listBookingDto = new ListBookingDto();

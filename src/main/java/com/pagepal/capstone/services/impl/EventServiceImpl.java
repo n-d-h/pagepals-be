@@ -241,13 +241,21 @@ public class EventServiceImpl implements EventService {
     public EventDto updateEvent(UUID id, EventUpdateDto eventDto) {
         try {
             List<Booking> bookings = bookingRepository.findAllByEventId(id);
-            if (bookings.size() > 0) {
+            if (!bookings.isEmpty()) {
                 throw new ValidationException("Event has bookings, cannot update");
             }
 
             Event event = eventRepository.findById(id).orElse(null);
             if (event == null) {
                 throw new ValidationException("Event not found");
+            }
+
+            if (event.getState().equals(EventStateEnum.INACTIVE)) {
+                throw new ValidationException("Event is deleted, cannot update");
+            }
+
+            if (event.getStartAt().before(dateUtils.getCurrentVietnamDate())) {
+                throw new ValidationException("Cannot update event in the past.");
             }
 
             var seminar = event.getSeminar();

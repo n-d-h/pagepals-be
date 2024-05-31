@@ -145,6 +145,21 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
                     SELECT 1
                     FROM Booking b
                     WHERE b.event = e
+                    AND b.state.name = 'CANCEL'
+                )
+            """)
+    Page<Event> findAllEventCanceledByReaderId(UUID readerId, EventStateEnum state, Date currentTime, Pageable pageable);
+
+    @Query("""
+                SELECT e
+                FROM Event e
+                WHERE e.seminar.reader.id = :readerId
+                AND e.state = :state
+                AND e.endAt < :currentTime
+                AND EXISTS (
+                    SELECT 1
+                    FROM Booking b
+                    WHERE b.event = e
                     AND b.state.name = 'PENDING'
                 )
             """)
