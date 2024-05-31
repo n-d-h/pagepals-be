@@ -108,7 +108,7 @@ public class EventServiceImpl implements EventService {
             //				throw new ValidationException("Event start date must be within [7 - 14] days");
             //			}
             if (Boolean.FALSE.equals(canCreateEvent(reader.getId()))) {
-                throw new ValidationException("Reader exceeds the limit (2) of creating seminar events in this week");
+                throw new ValidationException("You have reached the limit (2) of creating events for this week");
             }
 
             var countConflictWorkingTime = workingTimeRepository
@@ -327,8 +327,11 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Booking> bookings = bookingRepository.findAllByEventId(id);
-        if (bookings.size() > 0) {
-            throw new ValidationException("Event has bookings, cannot delete");
+        if (!bookings.isEmpty() &&
+                bookings.stream().anyMatch(booking -> booking.getState().getName().equals("PENDING")) &&
+                event.getEndAt().after(dateUtils.getCurrentVietnamDate())
+        ) {
+            throw new ValidationException("Event has pending bookings, cannot delete");
         }
 
         event.setState(EventStateEnum.INACTIVE);

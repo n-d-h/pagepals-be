@@ -73,7 +73,7 @@ public class SeminarServiceImpl implements SeminarService {
         Reader reader = readerRepository.findById(seminarCreateDto.getReaderId()).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
         if (Boolean.FALSE.equals(canCreateSeminar(reader.getId()))) {
-            throw new ValidationException("Reader exceeds the limit (2) of creating seminar requests in this week");
+            throw new ValidationException("You have reached the limit (2) of creating seminars for this week");
         }
 
         Book book;
@@ -278,7 +278,12 @@ public class SeminarServiceImpl implements SeminarService {
         pagingDto.setPageSize(list.getSize());
 
         // set value
-        listSeminarDto.setList(list.map(SeminarMapper.INSTANCE::toDto).toList());
+        var listSeminars = list.map(SeminarMapper.INSTANCE::toDto).toList();
+        for (SeminarDto seminarDto : listSeminars) {
+            seminarDto.setEvents(seminarDto.getEvents()
+                    .stream().filter(eventDto -> eventDto.getState() == EventStateEnum.ACTIVE).toList());
+        }
+        listSeminarDto.setList(listSeminars);
         listSeminarDto.setPagination(pagingDto);
 
         return listSeminarDto;

@@ -148,15 +148,13 @@ public class BookingServiceImpl implements BookingService {
 
 
         Date currentTime = dateUtils.getCurrentVietnamDate();
-        if ("PENDING".equals(state)) {
-            events = eventRepository.findAllEventActiveByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
-        } else if ("PROCESSING".equals(state)) {
-            events = eventRepository.findAllEventProcessingByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
-        } else if ("COMPLETE".equals(state)) {
-            events = eventRepository.findAllEventCompletedByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
-        } else {
-            events = eventRepository.findAllEventCanceledByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
-        }
+        events = switch (state) {
+            case "PENDING" ->
+                    eventRepository.findAllEventActiveByReaderId(readerId, EventStateEnum.ACTIVE, currentTime, pageable);
+            case "PROCESSING" -> eventRepository.findAllEventProcessingByReaderId(readerId, currentTime, pageable);
+            case "COMPLETE" -> eventRepository.findAllEventCompletedByReaderId(readerId, currentTime, pageable);
+            default -> eventRepository.findAllEventCanceledByReaderId(readerId, currentTime, pageable);
+        };
 
         ListBookingDto listBookingDto = new ListBookingDto();
 
