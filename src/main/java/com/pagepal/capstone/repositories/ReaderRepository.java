@@ -26,10 +26,10 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
 
     @Query("""
         SELECT r FROM Reader r
-        WHERE LOWER(r.nickname) LIKE %:nickname%
-        AND LOWER(r.genre) LIKE %:genre%
-        AND LOWER(r.language) LIKE %:language%
-        AND LOWER(r.countryAccent) LIKE %:countryAccent%
+        WHERE LOWER(r.nickname) LIKE CONCAT('%', LOWER(:nickname), '%')
+        AND LOWER(r.genre) LIKE CONCAT('%', LOWER(:genre), '%')
+        AND LOWER(r.language) LIKE CONCAT('%', LOWER(:language), '%')
+        AND LOWER(r.countryAccent) LIKE CONCAT('%', LOWER(:countryAccent), '%')
         AND r.rating = :rating
         AND r.account.accountState.name = :state
         """)
@@ -37,13 +37,13 @@ public interface ReaderRepository extends JpaRepository<Reader, UUID>{
             String nickname, String genre, String language, String countryAccent, Integer rating, String state, Pageable pageable);
 
     @Query("""
-        SELECT r FROM Reader r
-        WHERE LOWER(r.nickname) LIKE %:nickname%
-        AND LOWER(r.genre) LIKE %:genre%
-        AND LOWER(r.language) LIKE %:language%
-        AND LOWER(r.countryAccent) LIKE %:countryAccent%
-        AND r.account.accountState.name = :state
-        """)
+            SELECT r FROM Reader r
+            WHERE LOWER(r.nickname) LIKE CONCAT('%', LOWER(:nickname), '%')
+            AND LOWER(r.genre) LIKE CONCAT('%', LOWER(:genre), '%')
+            AND LOWER(r.language) LIKE CONCAT('%', LOWER(:language), '%')
+            AND LOWER(r.countryAccent) LIKE CONCAT('%', LOWER(:countryAccent), '%')
+            AND r.account.accountState.name = :state
+            """)
     Page<Reader> findByNicknameContainingIgnoreCaseAndGenreContainingIgnoreCaseAndLanguageContainingIgnoreCaseAndCountryAccentContainingIgnoreCaseAndAccountState(
             String nickname, String genre, String language, String countryAccent, String state, Pageable pageable);
 

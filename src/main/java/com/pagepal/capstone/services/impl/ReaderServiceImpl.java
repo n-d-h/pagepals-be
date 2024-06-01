@@ -139,7 +139,13 @@ public class ReaderServiceImpl implements ReaderService {
             pagingDto.setCurrentPage(page.getNumber());
             pagingDto.setPageSize(page.getSize());
 
-            listReaderDto.setList(page.map(ReaderMapper.INSTANCE::toDto).toList());
+            var listReader = page.map(ReaderMapper.INSTANCE::toDto).toList();
+            for (var reader : listReader) {
+                reader.setGenre(reader.getGenre().replaceAll(",\\s+", ", "));
+                reader.setLanguage(reader.getLanguage().replaceAll(",\\s+", ", "));
+            }
+
+            listReaderDto.setList(listReader);
             listReaderDto.setPagination(pagingDto);
             return listReaderDto;
         }
