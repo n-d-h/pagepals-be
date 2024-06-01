@@ -526,6 +526,19 @@ public class ReaderServiceImpl implements ReaderService {
     public String updateReaderProfile(UUID id, ReaderRequestInputDto readerUpdateDto) {
         Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
 
+        if (reader.getStatus().equals(Status.INACTIVE)) {
+            throw new ValidationException("Reader is banned or deleted!");
+        }
+
+        // if update date is not null and update date is 30 days before current date then update reader
+        if (reader.getUpdatedAt() != null) {
+            long diff = dateUtils.getCurrentVietnamDate().getTime() - reader.getUpdatedAt().getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+            if (diffDays < 30) {
+                throw new ValidationException("You can only update your profile once a month!");
+            }
+        }
+
         reader.setNickname(readerUpdateDto.getNickname());
         reader.setGenre(readerUpdateDto.getGenres().toString().replaceAll("\\[|\\]", ""));
         reader.setLanguage(readerUpdateDto.getLanguages().toString().replaceAll("\\[|\\]", ""));
