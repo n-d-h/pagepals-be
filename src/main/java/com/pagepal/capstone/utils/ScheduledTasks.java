@@ -188,6 +188,7 @@ public class ScheduledTasks {
     public void refundForCustomer(Booking booking) {
         booking.setState(bookingStateRepository.findByName("CANCEL").orElseThrow(() -> new EntityNotFoundException("Booking state not found")));
         booking.setUpdateAt(dateUtils.getCurrentVietnamDate());
+        booking.setCancelReason("Meeting does not meet the conditions for completion or does not take place");
         bookingRepository.save(booking);
 
         Wallet wallet = booking.getCustomer().getAccount().getWallet();
