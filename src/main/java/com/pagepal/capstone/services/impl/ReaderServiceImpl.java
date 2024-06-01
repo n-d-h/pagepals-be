@@ -295,8 +295,8 @@ public class ReaderServiceImpl implements ReaderService {
             }
             default -> {
                 // first day of the week and last day of the week
-                start = startOfDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                end = startOfDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+                start = startOfDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+                end = startOfDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
             }
         }
         Date begin = Date.from(start.atZone(ZoneId.systemDefault()).toInstant());
