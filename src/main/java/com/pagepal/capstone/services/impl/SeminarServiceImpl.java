@@ -6,7 +6,6 @@ import com.pagepal.capstone.dtos.seminar.SeminarCreateDto;
 import com.pagepal.capstone.dtos.seminar.SeminarDto;
 import com.pagepal.capstone.dtos.seminar.SeminarUpdateDto;
 import com.pagepal.capstone.entities.postgre.Book;
-import com.pagepal.capstone.entities.postgre.Event;
 import com.pagepal.capstone.entities.postgre.Reader;
 import com.pagepal.capstone.entities.postgre.Seminar;
 import com.pagepal.capstone.enums.EventStateEnum;
@@ -35,7 +34,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 

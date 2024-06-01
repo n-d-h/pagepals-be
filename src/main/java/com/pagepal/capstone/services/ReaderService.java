@@ -28,6 +28,8 @@ public interface ReaderService {
 
     WorkingTimeListRead getReaderWorkingTimes(UUID id);
 
+    WorkingTimeListRead getReaderWorkingTimesByViewAndDate(UUID id, String view, String date);
+
     ReaderBookListDto getBookOfReader(UUID id, ReaderBookFilterDto readerBookFilterDto);
 
     ReaderDto registerReader(UUID accountId, RequestInputDto requestInputDto);

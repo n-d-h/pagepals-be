@@ -25,13 +25,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -225,6 +229,77 @@ public class ReaderServiceImpl implements ReaderService {
         List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndStartTimeAfterOrderByStartTimeAsc(reader, now);
 
         List<WorkingTimeDto> result = new ArrayList<>();
+
+        WorkingTimeListRead list = new WorkingTimeListRead();
+        if (workingTimes != null) {
+            for (WorkingTime workingTime : workingTimes) {
+                result.add(WorkingTimeMapper.INSTANCE.toDto(workingTime));
+            }
+            if (events != null && !events.isEmpty()) {
+                for (Event event : events) {
+                    // calculate start  of the date from seminar start time
+                    LocalDateTime startLocalDate = event
+                            .getStartAt()
+                            .toInstant()
+                            .atZone(vietnamTimeZone)
+                            .toLocalDate()
+                            .atStartOfDay();
+
+
+                    LocalDateTime endLocalDate = event
+                            .getStartAt()
+                            .toInstant()
+                            .atZone(vietnamTimeZone)
+                            .toLocalDateTime()
+                            .plusMinutes(event.getSeminar().getDuration());
+
+                    WorkingTimeDto workingTimeDto = new WorkingTimeDto();
+                    workingTimeDto.setId(null);
+                    workingTimeDto.setDate(Date.from(startLocalDate.atZone(vietnamTimeZone).toInstant()));
+                    workingTimeDto.setStartTime(event.getStartAt());
+                    workingTimeDto.setEndTime(Date.from(endLocalDate.atZone(vietnamTimeZone).toInstant()));
+                    workingTimeDto.setIsBooked(event.getBookings() != null && !event.getBookings().isEmpty());
+                    workingTimeDto.setReader(ReaderMapper.INSTANCE.toDto(reader));
+
+                    result.add(workingTimeDto);
+                }
+            }
+            list = divideWorkingTimes(result);
+        }
+        return list;
+    }
+
+    @Override
+    public WorkingTimeListRead getReaderWorkingTimesByViewAndDate(UUID id, String view, String date) {
+        Reader reader = readerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reader not found"));
+
+        LocalDate localDate = LocalDate.parse(date);
+        LocalDateTime startOfDate = localDate.atStartOfDay();
+        LocalDateTime endOfDate = localDate.atTime(23, 59, 59);
+        LocalDateTime start;
+        LocalDateTime end;
+        switch (view) {
+            case "dayGridMonth" -> {
+                start = startOfDate.with(TemporalAdjusters.firstDayOfMonth());
+                end = startOfDate.with(TemporalAdjusters.lastDayOfMonth());
+            }
+            case "timeGridDay" -> {
+                start = startOfDate;
+                end = endOfDate;
+            }
+            default -> {
+                // first day of the week and last day of the week
+                start = startOfDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                end = startOfDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+            }
+        }
+        Date begin = Date.from(start.atZone(ZoneId.systemDefault()).toInstant());
+        Date finish = Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
+        List<Event> events = eventRepository.findByReaderAndStatusAndStartTimeBetweenOrderByStartTimeAsc(id, EventStateEnum.ACTIVE, begin, finish);
+        List<WorkingTime> workingTimes = workingTimeRepository.findByReaderAndStartTimeBetweenOrderByStartTimeAsc(reader, begin, finish);
+
+        List<WorkingTimeDto> result = new ArrayList<>();
+        ZoneId vietnamTimeZone = ZoneId.of("Asia/Ho_Chi_Minh");
 
         WorkingTimeListRead list = new WorkingTimeListRead();
         if (workingTimes != null) {
